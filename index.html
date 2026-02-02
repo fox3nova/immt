@@ -1,0 +1,597 @@
+import React, { useState, useMemo, useEffect } from 'react';
+import { ChevronDown, ChevronUp, Search, Shield, Zap, BookOpen, MapPin, Users, Gem, Skull, Globe, Star, Sparkles, Cloud, Activity, Hourglass } from 'lucide-react';
+
+const HanLiChronicle = () => {
+  const [activeWorld, setActiveWorld] = useState('HUMAN'); 
+  const [filterType, setFilterType] = useState('ALL');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [expandedId, setExpandedId] = useState(null);
+
+  // 定義事件類型
+  const EVENT_TYPES = {
+    CULTIVATION: { label: '境界突破', color: 'text-emerald-400', border: 'border-emerald-500/50', bg: 'bg-emerald-500', icon: Shield },
+    TREASURE: { label: '奪寶機緣', color: 'text-amber-400', border: 'border-amber-500/50', bg: 'bg-amber-500', icon: Gem },
+    TECHNIQUE: { label: '功法神通', color: 'text-blue-400', border: 'border-blue-500/50', bg: 'bg-blue-500', icon: BookOpen },
+    EVENT: { label: '關鍵副本', color: 'text-gray-200', border: 'border-gray-500/50', bg: 'bg-gray-500', icon: Zap },
+    FIGHT: { label: '血戰殺伐', color: 'text-red-400', border: 'border-red-500/50', bg: 'bg-red-500', icon: Skull },
+  };
+
+  const WORLDS = {
+    HUMAN: { label: '人界篇', icon: Globe, color: 'from-emerald-400 to-cyan-300', desc: '凡人 · 亂星 · 大晉', years: '10歲 - 900歲' },
+    SPIRIT: { label: '靈界篇', icon: Cloud, color: 'from-purple-400 to-pink-300', desc: '百族 · 魔界 · 大乘', years: '1000歲 - 11000歲' },
+    IMMORTAL: { label: '仙界篇', icon: Sparkles, color: 'from-amber-300 to-yellow-500', desc: '真仙 · 道祖 · 永生', years: '11000歲 - 永恆' },
+  };
+
+  // 數據庫 - 極致細節版 v4.0
+  const ALL_DATA = {
+    HUMAN: [
+       {
+        id: 'h1', age: 10, realm: '凡人', type: 'EVENT', title: '七玄門入門', location: '鏡州 · 七玄門',
+        characters: ['韓立', '厲飛雨', '張鐵'],
+        description: '韓立隨三叔參加七玄門測試。雖未被正式錄取，但被墨大夫收入神手谷，結識好友厲飛雨、張鐵。',
+        gained: ['長春功口訣'], lost: ['凡人生活'], techniques: []
+      },
+      {
+        id: 'h2', age: 14, realm: '煉氣期 一層', type: 'TREASURE', title: '掌天瓶現世', location: '神手谷',
+        characters: ['韓立'],
+        description: '意外拾得神秘小綠瓶。發現其能凝聚綠液催熟靈藥，從此走上「嗑藥修仙」的逆天之路。',
+        gained: ['掌天瓶(殘缺)'], lost: [], techniques: ['長春功']
+      },
+      {
+        id: 'h3', age: 16, realm: '煉氣期 六層', type: 'FIGHT', title: '墨大夫奪舍', location: '神手谷',
+        characters: ['韓立', '墨大夫', '余子童'],
+        description: '墨大夫圖窮匕見，韓立反殺墨大夫，囚禁余子童元神，獲得修仙界常識與暖陽寶玉。',
+        gained: ['暖陽寶玉', '長春功全本', '曲魂(煉屍)'], lost: ['師徒情分'], techniques: ['眨眼劍法', '羅煙步']
+      },
+      {
+        id: 'h4', age: 18, realm: '煉氣期 九層', type: 'EVENT', title: '嘉元城與太南小會', location: '嘉元城 / 太南谷',
+        characters: ['韓立', '墨彩環', '萬小山'],
+        description: '解決墨家危機後，參加太南小會，初次接觸修仙界交易，購買大量基礎物資。',
+        gained: ['金竺筆', '符籙大全', '法器'], lost: [], techniques: ['控物術', '天眼術']
+      },
+      {
+        id: 'h5', age: 21, realm: '煉氣期 十一層', type: 'CULTIVATION', title: '拜入黃楓谷', location: '越國 · 黃楓谷',
+        characters: ['韓立', '葉師叔'],
+        description: '持昇仙令加入黃楓谷。因資質低劣（四偽靈根），只能擔任百藥園看守弟子。',
+        gained: ['黃楓谷弟子身份', '青元劍訣(殘本)'], lost: ['昇仙令'], techniques: ['烈火彈']
+      },
+      {
+        id: 'h6', age: 23, realm: '煉氣期 巔峰', type: 'FIGHT', title: '血色試煉', location: '血色禁地',
+        characters: ['韓立', '南宮婉', '墨蛟'],
+        description: '為奪築基丹原料參加試煉。斬殺多名強敵，與南宮婉合力斬殺墨蛟，發生肌膚之親。',
+        gained: ['金頁(青元劍訣全本)', '定顏丹', '墨蛟材料'], lost: ['初吻', '童子身'], techniques: []
+      },
+      {
+        id: 'h7', age: 25, realm: '築基期 初期', type: 'CULTIVATION', title: '築基成功', location: '黃楓谷',
+        characters: ['韓立', '李化元'],
+        description: '服用大量築基丹後終於築基。拜李化元為師，獲得闢穀與後續功法指導。',
+        gained: ['青元劍訣(前十三層)', '闢穀'], lost: ['所有築基丹'], techniques: ['青元劍芒']
+      },
+      {
+        id: 'h8', age: 29, realm: '築基期 中期', type: 'TREASURE', title: '大衍神君', location: '千竹教分壇',
+        characters: ['韓立', '大衍神君'],
+        description: '獲得千竹教傀儡術與大衍神君寄宿的傀儡。得到增強神識的逆天功法《大衍決》。',
+        gained: ['大衍決', '傀儡真解', '大衍神君(隨身老爺爺)'], lost: [], techniques: ['大衍決(第一層)', '傀儡術']
+      },
+      {
+        id: 'h9', age: 31, realm: '築基期 中期', type: 'EVENT', title: '棄子傳送', location: '越國 → 亂星海',
+        characters: ['韓立', '南宮婉'],
+        description: '魔道入侵，韓立成為棄子。巧遇南宮婉後，通過古傳送陣逃往亂星海，遠離天南是非。',
+        gained: ['大挪移令', '亂星海新身份'], lost: ['修為倒退', '故土'], techniques: []
+      },
+      {
+        id: 'h10', age: 32, realm: '築基期 後期', type: 'CULTIVATION', title: '重修散功', location: '亂星海 · 魁星島',
+        characters: ['韓立'],
+        description: '在小寰島散功重修《三轉重元功》，並開始用綠液大量催熟天雷竹。',
+        gained: ['噬金蟲(幼體)', '天雷竹'], lost: [], techniques: ['三轉重元功']
+      },
+      {
+        id: 'h11', age: 126, realm: '結丹期 初期', type: 'CULTIVATION', title: '金丹大成', location: '亂星海 · 雪雲峰',
+        characters: ['韓立'],
+        description: '歷經近百年苦修與獵妖，終於結丹。煉製本命法寶「青竹蜂雲劍」。',
+        gained: ['青竹蜂雲劍(72口)', '辟邪神雷'], lost: [], techniques: ['青元劍盾', '萬劍訣']
+      },
+      {
+        id: 'h12', age: 150, realm: '結丹期 中期', type: 'TREASURE', title: '陰冥之地', location: '亂星海 · 鬼霧',
+        characters: ['韓立', '紫靈', '梅凝', '啼魂'],
+        description: '被鬼霧吞噬進入陰冥之地。憑藉強悍肉身稱霸。獲得專克鬼物的神獸「啼魂獸」。',
+        gained: ['啼魂獸', '冥河神乳'], lost: [], techniques: []
+      },
+      {
+        id: 'h13', age: 175, realm: '結丹期 後期', type: 'TREASURE', title: '虛天殿副本', location: '亂星海 · 虛天殿',
+        characters: ['韓立', '極陰', '蠻鬍子', '元瑤'],
+        description: '人界第一副本。在元嬰老怪夾縫中求生，虎口奪食取走虛天鼎，獲得第一件通天靈寶。',
+        gained: ['虛天鼎', '九曲靈參', '補天丹', '乾藍冰焰', '萬年靈乳'], lost: [], techniques: []
+      },
+      {
+        id: 'h14', age: 199, realm: '元嬰期 初期', type: 'CULTIVATION', title: '凝結元嬰', location: '亂星海',
+        characters: ['韓立'],
+        description: '利用九曲靈參煉丹，碎丹成嬰。習得《大衍決》第四層，神識遠超同階。',
+        gained: ['元嬰法體', '瞬移', '嬰火'], lost: [], techniques: ['大衍決(第四層)']
+      },
+      {
+        id: 'h15', age: 217, realm: '元嬰期 初期', type: 'EVENT', title: '重返天南', location: '天南 · 落雲宗',
+        characters: ['韓立', '南宮婉', '慕蘭人'],
+        description: '意外傳送回天南。加入落雲宗，參加邊界大戰。與南宮婉結為道侶。',
+        gained: ['庚精', '南宮婉(道侶)'], lost: [], techniques: ['太陰真火修煉法']
+      },
+      {
+        id: 'h16', age: 230, realm: '元嬰期 初期', type: 'FIGHT', title: '墜魔谷之戰', location: '天南 · 墜魔谷',
+        characters: ['韓立', '古魔', '紫靈'],
+        description: '為尋靈燭果入谷，遭遇古魔血焰主魂。大戰中展現驚人實力，擊退古魔。',
+        gained: ['靈燭果', '火蟾獸妖丹', '上古傀儡'], lost: [], techniques: ['三頭六臂真魔功(仿)', '春黎劍陣']
+      },
+      {
+        id: 'h17', age: 260, realm: '元嬰期 中期', type: 'EVENT', title: '遠赴大晉', location: '大晉',
+        characters: ['韓立', '大衍神君', '銀月'],
+        description: '大衍神君坐化。為解南宮婉封印與銀月身世，遠赴大晉。',
+        gained: ['大衍決全本', '平山印'], lost: ['大衍神君'], techniques: []
+      },
+      {
+        id: 'h18', age: 295, realm: '元嬰期 中期', type: 'TREASURE', title: '昆吾山副本', location: '大晉 · 昆吾山',
+        characters: ['韓立', '元剎聖祖', '玲瓏', '向之禮'],
+        description: '昆吾山封印破裂。韓立混入其中，大戰古魔元剎。見識化神期大能出手。',
+        gained: ['黑風旗', '赤魂石', '太陰真火', '圭靈', '五火七禽扇(仿)'], lost: [], techniques: []
+      },
+      {
+        id: 'h19', age: 350, realm: '元嬰期 後期', type: 'CULTIVATION', title: '小極宮進階', location: '北夜小極宮',
+        characters: ['韓立', '冰鳳'],
+        description: '利用虛靈丹突破元嬰後期。與冰鳳恩怨糾纏，意外傳送至虛靈殿。',
+        gained: ['元嬰後期修為', '五子同心魔', '破滅法目'], lost: [], techniques: ['五寒靈火']
+      },
+      {
+        id: 'h20', age: 400, realm: '元嬰期 後期', type: 'FIGHT', title: '元磁神山', location: '亂星海',
+        characters: ['韓立', '金蛟王', '星宮雙聖'],
+        description: '回馬亂星海，斬殺金蛟王奪丹。與星宮交易獲得元磁山，修煉元磁神光。',
+        gained: ['元磁神山', '龍丹', '風希妖丹'], lost: [], techniques: ['元磁神光']
+      },
+      {
+        id: 'h21', age: 800, realm: '化神期 初期', type: 'CULTIVATION', title: '人間化神', location: '天南',
+        characters: ['韓立'],
+        description: '在人界靈氣匱乏條件下，憑藉五行合一與元磁神光，強行突破化神期。',
+        gained: ['化神期修為', '壽元2000載'], lost: [], techniques: ['縮地成寸', '元磁神光(大成)']
+      },
+      {
+        id: 'h22', age: 900, realm: '化神期 初期', type: 'EVENT', title: '偷渡靈界', location: '空間節點',
+        characters: ['韓立', '冰鳳'],
+        description: '與冰鳳聯手闖空間節點。遭遇空間風暴，法寶盡毀，修為大跌。',
+        gained: ['靈界機緣'], lost: ['修為(跌落)', '大挪移令', '大部分法寶'], techniques: []
+      }
+    ],
+    SPIRIT: [
+      {
+        id: 's1', age: 1000, realm: '化神期 中期', type: 'EVENT', title: '天淵城青冥衛', location: '靈界 · 天淵城',
+        characters: ['韓立', '雷蘭'],
+        description: '修為恢復後，為獲取滅塵丹（抵禦靈界同化），加入天淵城擔任青冥衛。',
+        gained: ['青冥衛身份', '滅塵丹'], lost: [], techniques: ['金篆文(初步)']
+      },
+      {
+        id: 's2', age: 1200, realm: '煉虛期 初期', type: 'TREASURE', title: '地淵副本', location: '天淵城 · 地淵',
+        characters: ['韓立', '四大妖王', '元瑤'],
+        description: '被妖王脅迫探寶。在冥河之地獲得大機緣，與元瑤重逢。利用冥河神乳突破煉虛。',
+        gained: ['煉虛期修為', '元磁山(煉化)', '噬金蟲王(候選)', '天外魔甲'], lost: [], techniques: ['驚蟄十二變']
+      },
+      {
+        id: 's3', age: 1300, realm: '煉虛期 中期', type: 'EVENT', title: '飛靈族副本', location: '飛靈族',
+        characters: ['韓立', '金悅'],
+        description: '誤入飛靈族領地，冒充天鵬族聖子參加試煉。進入地淵深層，奪取金鹏舍利。',
+        gained: ['天鵬族聖子身份', '雷鵬之骨', '鯤鵬真血'], lost: [], techniques: ['風雷翅(進化)']
+      },
+      {
+        id: 's4', age: 1350, realm: '煉虛期 中期', type: 'FIGHT', title: '五色孔雀', location: '飛靈族聖地',
+        characters: ['韓立', '魚店主'],
+        description: '潛入五色孔雀聖山，洗劫真血。被大乘期老祖追殺，利用羅睺逃脫。',
+        gained: ['五色孔雀真血'], lost: [], techniques: ['驚蟄十二變(五色孔雀變)']
+      },
+      {
+        id: 's5', age: 1400, realm: '煉虛期 後期', type: 'EVENT', title: '青元子副本', location: '冥河之地',
+        characters: ['韓立', '青元子', '姜老怪'],
+        description: '再入冥河之地，協助青元子渡劫。青元子傳授新版青元劍訣與劍陣圖。',
+        gained: ['新青元劍訣', '春黎/青蟠/巨劍術'], lost: [], techniques: ['大庚劍陣']
+      },
+      {
+        id: 's6', age: 1450, realm: '煉虛期 後期', type: 'EVENT', title: '角蚩族大戰', location: '雷鳴大陸',
+        characters: ['韓立'],
+        description: '捲入角蚩族與海王族大戰。竊取廣寒界鑰匙，獲得極品靈石。',
+        gained: ['廣寒界鑰匙', '極品靈石'], lost: [], techniques: []
+      },
+      {
+        id: 's7', age: 1500, realm: '煉虛期 後期', type: 'TREASURE', title: '廣寒界', location: '雷鳴大陸 · 廣寒界',
+        characters: ['韓立', '柳水兒'],
+        description: '進入廣寒界，尋得《煉神術》殘篇（修煉神識禁術，靠小綠瓶解副作用）。',
+        gained: ['煉神術(第一層)', '山岳巨猿真血', '太乙青山'], lost: [], techniques: ['百脈煉寶決', '煉神術']
+      },
+      {
+        id: 's8', age: 2000, realm: '合體期 初期', type: 'CULTIVATION', title: '進階合體', location: '人族 · 魔金山脈',
+        characters: ['韓立'],
+        description: '在魔氣之地衝擊合體成功。引發驚人天象，正式踏入靈界高層戰力。',
+        gained: ['合體期修為', '天地元氣灌體'], lost: [], techniques: ['梵聖真魔功(大成)', '法相金身']
+      },
+      {
+        id: 's9', age: 2100, realm: '合體期 中期', type: 'EVENT', title: '魔界洗靈池', location: '魔界',
+        characters: ['韓立', '紫靈', '蟹道人'],
+        description: '深入魔界尋找洗靈池與淨靈蓮。找回紫靈，收服偽仙傫「蟹道人」。發現掌天瓶可凝聚「光陰之絲」。',
+        gained: ['蟹道人(強力保鏢)', '紫靈(重逢)', '光陰之絲'], lost: [], techniques: ['涅槃聖體']
+      },
+      {
+        id: 's10', age: 2150, realm: '合體期 後期', type: 'TREASURE', title: '小修羅界', location: '靈界',
+        characters: ['韓立', '修羅蛛'],
+        description: '進入小修羅界，獵殺光陰之蟲，獲取時間法則材料。',
+        gained: ['光陰之晶', '修羅蛛絲'], lost: [], techniques: []
+      },
+      {
+        id: 's11', age: 2200, realm: '合體期 後期', type: 'FIGHT', title: '守護人族', location: '木族領地',
+        characters: ['韓立', '莫簡離', '敖嘯老祖'],
+        description: '魔族入侵靈界。韓立作為人族頂樑柱，斬殺魔族聖祖化身，威震百族。',
+        gained: ['人族第一強者聲望'], lost: ['敖嘯老祖(隕落)'], techniques: []
+      },
+      {
+        id: 's12', age: 2400, realm: '大乘期', type: 'CULTIVATION', title: '成就大乘', location: '靈界',
+        characters: ['韓立'],
+        description: '突破大乘期，成為靈界頂點。重煉青竹蜂雲劍，將其提升為玄天之寶。',
+        gained: ['大乘期修為', '言出法隨', '青竹蜂雲劍(玄天)'], lost: [], techniques: ['元合五極山']
+      },
+      {
+        id: 's13', age: 2450, realm: '大乘期', type: 'FIGHT', title: '斬殺真仙馬良', location: '靈界',
+        characters: ['韓立', '馬良', '蟹道人', '噬金蟲王'],
+        description: '仙界叛徒馬良血祭下界。韓立佈局，集合全界之力，成功弒仙！',
+        gained: ['盜天瓶(仿)', '真仙遺骸', '成套仙器'], lost: [], techniques: ['玄天斬靈劍']
+      },
+      {
+        id: 's14', age: 2500, realm: '大乘期', type: 'EVENT', title: '飛升準備', location: '人族',
+        characters: ['韓立', '南宮婉', '許家'],
+        description: '在靈界滯留數千年，培養後輩，為許家留下底蘊，陪伴南宮婉。',
+        gained: ['家族繁榮'], lost: [], techniques: []
+      },
+      {
+        id: 's15', age: 11000, realm: '渡劫飛升', type: 'EVENT', title: '飛升大劫', location: '靈界 → 仙界',
+        characters: ['韓立'],
+        description: '度過極其恐怖的飛升之劫，肉身成聖，前往北寒仙域。',
+        gained: ['仙界資格'], lost: ['天倫之樂'], techniques: []
+      }
+    ],
+    IMMORTAL: [
+      {
+        id: 'i1', age: '11000+', realm: '凡人(暫)', type: 'EVENT', title: '失憶開局', location: '北寒仙域 · 靈寰界',
+        characters: ['韓立(厲飛雨)', '柳樂兒'],
+        description: '飛升被陶羽偷襲，跌落靈寰界，元嬰封印，記憶全失。化名厲飛雨保護柳樂兒，修煉肉身。',
+        gained: ['柳樂兒(羈絆)', '肉身成聖基礎'], lost: ['記憶', '修為', '掌天瓶'], techniques: ['萬竅空寂術']
+      },
+      {
+        id: 'i2', age: '11100+', realm: '真仙境 初期', type: 'CULTIVATION', title: '冷焰宗', location: '冷焰宗',
+        characters: ['韓立'],
+        description: '恢復記憶，加入冷焰宗。利用仙界資源修煉《大周天星元功》，打通仙竅，重回真仙。',
+        gained: ['真仙修為', '小北斗星元功'], lost: [], techniques: []
+      },
+      {
+        id: 'i3', age: '11500+', realm: '真仙境 中期', type: 'EVENT', title: '無常盟', location: '仙界',
+        characters: ['韓立(青狐)'],
+        description: '加入神秘組織無常盟，戴上紅色面具，化號「青狐」，進行地下交易。',
+        gained: ['無常盟面具', '大量資源'], lost: [], techniques: []
+      },
+      {
+        id: 'i4', age: '12000+', realm: '金仙境 初期', type: 'TREASURE', title: '燭龍道與掌天瓶', location: '燭龍道',
+        characters: ['韓立', '百里炎', '瓶靈'],
+        description: '加入燭龍道，尋回掌天瓶。發現瓶靈。獲得時間法則核心功法《真言化輪經》。',
+        gained: ['真實之眼', '時間法則之絲', '掌天瓶(歸位)'], lost: [], techniques: ['真言化輪經', '時間道紋']
+      },
+      {
+        id: 'i5', age: '12500+', realm: '金仙境 中期', type: 'TREASURE', title: '黑風海域', location: '黑風海',
+        characters: ['韓立', '陸雨晴'],
+        description: '傳送至黑風海域，護送陸雨晴。進入無盡海深處，獲得太乙丹方與地圖。',
+        gained: ['太乙丹方', '地祇化身法'], lost: [], techniques: []
+      },
+      {
+        id: 'i6', age: '13000+', realm: '金仙境 後期', type: 'EVENT', title: '冥界副本', location: '冥界 · 閻羅之府',
+        characters: ['韓立', '啼魂', '閻羅王'],
+        description: '啼魂感應召喚進入冥界。韓立隨行，助啼魂奪回刑獸真身，斬殺監察仙使。',
+        gained: ['啼魂(真仙界刑獸)', '鬼道秘術'], lost: [], techniques: []
+      },
+      {
+        id: 'i7', age: '13500+', realm: '太乙玉仙', type: 'FIGHT', title: '灰界與大羅一擊', location: '灰界',
+        characters: ['韓立', '石穿空', '墨雨'],
+        description: '誤入灰界，洗去煞氣。利用掌天瓶穿越時空，借用前世大羅修為一擊破敵。',
+        gained: ['太乙修為', '天狐化血刀', '羅吒琵琶'], lost: [], techniques: ['穿越時空能力(有限)']
+      },
+      {
+        id: 'i8', age: '14000+', realm: '太乙玉仙', type: 'TREASURE', title: '蠻荒界域', location: '蠻荒',
+        characters: ['韓立', '柳樂兒'],
+        description: '護送柳樂兒回天狐族。捲入蠻荒各族紛爭，斬殺大羅境噬金蟲，金童吞噬進階。',
+        gained: ['天狐族友誼', '金童進階'], lost: [], techniques: []
+      },
+      {
+        id: 'i9', age: '15000+', realm: '大羅境 初期', type: 'EVENT', title: '太歲仙府', location: '金源仙域',
+        characters: ['韓立'],
+        description: '探索太歲仙府，獲得時間法則至寶。修煉《大五行幻世訣》小成。',
+        gained: ['大羅修為', '東乙神木', '歲月神燈'], lost: [], techniques: ['通天劍陣']
+      },
+      {
+        id: 'i10', age: '16000+', realm: '大羅境 中期', type: 'FIGHT', title: '積鱗空境', location: '積鱗空境',
+        characters: ['韓立', '蟹道人(傀儡道祖)'],
+        description: '跌入無法使用法力的積鱗空境。專修肉身，助蟹道人奪回道祖之軀。',
+        gained: ['肉身圓滿', '蟹道人(道祖級盟友)'], lost: [], techniques: ['天煞鎮獄功']
+      },
+      {
+        id: 'i11', age: '18000+', realm: '大羅境 後期', type: 'EVENT', title: '九元觀副本', location: '金源仙域',
+        characters: ['韓立', '金童'],
+        description: '潛入九元觀救金童（噬金蟲王）。大鬧九元觀，對抗道祖分身。',
+        gained: ['金童(道祖級戰力)', '九元觀秘藏'], lost: [], techniques: ['大五行幻世訣(精進)']
+      },
+      {
+        id: 'i12', age: '20000+', realm: '大羅 巔峰', type: 'CULTIVATION', title: '斬三屍', location: '黃泉大澤',
+        characters: ['韓立', '輪迴殿主', '紫靈'],
+        description: '與輪迴殿主（未來的自己）會面。得知天道真相。成功斬去善、惡、執三屍，達大羅巔峰。',
+        gained: ['大羅巔峰修為', '天道真相'], lost: ['三屍羈絆'], techniques: ['煉神術(圓滿)']
+      },
+      {
+        id: 'i13', age: '22000+', realm: '大羅 巔峰', type: 'EVENT', title: '菩提宴', location: '天庭',
+        characters: ['韓立', '古或今'],
+        description: '參加天庭菩提宴，實則為決戰前夕。看破時間道祖古或今的陰謀。',
+        gained: ['各方盟友'], lost: [], techniques: []
+      },
+      {
+        id: 'i14', age: '25000+', realm: '道祖境', type: 'FIGHT', title: '天庭終戰', location: '天庭 · 混沌虛空',
+        characters: ['韓立', '古或今', '魔主', '輪迴殿主'],
+        description: '古或今企圖獻祭三界。輪迴殿主犧牲自我為韓立鋪路。韓立融合掌天瓶，成就時間道祖，擊敗古或今。',
+        gained: ['時間道祖果位', '掌天瓶(終極)'], lost: ['輪迴殿主(隕落)', '大量故人'], techniques: ['大五行幻世訣(圓滿)', '言出法隨']
+      },
+      {
+        id: 'i15', age: '∞', realm: '大道至尊', type: 'EVENT', title: '逍遙永生', location: '諸天萬界',
+        characters: ['韓立', '南宮婉', '紫靈', '金童'],
+        description: '不願被天道同化，自斬道祖果位，保留實力但超脫天道。與南宮婉等人在仙界隱居，號「韓天尊」。',
+        gained: ['真正的大逍遙', '永恆生命'], lost: ['道祖權柄(主動放棄)'], techniques: []
+      }
+    ]
+  };
+
+  const currentData = useMemo(() => ALL_DATA[activeWorld], [activeWorld]);
+
+  const filteredData = useMemo(() => {
+    return currentData.filter(item => {
+      const matchesType = filterType === 'ALL' || item.type === filterType;
+      const matchesSearch = item.title.includes(searchTerm) || 
+                            item.description.includes(searchTerm) ||
+                            (item.gained && item.gained.some(g => g.includes(searchTerm)));
+      return matchesType && matchesSearch;
+    });
+  }, [currentData, filterType, searchTerm]);
+
+  useEffect(() => {
+    setExpandedId(null);
+  }, [activeWorld]);
+
+  const CurrentWorldIcon = WORLDS[activeWorld].icon;
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-200 font-sans p-4 md:p-8 transition-colors duration-700">
+      
+      {/* Dynamic Background Gradient */}
+      <div className={`fixed inset-0 bg-gradient-to-br opacity-20 pointer-events-none transition-all duration-1000 ${
+        activeWorld === 'HUMAN' ? 'from-emerald-900 via-slate-900 to-slate-900' :
+        activeWorld === 'SPIRIT' ? 'from-purple-900 via-slate-900 to-indigo-900' :
+        'from-amber-900 via-slate-900 to-yellow-900'
+      }`}></div>
+
+      {/* Header Area */}
+      <header className="relative max-w-5xl mx-auto mb-10 text-center space-y-4 z-10">
+        <h1 className={`text-4xl md:text-6xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r ${WORLDS[activeWorld].color} drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] transition-all duration-500`}>
+          韓立修仙編年史
+        </h1>
+        <div className="flex items-center justify-center gap-3 text-slate-400">
+          <p className="text-sm md:text-base tracking-[0.2em] uppercase">
+            A Record of a Mortal's Journey to Immortality
+          </p>
+          <span className="w-1 h-1 bg-slate-500 rounded-full"></span>
+          <p className="text-xs md:text-sm font-mono text-slate-500">
+            {WORLDS[activeWorld].years}
+          </p>
+        </div>
+
+        {/* World Selectors */}
+        <div className="grid grid-cols-3 gap-2 md:gap-4 mt-8 max-w-3xl mx-auto">
+          {Object.entries(WORLDS).map(([key, config]) => {
+            const isActive = activeWorld === key;
+            const Icon = config.icon;
+            return (
+              <button
+                key={key}
+                onClick={() => setActiveWorld(key)}
+                className={`group relative flex flex-col md:flex-row items-center justify-center gap-2 px-2 py-3 md:py-4 rounded-xl transition-all duration-300 border ${
+                  isActive 
+                    ? `bg-slate-800 border-${config.color.split('-')[1]}-500/50 text-white shadow-lg scale-105` 
+                    : 'bg-slate-900/50 border-slate-700/50 text-slate-500 hover:bg-slate-800 hover:text-slate-300'
+                }`}
+              >
+                <Icon size={20} className={isActive ? `text-${config.color.split('-')[1]}-400` : ''} />
+                <div className="text-center md:text-left">
+                  <div className={`text-sm font-bold ${isActive ? 'opacity-100' : 'opacity-80'}`}>{config.label}</div>
+                  <div className="text-[10px] opacity-60 font-mono hidden md:block">{config.desc}</div>
+                </div>
+                {isActive && (
+                  <span className={`absolute -bottom-1 left-1/2 w-16 h-0.5 -translate-x-1/2 bg-gradient-to-r ${config.color}`}></span>
+                )}
+              </button>
+            )
+          })}
+        </div>
+      </header>
+
+      {/* Controls */}
+      <div className="max-w-4xl mx-auto mb-8 sticky top-4 z-20 bg-slate-900/90 backdrop-blur-xl p-4 rounded-2xl border border-slate-700/50 shadow-2xl">
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+          
+          {/* Filter Types */}
+          <div className="flex flex-wrap gap-2 justify-center md:justify-start w-full md:w-auto">
+            <button 
+              onClick={() => setFilterType('ALL')}
+              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all ${filterType === 'ALL' ? 'bg-slate-100 text-slate-900' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
+            >
+              全部
+            </button>
+            {Object.entries(EVENT_TYPES).map(([key, config]) => (
+              <button 
+                key={key}
+                onClick={() => setFilterType(key)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${filterType === key ? `bg-slate-800 ${config.color} ${config.border}` : 'bg-slate-800/0 border-transparent text-slate-500 hover:bg-slate-800'}`}
+              >
+                <config.icon size={12} />
+                {config.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Search */}
+          <div className="relative w-full md:w-64">
+            <Search className="absolute left-3 top-2.5 text-slate-500" size={16} />
+            <input 
+              type="text" 
+              placeholder="搜尋法寶、人物、地點..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-slate-950/50 text-slate-200 text-sm pl-10 pr-4 py-2 rounded-lg border border-slate-700 focus:outline-none focus:border-slate-500 transition-colors"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Timeline */}
+      <div className="max-w-4xl mx-auto relative pl-4 md:pl-0 z-10 min-h-[50vh]">
+        
+        {/* Empty State */}
+        {filteredData.length === 0 && (
+          <div className="text-center py-20 text-slate-600">
+            <div className="inline-block p-4 rounded-full bg-slate-900 mb-4">
+              <Search size={32} />
+            </div>
+            <p>找不到相關記錄，請嘗試其他關鍵字</p>
+          </div>
+        )}
+
+        {/* Central Line */}
+        <div className={`absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-transparent via-slate-700 to-transparent transform md:-translate-x-1/2`}></div>
+
+        <div className="space-y-12 pb-24">
+          {filteredData.map((item, index) => {
+            const isExpanded = expandedId === item.id;
+            const isEven = index % 2 === 0;
+            const eventConfig = EVENT_TYPES[item.type];
+
+            return (
+              <div key={item.id} className={`relative flex items-center md:justify-between ${isEven ? 'md:flex-row-reverse' : ''} animate-in fade-in slide-in-from-bottom-4 duration-500`}>
+                
+                {/* Timeline Dot */}
+                <div className={`absolute left-4 md:left-1/2 w-9 h-9 rounded-full bg-slate-900 border-2 border-slate-600 flex items-center justify-center transform -translate-x-1/2 z-10 shadow-lg ${isExpanded ? 'border-white scale-110' : ''} transition-all group-hover:border-${eventConfig.color.split('-')[1]}-400`}>
+                  <span className={`text-[10px] font-bold ${eventConfig.color}`}>{item.age}</span>
+                </div>
+
+                {/* Content Card */}
+                <div className="ml-12 md:ml-0 md:w-[45%] w-full">
+                  <div 
+                    className={`group relative bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-xl overflow-hidden hover:border-slate-600 transition-all duration-300 cursor-pointer shadow-xl ${isExpanded ? 'ring-1 ring-white/20 bg-slate-800/80' : ''}`}
+                    onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                  >
+                    
+                    {/* Realm Badge */}
+                    <div className="absolute top-3 right-3">
+                      <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/5 bg-white/5 text-slate-300`}>
+                        {item.realm}
+                      </span>
+                    </div>
+
+                    <div className="p-5">
+                      {/* Meta info */}
+                      <div className="flex items-center gap-2 mb-2">
+                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-sm ${eventConfig.bg} text-slate-950`}>
+                           {eventConfig.label}
+                         </span>
+                         <span className="text-[10px] text-slate-500 flex items-center gap-1">
+                           <MapPin size={10} /> {item.location}
+                         </span>
+                      </div>
+                      
+                      <h3 className={`text-lg font-bold text-slate-200 mb-2 group-hover:text-white transition-colors`}>
+                        {item.title}
+                      </h3>
+                      
+                      <p className="text-sm text-slate-400 line-clamp-2 leading-relaxed">
+                        {item.description}
+                      </p>
+
+                      <div className="mt-3 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        {isExpanded ? <ChevronUp size={16} className="text-slate-500" /> : <ChevronDown size={16} className="text-slate-500" />}
+                      </div>
+                    </div>
+
+                    {/* Expanded Content */}
+                    {isExpanded && (
+                      <div className="px-5 pb-5 pt-0 text-sm animate-in fade-in slide-in-from-top-1">
+                        <div className="h-px w-full bg-slate-700/50 mb-4"></div>
+                        <div className="space-y-4">
+                          <p className="text-slate-300 leading-relaxed">
+                            {item.description}
+                          </p>
+                          
+                          <div className="grid grid-cols-1 gap-3">
+                            {/* Gained */}
+                            {item.gained && item.gained.length > 0 && (
+                              <div className="bg-amber-500/10 p-3 rounded border border-amber-500/20">
+                                <div className="text-xs text-amber-400 mb-2 flex items-center gap-1.5 font-bold uppercase tracking-wider">
+                                  <Gem size={12} /> 獲得/機緣
+                                </div>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {item.gained.map((g, i) => (
+                                    <span key={i} className="text-xs text-amber-200/80 bg-amber-900/30 px-2 py-1 rounded">
+                                      {g}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Techniques */}
+                            {item.techniques && item.techniques.length > 0 && (
+                              <div className="bg-blue-500/10 p-3 rounded border border-blue-500/20">
+                                <div className="text-xs text-blue-400 mb-2 flex items-center gap-1.5 font-bold uppercase tracking-wider">
+                                  <BookOpen size={12} /> 功法/神通
+                                </div>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {item.techniques.map((t, i) => (
+                                    <span key={i} className="text-xs text-blue-200/80 bg-blue-900/30 px-2 py-1 rounded">
+                                      {t}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Characters */}
+                           {item.characters && item.characters.length > 0 && (
+                              <div className="flex flex-wrap gap-2 items-center pt-2">
+                                <Users size={12} className="text-slate-600" />
+                                {item.characters.map((char, i) => (
+                                  <span key={i} className="text-[10px] text-slate-500 border border-slate-700 px-1.5 py-0.5 rounded-full">
+                                    {char}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      
+       <div className="text-center text-slate-700 text-[10px] pb-8 uppercase tracking-widest">
+        Archive System v4.0 • {activeWorld} Realm
+      </div>
+    </div>
+  );
+};
+
+export default HanLiChronicle;
