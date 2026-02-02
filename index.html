@@ -74,7 +74,7 @@
                 IMMORTAL: { label: '仙界篇', icon: Sparkles, color: 'from-amber-300 to-yellow-500', desc: '真仙 · 道祖 · 永生', years: '11000歲 - 永恆' },
             };
 
-            // 數據庫 - 極致細節版 v4.0
+            // 數據庫 - 極致細節版 v5.0 (Omniscient Edition)
             const ALL_DATA = {
                 HUMAN: [
                 {
@@ -102,6 +102,12 @@
                     gained: ['金竺筆', '符籙大全', '法器'], lost: [], techniques: ['控物術', '天眼術']
                 },
                 {
+                    id: 'h4.5', age: 20, realm: '煉氣期 十層', type: 'EVENT', title: '燕家堡血祭', location: '燕家堡',
+                    characters: ['韓立', '董萱兒', '鬼靈門'],
+                    description: '參加奪寶大會，意外撞破魔道鬼靈門與燕家勾結。見證血祭慘案，堅定了「跑路」與「謹慎」的修仙核心價值觀。',
+                    gained: ['魔道入侵情報'], lost: ['對世家的信任'], techniques: []
+                },
+                {
                     id: 'h5', age: 21, realm: '煉氣期 十一層', type: 'CULTIVATION', title: '拜入黃楓谷', location: '越國 · 黃楓谷',
                     characters: ['韓立', '葉師叔'],
                     description: '持昇仙令加入黃楓谷。因資質低劣（四偽靈根），只能擔任百藥園看守弟子。',
@@ -120,10 +126,22 @@
                     gained: ['青元劍訣(前十三層)', '闢穀'], lost: ['所有築基丹'], techniques: ['青元劍芒']
                 },
                 {
+                    id: 'h7.5', age: 27, realm: '築基期 初期', type: 'EVENT', title: '陣法與辛如音', location: '天星宗坊市',
+                    characters: ['韓立', '辛如音', '齊雲霄'],
+                    description: '結識陣法天才辛如音。為其修復古陣圖，承諾照顧其後人（雖然沒做到完美的結局）。',
+                    gained: ['顛倒五行陣', '古傳送陣修復法'], lost: [], techniques: ['陣法基礎']
+                },
+                {
                     id: 'h8', age: 29, realm: '築基期 中期', type: 'TREASURE', title: '大衍神君', location: '千竹教分壇',
                     characters: ['韓立', '大衍神君'],
                     description: '獲得千竹教傀儡術與大衍神君寄宿的傀儡。得到增強神識的逆天功法《大衍決》。',
                     gained: ['大衍決', '傀儡真解', '大衍神君(隨身老爺爺)'], lost: [], techniques: ['大衍決(第一層)', '傀儡術']
+                },
+                {
+                    id: 'h8.5', age: 30, realm: '築基期 中期', type: 'FIGHT', title: '黑煞教副本', location: '越國皇宮',
+                    characters: ['韓立', '陳師姐', '黑煞教主'],
+                    description: '發現皇宮被黑煞教控制。與同門圍剿妖化教主。此戰極其慘烈，獲得凝結煞丹之法。',
+                    gained: ['金書頁(身外化身)', '五行血凝丹'], lost: ['部分同門'], techniques: []
                 },
                 {
                     id: 'h9', age: 31, realm: '築基期 中期', type: 'EVENT', title: '棄子傳送', location: '越國 → 亂星海',
@@ -132,7 +150,13 @@
                     gained: ['大挪移令', '亂星海新身份'], lost: ['修為倒退', '故土'], techniques: []
                 },
                 {
-                    id: 'h10', age: 32, realm: '築基期 後期', type: 'CULTIVATION', title: '重修散功', location: '亂星海 · 魁星島',
+                    id: 'h9.5', age: 35, realm: '築基期 後期', type: 'EVENT', title: '妙音門與天雷竹', location: '亂星海 · 天星城',
+                    characters: ['韓立', '紫靈仙子', '文思月'],
+                    description: '與妙音門交易，初識紫靈。在拍賣會上意外得到天雷竹的根莖消息，開始培育。',
+                    gained: ['天雷竹根莖', '紫靈的關注'], lost: [], techniques: []
+                },
+                {
+                    id: 'h10', age: 40, realm: '築基期 後期', type: 'CULTIVATION', title: '重修散功', location: '亂星海 · 魁星島',
                     characters: ['韓立'],
                     description: '在小寰島散功重修《三轉重元功》，並開始用綠液大量催熟天雷竹。',
                     gained: ['噬金蟲(幼體)', '天雷竹'], lost: [], techniques: ['三轉重元功']
@@ -168,6 +192,12 @@
                     gained: ['庚精', '南宮婉(道侶)'], lost: [], techniques: ['太陰真火修煉法']
                 },
                 {
+                    id: 'h15.5', age: 220, realm: '元嬰期 初期', type: 'FIGHT', title: '邊界賭戰', location: '天南邊界',
+                    characters: ['韓立', '慕蘭聖女', '天南三大修士'],
+                    description: '代表天南出戰慕蘭法士，以初期修為力敵元嬰後期，一戰成名。',
+                    gained: ['大量庚精', '天南第一人稱號(雛形)'], lost: [], techniques: []
+                },
+                {
                     id: 'h16', age: 230, realm: '元嬰期 初期', type: 'FIGHT', title: '墜魔谷之戰', location: '天南 · 墜魔谷',
                     characters: ['韓立', '古魔', '紫靈'],
                     description: '為尋靈燭果入谷，遭遇古魔血焰主魂。大戰中展現驚人實力，擊退古魔。',
@@ -178,6 +208,12 @@
                     characters: ['韓立', '大衍神君', '銀月'],
                     description: '大衍神君坐化。為解南宮婉封印與銀月身世，遠赴大晉。',
                     gained: ['大衍決全本', '平山印'], lost: ['大衍神君'], techniques: []
+                },
+                {
+                    id: 'h17.5', age: 270, realm: '元嬰期 中期', type: 'EVENT', title: '陰陽窟收銀月', location: '大晉 · 陰陽窟',
+                    characters: ['韓立', '銀月(玲瓏)'],
+                    description: '深入陰陽窟，幫助銀月融合分魂。這是銀月劇情線的高潮部分。',
+                    gained: ['銀月狼族好感', '通天靈寶仿製品'], lost: [], techniques: []
                 },
                 {
                     id: 'h18', age: 295, realm: '元嬰期 中期', type: 'TREASURE', title: '昆吾山副本', location: '大晉 · 昆吾山',
@@ -272,6 +308,12 @@
                     gained: ['光陰之晶', '修羅蛛絲'], lost: [], techniques: []
                 },
                 {
+                    id: 's10.5', age: 2180, realm: '合體期 後期', type: 'FIGHT', title: '螟蟲之母大戰', location: '始印之地',
+                    characters: ['韓立', '寶花', '螟蟲之母'],
+                    description: '與魔界始祖寶花聯手，進入封印之地斬殺上古仙界凶蟲「螟蟲之母」。此戰兇險程度極高。',
+                    gained: ['仙界秘辛', '寶花的友誼'], lost: [], techniques: []
+                },
+                {
                     id: 's11', age: 2200, realm: '合體期 後期', type: 'FIGHT', title: '守護人族', location: '木族領地',
                     characters: ['韓立', '莫簡離', '敖嘯老祖'],
                     description: '魔族入侵靈界。韓立作為人族頂樑柱，斬殺魔族聖祖化身，威震百族。',
@@ -322,6 +364,12 @@
                     gained: ['無常盟面具', '大量資源'], lost: [], techniques: []
                 },
                 {
+                    id: 'i3.5', age: '11800+', realm: '真仙境 後期', type: 'TREASURE', title: '冥寒仙府', location: '北寒仙域',
+                    characters: ['韓立', '蕭晉寒', '公輸久'],
+                    description: '進入冥寒仙府，與天庭監察使公輸久大戰。獲得太乙級別的修煉資源與關鍵鑰匙。',
+                    gained: ['太乙丹', '仙府鑰匙'], lost: [], techniques: []
+                },
+                {
                     id: 'i4', age: '12000+', realm: '金仙境 初期', type: 'TREASURE', title: '燭龍道與掌天瓶', location: '燭龍道',
                     characters: ['韓立', '百里炎', '瓶靈'],
                     description: '加入燭龍道，尋回掌天瓶。發現瓶靈。獲得時間法則核心功法《真言化輪經》。',
@@ -338,6 +386,12 @@
                     characters: ['韓立', '啼魂', '閻羅王'],
                     description: '啼魂感應召喚進入冥界。韓立隨行，助啼魂奪回刑獸真身，斬殺監察仙使。',
                     gained: ['啼魂(真仙界刑獸)', '鬼道秘術'], lost: [], techniques: []
+                },
+                {
+                    id: 'i6.5', age: '13200+', realm: '金仙境 巔峰', type: 'TREASURE', title: '真言門遺跡', location: '仙界',
+                    characters: ['韓立', '熱火仙尊'],
+                    description: '探索被天庭滅門的真言門遺跡，補全《大五行幻世訣》的關鍵功法。',
+                    gained: ['須彌感應篇', '東乙神木'], lost: [], techniques: ['大五行幻世訣(殘篇補全)']
                 },
                 {
                     id: 'i7', age: '13500+', realm: '太乙玉仙', type: 'FIGHT', title: '灰界與大羅一擊', location: '灰界',
@@ -640,7 +694,7 @@
                     </div>
                     
                     <div className="text-center text-slate-700 text-[10px] pb-8 uppercase tracking-widest">
-                        Archive System v4.0 • {activeWorld} Realm
+                        Archive System v5.0 (Omniscient) • {activeWorld} Realm
                     </div>
                 </div>
             );
