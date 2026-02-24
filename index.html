@@ -48,7 +48,6 @@
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #fbbf24; }
 
-        /* 典藏級卡片設計 */
         .glass-card {
             background: linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(3, 7, 18, 0.95));
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -56,7 +55,6 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        /* 雙欄與時間軸適應 */
         .timeline-center-line {
             position: absolute; left: 50%; transform: translateX(-50%);
             width: 2px; height: 100%;
@@ -71,7 +69,6 @@
             .age-badge-wrapper { left: 24px !important; transform: translateX(-50%); }
         }
 
-        /* 手風琴動畫 */
         .event-card { cursor: pointer; overflow: hidden; }
         .event-card:hover { border-color: rgba(251, 191, 36, 0.4); box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 15px rgba(251,191,36,0.1); }
         .collapse-content {
@@ -84,14 +81,12 @@
         .chevron-icon { transition: transform 0.4s ease; }
         .event-card.expanded .chevron-icon { transform: rotate(180deg); color: #fbbf24; }
 
-        /* 標籤美化 */
         .mini-tag {
             font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; 
             background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); 
             display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
         }
 
-        /* Filter Tabs */
         .filter-btn.active#filter-全部 { border-color: white; color: white; background: rgba(255,255,255,0.1); }
         .filter-btn.active#filter-人界篇 { border-color: #10b981; color: #10b981; background: rgba(16, 185, 129, 0.15); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
         .filter-btn.active#filter-靈界篇 { border-color: #06b6d4; color: #06b6d4; background: rgba(6, 182, 212, 0.15); box-shadow: 0 0 10px rgba(6, 182, 212, 0.2); }
@@ -126,7 +121,6 @@
         <!-- ================= View: Timeline ================= -->
         <div id="view-timeline" class="w-full relative block">
             
-            <!-- Timeline Controls (Sticky) -->
             <div class="flex flex-col md:flex-row justify-between items-center mb-10 sticky top-[75px] z-40 bg-[#0a0f18]/90 backdrop-blur-md py-3 px-6 rounded-2xl border border-gray-700 shadow-[0_10px_30px_rgba(0,0,0,0.8)] gap-4">
                 <div class="flex flex-wrap justify-center gap-2">
                     <button onclick="filterTimeline('全部')" class="filter-btn active px-4 py-1.5 rounded-full border border-gray-600 text-gray-300 hover:text-white text-xs font-bold transition-all" id="filter-全部">全部紀元</button>
@@ -146,20 +140,18 @@
                 </div>
             </div>
 
-            <!-- Timeline Structure -->
             <div class="relative w-full">
                 <div class="timeline-center-line hidden md:block"></div>
                 <div class="absolute left-[24px] w-[2px] h-full bg-gradient-to-b from-emerald-500 via-cyan-500 to-amber-500 opacity-30 md:hidden"></div>
-                
-                <div id="timeline-container" class="relative w-full pb-20 flex flex-col gap-6 mobile-timeline-offset md:p-0">
-                    <!-- JS Injected Timeline Events -->
-                </div>
+                <div id="timeline-container" class="relative w-full pb-20 flex flex-col gap-6 mobile-timeline-offset md:p-0"></div>
             </div>
         </div>
 
         <!-- ================= View: Relational Cosmos (Graph) ================= -->
         <div id="view-chart" class="hidden w-full h-[85vh] bg-[#020408] rounded-2xl border border-gray-800 shadow-2xl relative overflow-hidden">
-            <div class="absolute top-4 left-4 z-10 text-gray-200 bg-black/70 backdrop-blur-xl p-4 rounded-xl border border-gray-700 shadow-2xl pointer-events-none">
+            
+            <!-- 關係圖資訊 -->
+            <div class="absolute top-4 left-4 z-10 text-gray-200 bg-black/70 backdrop-blur-xl p-4 rounded-xl border border-gray-700 shadow-2xl pointer-events-none hidden md:block">
                 <h3 class="font-serif text-lg text-amber-500 mb-1 tracking-widest"><i class="fa-solid fa-network-wired mr-2"></i>萬界星系因果網</h3>
                 <p class="text-[11px] text-gray-400 leading-relaxed font-sans">
                     • 點擊圖例隱藏/顯示陣營<br>
@@ -167,6 +159,18 @@
                     • 關係文字已全面顯示，請細細品味
                 </p>
             </div>
+
+            <!-- 新增：關係圖搜尋框 (漂浮右上角) -->
+            <div class="absolute top-4 right-4 z-20 flex flex-col md:flex-row items-end md:items-center gap-2">
+                <div class="relative w-56 md:w-64">
+                    <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-500/80 text-sm"></i>
+                    <input type="text" id="searchGraph" placeholder="搜角色 (例: 曲魂、南宮婉)" class="bg-black/80 border border-gray-600 text-gray-200 text-sm rounded-lg focus:ring-1 focus:ring-amber-500 focus:border-amber-500 block w-full pl-9 py-2 outline-none transition-all shadow-lg backdrop-blur-md" oninput="searchChartNode()">
+                </div>
+                <button onclick="resetChartSearch()" class="bg-gray-800/90 hover:bg-gray-700 text-gray-300 p-2 rounded-lg border border-gray-600 transition-all shadow-lg backdrop-blur-md" title="重置因果網">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+
             <div id="echarts-container" class="w-full h-full cursor-move"></div>
         </div>
 
@@ -174,9 +178,8 @@
 
     <!-- Data & Script -->
     <script>
-        // ================= 1. Extreme Density Timeline Data (80+ Nodes) =================
+        // ================= 1. Timeline Data (保留原樣) =================
         const timelineData = [
-            // ---------- 人界篇 ----------
             { realmType: "人界篇", age: "10歲", phase: "拜入七玄門", event: "二愣子為改善家境離開青牛鎮，通過考驗加入七玄門。因身具木屬性偽靈根被墨居仁收為記名弟子。偶然撿到神秘小瓶。", location: "越國-鏡州-七玄門", realm: "凡人", combat: "無", kills: "無", relations: "墨居仁(算計)、厲飛雨(摯友)、張鐵(師弟)", loot: "掌天瓶(未激活)", lost: "童真", techniques: "長春功、眨眼劍法", abilities: "無", formations: "無", insects: "無", herbs: "無" },
             { realmType: "人界篇", age: "14歲", phase: "發現綠液奇效", event: "發現掌天瓶吸收月光凝聚綠液能催熟靈藥。暗中修煉長春功至第四層。發現張鐵失蹤，對墨大夫起疑並暗中準備。", location: "神手谷", realm: "煉氣期四層", combat: "無", kills: "無", relations: "墨居仁(防備)", loot: "無", lost: "無", techniques: "長春功", abilities: "無", formations: "無", insects: "無", herbs: "黃龍丹材料(催熟)" },
             { realmType: "人界篇", age: "16歲", phase: "神手谷弒師求生", event: "墨大夫圖謀奪舍，韓立憑藉長春功與暗器反殺。發現張鐵已被煉成殭屍(曲魂)。吞噬余子童元神獲取修仙界知識。", location: "神手谷密室", realm: "煉氣期六層", combat: "死鬥墨居仁、吞噬余子童", kills: "墨居仁、余子童", relations: "余子童", loot: "儲物袋、曲魂(煉屍)", lost: "對人性的信任", techniques: "火彈術、引力術", abilities: "御物術", formations: "無", insects: "無", herbs: "無" },
@@ -208,8 +211,6 @@
             { realmType: "人界篇", age: "400歲", phase: "昆吾山封魔與銀月飛升", event: "上古神山昆吾山現世。參與鎮壓魔界元剎聖祖分念，銀月恢復大晉妖妃玲瓏記憶，隨後飛升靈界回歸本體。", location: "大晉-昆吾山", realm: "元嬰後期", combat: "群修戰元剎聖祖", kills: "大晉元嬰老怪", relations: "玲瓏/銀月(飛升)、向之禮", loot: "八靈尺、黑風旗殘旗", lost: "銀月", techniques: "無", abilities: "破滅法目", formations: "大庚劍陣(成)", insects: "六翼霜蚣(進階)", herbs: "還魂草" },
             { realmType: "人界篇", age: "500-800歲", phase: "化神無敵震懾人界", event: "回歸天南突破化神期，成為人界無敵存在。橫掃一切不服，為落雲宗留下深厚底蘊與自保之法。", location: "天南", realm: "化神初期", combat: "震懾群雄(秒殺級)", kills: "無", relations: "南宮婉(甦醒)", loot: "元磁山", lost: "無", techniques: "元磁神光", abilities: "元磁護體", formations: "無", insects: "無", herbs: "無" },
             { realmType: "人界篇", age: "880歲", phase: "強闖節點偷渡靈界", event: "為求長生，與冰鳳聯手強闖空間節點偷渡靈界。遭遇毀滅性空間風暴，法力散盡，身負重傷流落異界。", location: "人界空間節點", realm: "化神初期", combat: "對抗空間風暴", kills: "無", relations: "冰鳳(失散)", loot: "無", lost: "法力跌落至煉氣", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "攜帶大量絕跡種子" },
-
-            // ---------- 靈界篇 ----------
             { realmType: "靈界篇", age: "約1000歲", phase: "流落天元艱難恢復", event: "流落靈界風元大陸天元境，法力散盡。在蠻荒躲避異族與凶獸，憑肉身與丹藥，艱難恢復修為至化神期。", location: "風元大陸-天元境", realm: "煉氣 → 化神初期", combat: "擊殺低階異族/凶獸", kills: "異族斥候", relations: "無", loot: "無", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "無" },
             { realmType: "靈界篇", age: "約1050歲", phase: "飛靈族：偽裝聖子", event: "混入飛靈族被金悅長老看穿，被逼交易偽裝成天鵬族聖子。在地淵試煉大放異彩，學會逆天功法。", location: "飛靈族 / 地淵", realm: "化神後期", combat: "躲避木族高階追殺", kills: "木族化神", relations: "金悅、雷蘭", loot: "真靈之血(天鵬/五光孔雀)", lost: "無", techniques: "驚蟄十二變", abilities: "天鵬變", formations: "無", insects: "豹麟獸", herbs: "冥河神乳" },
             { realmType: "靈界篇", age: "約1100歲", phase: "地淵妖王與逃離", event: "地淵遭遇四大妖王（木青、地血等）險象環生，利用辟邪神雷與計謀獲取冥河神乳後，驚險逃離飛靈族。", location: "地淵深處", realm: "化神大圓滿", combat: "周旋於合體期妖王之間", kills: "無", relations: "地淵四大妖王", loot: "極品靈石", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "冥河神乳" },
@@ -226,8 +227,6 @@
             { realmType: "靈界篇", age: "約9000歲", phase: "血戰斬殺下界真仙", event: "韓立聯手明尊等靈界大乘佈下絕陣伏擊馬良。經歷慘烈血戰，韓立拼盡全力以玄天之寶將真仙斬殺。", location: "角蚩族領地", realm: "大乘期巔峰", combat: "滅世之戰斬馬良", kills: "真仙馬良", relations: "明尊(戰死)、馬良", loot: "萬物母劍、盜天瓶", lost: "玄天斬靈劍(靈性大損)", techniques: "煉神術(大成)", abilities: "時間法則(初現)", formations: "無", insects: "噬金仙(蟲王蛻變為真仙級)", herbs: "無" },
             { realmType: "靈界篇", age: "約9500歲", phase: "平定螟蟲之母", event: "助寶花前往始印之地，徹底鎮壓企圖吞噬世界的螟蟲之母，解決靈魔兩界最後的隱患。", location: "始印之地", realm: "大乘期巔峰", combat: "鎮螟蟲之母", kills: "螟蟲之母", relations: "寶花", loot: "無", lost: "無", techniques: "無", abilities: "無", formations: "周天星斗大陣", insects: "無", herbs: "無" },
             { realmType: "靈界篇", age: "約10000歲", phase: "度雷劫飛升仙界", event: "處理完靈界所有牽掛，安頓南宮婉等。引動飛升雷劫，成功扛過天罰，破空飛升，正式踏入真仙界。", location: "靈界飛升台", realm: "大乘期巔峰", combat: "對抗飛升天罰", kills: "無", relations: "南宮婉(留守)", loot: "無", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-
-            // ---------- 仙界篇 ----------
             { realmType: "仙界篇", age: "仙界初期", phase: "接引叛變與失憶流落", event: "飛升北寒仙域，接引仙使高昇叛變引來方磐暗算。韓立失去三百年記憶與金童。流落黑土仙域救下狐妖柳樂兒。", location: "北寒仙域 / 黑土仙域", realm: "真仙境(重修)", combat: "遭暗算逃亡、反殺追兵", kills: "方磐", relations: "高昇、方磐、柳樂兒", loot: "尋回掌天瓶", lost: "三百年記憶、金童", techniques: "小北斗星元功", abilities: "星辰之力", formations: "無", insects: "無", herbs: "無" },
             { realmType: "仙界篇", age: "仙界中期", phase: "燭龍道修真言寶輪", event: "加入燭龍道。修煉三大時間功法之一的《真言化輪經》，成功凝聚出「真言寶輪」，踏上時間大道。", location: "北寒仙域-燭龍道", realm: "半步金仙", combat: "無", kills: "無", relations: "呼言道人、百里炎", loot: "無", lost: "無", techniques: "真言化輪經", abilities: "時間減速、真言寶輪", formations: "無", insects: "無", herbs: "無" },
             { realmType: "仙界篇", age: "仙界中期", phase: "冥寒仙府怒斬蕭晉寒", event: "冥寒仙府現世。找回化為女童的金童。在核心區域為奪歲月神燈，突破金仙境，怒斬死敵北寒宮主蕭晉寒。", location: "冥寒仙府", realm: "金仙境", combat: "仙府混戰、死鬥金仙", kills: "蕭晉寒", relations: "金童(找回)、蛟三、蕭晉寒", loot: "歲月神燈、東乙神木", lost: "燭龍道覆滅", techniques: "水衍四時訣", abilities: "無", formations: "太乙幻陣", insects: "金童(噬金仙)", herbs: "極品仙草" },
@@ -238,7 +237,7 @@
             { realmType: "仙界篇", age: "仙界終局", phase: "決戰天庭時間道祖", event: "仙界終極決戰。韓立與古或今展開大道之爭，最終斬殺古或今。韓立成為新任時間道祖，與佳人逍遙世間。", location: "天庭-最高空", realm: "時間道祖", combat: "斬殺時間道祖", kills: "古或今", relations: "紫靈", loot: "天道本源、完整掌天瓶", lost: "無", techniques: "時間大道", abilities: "逆轉時空", formations: "無", insects: "金童(道祖)", herbs: "無" }
         ];
 
-        // ================= 2. Massive Categorized ECharts Graph Data (80+ Nodes, 150+ Links) =================
+        // ================= 2. Massive Categorized ECharts Graph Data (擴充版) =================
         const chartCategories = [
             { name: '主角', itemStyle: { color: '#06b6d4' } },
             { name: '紅顏/道侶', itemStyle: { color: '#ec4899' } },
@@ -249,14 +248,14 @@
             { name: '宿敵/死敵/反派', itemStyle: { color: '#b91c1c' } }
         ];
 
-        // Extreme Density Nodes
+        // 擴充節點 (加入超過20位重要角色)
         const chartNodes = [
             // 主角
             { id: "韓立", name: "韓立\n(時間道祖)", category: '主角', symbolSize: 90, itemStyle: { shadowBlur: 20, shadowColor: '#06b6d4' } },
             
             // 紅顏/道侶
             { id: "南宮婉", name: "南宮婉\n(正妻)", category: '紅顏/道侶', symbolSize: 60 },
-            { id: "紫靈", name: "紫靈\n(紅顏)", category: '紅顏/道侶', symbolSize: 55 },
+            { id: "紫靈", name: "紫靈/汪凝\n(紅顏)", category: '紅顏/道侶', symbolSize: 55 },
             { id: "元瑤", name: "元瑤\n(紅顏)", category: '紅顏/道侶', symbolSize: 50 },
             { id: "銀月", name: "銀月\n(器靈/紅顏)", category: '紅顏/道侶', symbolSize: 50 },
             { id: "陳巧倩", name: "陳巧倩\n(錯過情緣)", category: '紅顏/道侶', symbolSize: 35 },
@@ -265,20 +264,26 @@
             { id: "梅凝", name: "梅凝\n(共患難)", category: '紅顏/道侶', symbolSize: 30 },
             { id: "墨彩環", name: "墨彩環\n(無緣凡俗)", category: '紅顏/道侶', symbolSize: 35 },
             { id: "甘如霜", name: "甘如霜\n(南宮婉前世)", category: '紅顏/道侶', symbolSize: 45 },
+            { id: "凌玉靈", name: "凌玉靈\n(星宮少主/紅顏)", category: '紅顏/道侶', symbolSize: 45 },
+            { id: "樂韻", name: "樂韻\n(慕蘭聖女)", category: '紅顏/道侶', symbolSize: 40 },
             
             // 至親/血脈
             { id: "蛟三", name: "蛟三/甘九真\n(親生女兒)", category: '至親/血脈', symbolSize: 55 },
             { id: "柳樂兒", name: "柳樂兒\n(狐妖妹妹)", category: '至親/血脈', symbolSize: 50 },
             { id: "田琴兒", name: "田琴兒\n(辛如音轉世)", category: '至親/血脈', symbolSize: 40 },
             { id: "韓家", name: "韓家\n(凡俗家人)", category: '至親/血脈', symbolSize: 25 },
+            { id: "嚴氏", name: "嚴氏\n(凡俗師母)", category: '至親/血脈', symbolSize: 28 },
             
             // 生死摯友/同道
             { id: "厲飛雨", name: "厲飛雨\n(生死摯友)", category: '生死摯友/同道', symbolSize: 50 },
+            { id: "張鐵", name: "張鐵/曲魂\n(師弟/煉屍)", category: '生死摯友/同道', symbolSize: 40 },
             { id: "辛如音", name: "辛如音\n(陣法奇才)", category: '生死摯友/同道', symbolSize: 40 },
             { id: "齊雲霄", name: "齊雲霄\n(煉器師)", category: '生死摯友/同道', symbolSize: 30 },
+            { id: "萬小山", name: "萬小山\n(太南摯友)", category: '生死摯友/同道', symbolSize: 30 },
             { id: "冰鳳", name: "冰鳳\n(偷渡道友)", category: '生死摯友/同道', symbolSize: 40 },
             { id: "石穿空", name: "石穿空\n(灰界生死友)", category: '生死摯友/同道', symbolSize: 45 },
             { id: "呼言道人", name: "呼言道人\n(忘年交)", category: '生死摯友/同道', symbolSize: 40 },
+            { id: "呂洛", name: "呂洛\n(落雲宗師兄)", category: '生死摯友/同道', symbolSize: 38 },
             { id: "雷蘭", name: "雷蘭\n(天鵬族)", category: '生死摯友/同道', symbolSize: 30 },
             { id: "白果兒", name: "白果兒\n(弟子)", category: '生死摯友/同道', symbolSize: 35 },
             { id: "海大少", name: "海大少\n(記名弟子)", category: '生死摯友/同道', symbolSize: 30 },
@@ -287,6 +292,7 @@
             // 靈獸/部屬/器靈
             { id: "金童", name: "金童\n(噬金仙/道祖)", category: '靈獸/部屬/器靈', symbolSize: 65 },
             { id: "啼魂", name: "啼魂\n(刑獸/大羅)", category: '靈獸/部屬/器靈', symbolSize: 55 },
+            { id: "六翼霜蚣", name: "六翼霜蚣\n(叛變靈蟲)", category: '靈獸/部屬/器靈', symbolSize: 45 },
             { id: "蟹道人", name: "蟹道人\n(仙界傀儡)", category: '靈獸/部屬/器靈', symbolSize: 45 },
             { id: "魔光", name: "魔光\n(契約天魔)", category: '靈獸/部屬/器靈', symbolSize: 40 },
             { id: "火須子", name: "火須子\n(火靈)", category: '靈獸/部屬/器靈', symbolSize: 35 },
@@ -297,8 +303,10 @@
             // 恩師/前輩/高人
             { id: "大衍神君", name: "大衍神君\n(良師益友)", category: '恩師/前輩/高人', symbolSize: 55 },
             { id: "李化元", name: "李化元\n(築基恩師)", category: '恩師/前輩/高人', symbolSize: 40 },
+            { id: "天星雙聖", name: "天星雙聖\n(星宮之主)", category: '恩師/前輩/高人', symbolSize: 48 },
             { id: "向之禮", name: "向之禮\n(化神苟王)", category: '恩師/前輩/高人', symbolSize: 45 },
             { id: "寶花", name: "寶花\n(魔界始祖)", category: '恩師/前輩/高人', symbolSize: 55 },
+            { id: "車老妖", name: "車老妖\n(萬妖谷主)", category: '恩師/前輩/高人', symbolSize: 40 },
             { id: "青元子", name: "青元子\n(劍訣祖師)", category: '恩師/前輩/高人', symbolSize: 50 },
             { id: "冰魄仙子", name: "冰魄仙子\n(人族前輩)", category: '恩師/前輩/高人', symbolSize: 40 },
             { id: "明尊", name: "明尊\n(戰死大乘)", category: '恩師/前輩/高人', symbolSize: 40 },
@@ -309,10 +317,12 @@
             
             // 宿敵/死敵/反派
             { id: "墨居仁", name: "墨居仁\n(啟蒙恩師/死敵)", category: '宿敵/死敵/反派', symbolSize: 45 },
+            { id: "余子童", name: "余子童\n(圖謀奪舍)", category: '宿敵/死敵/反派', symbolSize: 32 },
             { id: "王蟬", name: "王蟬\n(人界宿敵)", category: '宿敵/死敵/反派', symbolSize: 35 },
             { id: "金光上人", name: "金光上人\n(贈令快遞)", category: '宿敵/死敵/反派', symbolSize: 25 },
             { id: "極陰祖師", name: "極陰祖師\n(虛天殿仇敵)", category: '宿敵/死敵/反派', symbolSize: 40 },
             { id: "玄骨上人", name: "玄骨上人\n(算計反殺)", category: '宿敵/死敵/反派', symbolSize: 40 },
+            { id: "六道極聖", name: "六道極聖\n(逆星盟主)", category: '宿敵/死敵/反派', symbolSize: 45 },
             { id: "黑煞教主", name: "越皇/黑煞教主\n(越京死敵)", category: '宿敵/死敵/反派', symbolSize: 35 },
             { id: "血焰古魔", name: "血焰古魔\n(墜魔谷敵)", category: '宿敵/死敵/反派', symbolSize: 35 },
             { id: "元剎", name: "元剎聖祖\n(昆吾山大敵)", category: '宿敵/死敵/反派', symbolSize: 40 },
@@ -321,12 +331,14 @@
             { id: "馬良", name: "馬良\n(下凡真仙)", category: '宿敵/死敵/反派', symbolSize: 50 },
             { id: "螟蟲之母", name: "螟蟲之母\n(吞世之劫)", category: '宿敵/死敵/反派', symbolSize: 45 },
             { id: "方磐", name: "方磐\n(暗算追殺)", category: '宿敵/死敵/反派', symbolSize: 38 },
+            { id: "奇摩子", name: "奇摩子\n(仙界叛徒)", category: '宿敵/死敵/反派', symbolSize: 48 },
             { id: "蕭晉寒", name: "蕭晉寒\n(仙府死敵)", category: '宿敵/死敵/反派', symbolSize: 45 },
+            { id: "照骨真人", name: "照骨真人\n(灰界大敵)", category: '宿敵/死敵/反派', symbolSize: 42 },
             { id: "古或今", name: "古或今\n(時間道祖/最終)", category: '宿敵/死敵/反派', symbolSize: 80, itemStyle: { shadowBlur: 20, shadowColor: '#ef4444' } }
         ];
 
-        // Extreme Density Links (150+)
-        const chartLinks = [
+        // 擴充連線
+        let chartLinks = [
             // 主角與紅顏
             { source: "韓立", target: "南宮婉", value: "血色結緣，結髮正妻" },
             { source: "韓立", target: "紫靈", value: "亂星結識，共患難飛升" },
@@ -337,6 +349,8 @@
             { source: "韓立", target: "董萱兒", value: "燕家堡突圍，情愫暗生" },
             { source: "韓立", target: "梅凝", value: "陰冥之地共患難" },
             { source: "韓立", target: "墨彩環", value: "凡俗無緣，曾許來生" },
+            { source: "韓立", target: "凌玉靈", value: "星宮少主，互有好感" },
+            { source: "韓立", target: "樂韻", value: "邊界休戰牽線，助其解咒" },
             { source: "墨彩環", target: "紫靈", value: "疑似轉世 / 精神延續 (書迷推測)", lineStyle: { type: 'dashed' } },
             
             // 主角與至親轉世
@@ -348,15 +362,19 @@
             { source: "韓立", target: "韓家", value: "留下功法，斬斷凡塵" },
             { source: "辛如音", target: "田琴兒", value: "龍吟之質轉世" },
             { source: "韓立", target: "田琴兒", value: "收為親傳弟子" },
+            { source: "墨居仁", target: "嚴氏", value: "結髮夫妻" },
             
             // 主角與摯友/弟子
             { source: "韓立", target: "厲飛雨", value: "七玄門生死交(殺人放火名號)" },
+            { source: "韓立", target: "張鐵", value: "七玄門同門師弟，後收服為曲魂" },
             { source: "韓立", target: "辛如音", value: "修復古傳送陣，傳陣法" },
             { source: "韓立", target: "齊雲霄", value: "交易大衍決與陣法" },
             { source: "齊雲霄", target: "辛如音", value: "道侶" },
+            { source: "韓立", target: "萬小山", value: "太南小會結識，修仙界第一位朋友" },
             { source: "韓立", target: "冰鳳", value: "聯手闖空間節點偷渡" },
             { source: "韓立", target: "石穿空", value: "灰界同生共死" },
             { source: "韓立", target: "呼言道人", value: "燭龍道忘年交" },
+            { source: "韓立", target: "呂洛", value: "落雲宗師兄，相互扶持" },
             { source: "韓立", target: "白果兒", value: "人界親傳弟子" },
             { source: "韓立", target: "海大少", value: "記名弟子" },
             { source: "韓立", target: "雷蘭", value: "天鵬族聖子試煉搭檔" },
@@ -365,6 +383,7 @@
             { source: "韓立", target: "金童", value: "本命靈蟲，噬金仙，情同父女" },
             { source: "韓立", target: "啼魂", value: "專剋鬼物靈寵 (元瑤於虛天贈)" },
             { source: "元瑤", target: "啼魂", value: "擊殺青陽門少主奪得，後贈韓立" },
+            { source: "韓立", target: "六翼霜蚣", value: "收服培育，後生神智叛逃" },
             { source: "韓立", target: "血玉蜘蛛", value: "越京獲卵，虛天殿拉鼎隕落" },
             { source: "韓立", target: "蟹道人", value: "仙界雇傭傀儡/並肩作戰" },
             { source: "韓立", target: "魔光", value: "簽訂天魔契約" },
@@ -376,7 +395,9 @@
             { source: "韓立", target: "李化元", value: "築基期師傅，傳青元劍訣" },
             { source: "韓立", target: "大衍神君", value: "寄宿竹筒，傳承大衍決機關術" },
             { source: "韓立", target: "向之禮", value: "血色禁地同行，靈界相遇" },
+            { source: "凌玉靈", target: "天星雙聖", value: "血脈父母" },
             { source: "韓立", target: "寶花", value: "魔界交易合作，助平螟蟲" },
+            { source: "韓立", target: "車老妖", value: "人界頂級大妖，互有忌憚" },
             { source: "韓立", target: "青元子", value: "劍訣創始人，靈界贈禮" },
             { source: "韓立", target: "冰魄仙子", value: "天淵城獲其遺留線索" },
             { source: "韓立", target: "明尊", value: "聯手佈陣血戰馬良" },
@@ -387,11 +408,14 @@
             
             // 主角與宿敵/被殺
             { source: "韓立", target: "墨居仁", value: "圖謀奪舍，神手谷反殺" },
+            { source: "韓立", target: "余子童", value: "教唆墨居仁奪舍，被韓立吞噬" },
+            { source: "墨居仁", target: "張鐵", value: "將其暗害煉成曲魂" },
             { source: "韓立", target: "金光上人", value: "火彈反殺，爆升仙令" },
             { source: "韓立", target: "王蟬", value: "燕家堡血戰，人界死敵" },
             { source: "韓立", target: "黑煞教主", value: "越京血戰誅殺，獲血玉蜘蛛" },
             { source: "韓立", target: "極陰祖師", value: "虛天殿仇敵，算計" },
             { source: "韓立", target: "玄骨上人", value: "虛天殿冰火道辟邪雷反殺" },
+            { source: "天星雙聖", target: "六道極聖", value: "死敵，亂星海爭霸" },
             { source: "韓立", target: "血焰古魔", value: "墜魔谷死戰" },
             { source: "韓立", target: "元剎", value: "昆吾山參與鎮壓分念" },
             { source: "韓立", target: "木青", value: "地淵妖王，騙取神乳" },
@@ -399,14 +423,30 @@
             { source: "韓立", target: "馬良", value: "靈界滅世，玄天斬仙" },
             { source: "韓立", target: "螟蟲之母", value: "聯手寶花鎮壓" },
             { source: "韓立", target: "方磐", value: "仙界初期暗算，後反殺" },
+            { source: "韓立", target: "奇摩子", value: "仙界大反派，歲月塔爭奪" },
             { source: "韓立", target: "蕭晉寒", value: "冥寒仙府怒斬金仙" },
+            { source: "韓立", target: "照骨真人", value: "灰界血戰" },
             { source: "韓立", target: "古或今", value: "時間大道終極之戰，擊殺" },
             { source: "輪迴殿主", target: "古或今", value: "宿命死敵" }
         ];
 
+        // 預先處理連線樣式 (避免搜尋還原時線條亂飄)
+        chartLinks = chartLinks.map(link => ({
+            ...link,
+            lineStyle: {
+                color: link.value.includes('殺') || link.value.includes('死') || link.value.includes('敵') || link.value.includes('仇') || link.value.includes('奪舍') || link.value.includes('暗害') ? '#ef4444' : 
+                       link.value.includes('妻') || link.value.includes('紅顏') ? '#ec4899' : 
+                       link.value.includes('傳承') || link.value.includes('師') || link.value.includes('前世') || link.value.includes('轉世') ? '#a855f7' : '#64748b',
+                width: link.value.includes('殺') || link.value.includes('妻') || link.value.includes('死敵') || link.value.includes('轉世') ? 3 : 1.5,
+                opacity: 0.7,
+                curveness: Math.random() * 0.2 + 0.15
+            }
+        }));
+
         // --- App Logic ---
         let currentTimelineFilter = '全部';
         let currentSearchTimeline = '';
+        let myChart = null;
 
         function getRealmColorTheme(realmType) {
             if (realmType === '人界篇') return { text: 'text-emerald-400', border: 'border-emerald-500/40', bg: 'bg-emerald-900/20' };
@@ -469,23 +509,17 @@
             }
             
             const autoExpand = currentSearchTimeline.trim() !== '' ? 'expanded' : '';
-
             let html = '';
 
             filteredData.forEach((item, index) => {
                 const isLeft = index % 2 === 0;
-                // Flex佈局：確保左右對稱且與中央年齡標籤防重疊 (5/12 - 2/12 - 5/12)
                 const layoutClass = isLeft ? 'flex-row' : 'flex-row-reverse';
                 const theme = getRealmColorTheme(item.realmType);
 
                 html += `
                 <div class="flex flex-col md:${layoutClass} w-full items-center justify-between relative z-10 group">
-                    
-                    <!-- 卡片區域 (佔寬 42%) -->
                     <div class="w-full md:w-[43%] z-20">
                         <div class="glass-card event-card rounded-2xl p-5 ${autoExpand} ${theme.border}">
-                            
-                            <!-- Header -->
                             <div class="cursor-pointer flex flex-col gap-2 select-none" onclick="toggleCard(this)">
                                 <div class="flex justify-between items-center">
                                     <span class="text-[10px] px-2 py-0.5 rounded ${theme.bg} border ${theme.border} ${theme.text} tracking-wider">${item.realmType}</span>
@@ -499,7 +533,6 @@
                                 </div>
                             </div>
 
-                            <!-- Body (收合區域) -->
                             <div class="collapse-content">
                                 <p class="text-gray-300 text-[14px] leading-relaxed mb-4 font-light">${item.event}</p>
                                 
@@ -528,7 +561,6 @@
                         </div>
                     </div>
 
-                    <!-- 中央留白與徽章 (佔寬 14%) -->
                     <div class="hidden md:flex w-[14%] justify-center relative">
                         <div class="absolute top-8 w-full h-[1px] z-0 ${isLeft ? 'bg-gradient-to-l right-1/2' : 'bg-gradient-to-r left-1/2'} from-transparent to-white/20"></div>
                         <div class="age-badge-wrapper absolute top-8 transform -translate-y-1/2 z-20 transition-transform duration-300 group-hover:scale-110">
@@ -538,21 +570,19 @@
                         </div>
                     </div>
 
-                    <!-- 佔位對稱 (佔寬 43%) -->
                     <div class="hidden md:block w-[43%]"></div>
-
                 </div>
                 `;
             });
-
             container.innerHTML = html;
         }
 
         // --- Massive ECharts Logic ---
-        let myChart = null;
-
         function initChart() {
-            if (myChart != null) return;
+            if (myChart != null) {
+                myChart.resize();
+                return;
+            }
             const chartDom = document.getElementById('echarts-container');
             myChart = echarts.init(chartDom);
             const option = {
@@ -617,27 +647,97 @@
                     edgeSymbol: ['none', 'arrow'],
                     edgeSymbolSize: [0, 8],
                     force: { 
-                        repulsion: 3800, // 高斥力拉開80個節點
+                        repulsion: 4200, // 調高斥力容納更多節點
                         edgeLength: 220, 
-                        gravity: 0.05,
+                        gravity: 0.04,
                         friction: 0.15
                     },
                     data: chartNodes,
-                    links: chartLinks.map(link => ({
-                        ...link,
-                        lineStyle: {
-                            color: link.value.includes('殺') || link.value.includes('死') || link.value.includes('敵') || link.value.includes('仇') ? '#ef4444' : 
-                                   link.value.includes('妻') || link.value.includes('紅顏') ? '#ec4899' : 
-                                   link.value.includes('傳承') || link.value.includes('師') || link.value.includes('前世') || link.value.includes('轉世') ? '#a855f7' : '#64748b',
-                            width: link.value.includes('殺') || link.value.includes('妻') || link.value.includes('死敵') || link.value.includes('轉世') ? 3 : 1.5,
-                            opacity: 0.7,
-                            curveness: Math.random() * 0.2 + 0.15 // 隨機曲度避免多條線重疊
-                        }
-                    }))
+                    links: chartLinks
                 }]
             };
             myChart.setOption(option);
             window.addEventListener('resize', () => myChart.resize());
+        }
+
+        // --- Chart Search Logic ---
+        function searchChartNode() {
+            if (!myChart) return;
+            const query = document.getElementById('searchGraph').value.trim().toLowerCase();
+            
+            if (query === '') {
+                resetChartSearch(false);
+                return;
+            }
+
+            // 尋找匹配的節點 (比對 ID 和 Name)
+            const matchNodes = new Set();
+            chartNodes.forEach(n => {
+                if (n.name.toLowerCase().includes(query) || n.id.toLowerCase().includes(query)) {
+                    matchNodes.add(n.id);
+                }
+            });
+
+            if (matchNodes.size === 0) return; // 沒找到就不更新
+
+            // 尋找與匹配節點相連的一度關係節點
+            const relatedNodes = new Set(matchNodes);
+            chartLinks.forEach(l => {
+                if (matchNodes.has(l.source)) relatedNodes.add(l.target);
+                if (matchNodes.has(l.target)) relatedNodes.add(l.source);
+            });
+
+            // 更新節點樣式 (未相關的透明度降低)
+            const updatedNodes = chartNodes.map(n => ({
+                ...n,
+                itemStyle: {
+                    ...n.itemStyle,
+                    opacity: relatedNodes.has(n.id) ? 1 : 0.05
+                },
+                label: {
+                    ...n.label,
+                    show: relatedNodes.has(n.id) // 隱藏不相關的文字
+                }
+            }));
+
+            // 更新連線樣式
+            const updatedLinks = chartLinks.map(l => {
+                const isRelated = matchNodes.has(l.source) || matchNodes.has(l.target);
+                return {
+                    ...l,
+                    lineStyle: {
+                        ...l.lineStyle,
+                        opacity: isRelated ? 1 : 0.02,
+                        width: isRelated ? (l.lineStyle.width || 2) * 2 : 1 // 加粗相關連線
+                    }
+                };
+            });
+
+            myChart.setOption({
+                series: [{
+                    data: updatedNodes,
+                    links: updatedLinks
+                }]
+            });
+        }
+
+        function resetChartSearch(clearInput = true) {
+            if (!myChart) return;
+            if (clearInput) document.getElementById('searchGraph').value = '';
+            
+            // 還原為初始狀態
+            const resetNodes = chartNodes.map(n => ({
+                ...n,
+                itemStyle: { ...n.itemStyle, opacity: 1 },
+                label: { ...n.label, show: true }
+            }));
+
+            myChart.setOption({
+                series: [{
+                    data: resetNodes,
+                    links: chartLinks // 原始已包含曲率和基礎顏色
+                }]
+            });
         }
 
         // --- Tabs Logic ---
@@ -657,7 +757,7 @@
                 chartView.classList.remove('hidden');
                 btnChart.className = "px-6 py-2 rounded-lg text-sm font-bold bg-gradient-to-b from-gray-700 to-gray-900 text-white shadow-md border border-gray-500 transition-all flex items-center gap-2";
                 btnTimeline.className = "px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800/80 border border-transparent transition-all flex items-center gap-2";
-                setTimeout(initChart, 100);
+                setTimeout(initChart, 50); // 延遲確保 div 顯示後再初始化避免畫布破圖
             }
         }
 
