@@ -91,6 +91,14 @@
         .filter-btn.active#filter-人界篇 { border-color: #10b981; color: #10b981; background: rgba(16, 185, 129, 0.15); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
         .filter-btn.active#filter-靈界篇 { border-color: #06b6d4; color: #06b6d4; background: rgba(6, 182, 212, 0.15); box-shadow: 0 0 10px rgba(6, 182, 212, 0.2); }
         .filter-btn.active#filter-仙界篇 { border-color: #fbbf24; color: #fbbf24; background: rgba(251, 191, 36, 0.15); box-shadow: 0 0 10px rgba(251, 191, 36, 0.2); }
+
+        /* 境界對照表樣式 */
+        .realm-table th { background: rgba(15, 23, 42, 0.9); backdrop-blur: 5px; border-bottom: 2px solid rgba(255,255,255,0.1); position: sticky; top: 0; }
+        .realm-table td { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 1rem; }
+        .realm-table tr:hover td { background: rgba(255,255,255,0.03); }
+        .realm-human-row td { border-left: 3px solid #10b981; }
+        .realm-spirit-row td { border-left: 3px solid #06b6d4; }
+        .realm-immortal-row td { border-left: 3px solid #fbbf24; }
     </style>
 </head>
 <body class="font-sans antialiased min-h-screen flex flex-col">
@@ -98,17 +106,20 @@
     <!-- Header -->
     <header class="bg-[#03060a]/90 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-800 shadow-2xl">
         <div class="max-w-[1600px] mx-auto px-4 lg:px-8 py-3 flex flex-col lg:flex-row justify-between items-center gap-4">
-            <h1 class="text-xl md:text-2xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-amber-500 tracking-widest flex items-center drop-shadow-lg">
-                <i class="fa-solid fa-yin-yang text-amber-500 mr-3 animate-[spin_8s_linear_infinite]"></i>凡人修仙傳：極限星系百科
+            <h1 class="text-xl md:text-2xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-amber-500 tracking-widest flex items-center drop-shadow-lg shrink-0">
+                <i class="fa-solid fa-yin-yang text-amber-500 mr-3 animate-[spin_8s_linear_infinite]"></i>凡人修仙傳百科
             </h1>
             
-            <div class="flex flex-col md:flex-row items-center gap-4 w-full lg:w-auto">
-                <div class="flex space-x-2 bg-black/50 p-1.5 rounded-xl border border-gray-700/50 shadow-inner">
-                    <button id="btn-timeline" class="px-6 py-2 rounded-lg text-sm font-bold bg-gradient-to-b from-gray-700 to-gray-900 text-white shadow-md border border-gray-500 transition-all flex items-center gap-2" onclick="switchMainTab('timeline')">
+            <div class="flex flex-col md:flex-row items-center gap-4 w-full lg:w-auto overflow-x-auto pb-1 md:pb-0">
+                <div class="flex space-x-2 bg-black/50 p-1.5 rounded-xl border border-gray-700/50 shadow-inner min-w-max">
+                    <button id="btn-timeline" class="px-5 md:px-6 py-2 rounded-lg text-sm font-bold bg-gradient-to-b from-gray-700 to-gray-900 text-white shadow-md border border-gray-500 transition-all flex items-center gap-2" onclick="switchMainTab('timeline')">
                         <i class="fa-solid fa-stream"></i>極密時間線
                     </button>
-                    <button id="btn-chart" class="px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800/80 border border-transparent transition-all flex items-center gap-2" onclick="switchMainTab('chart')">
+                    <button id="btn-chart" class="px-5 md:px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800/80 border border-transparent transition-all flex items-center gap-2" onclick="switchMainTab('chart')">
                         <i class="fa-solid fa-diagram-project"></i>萬界因果網
+                    </button>
+                    <button id="btn-realm" class="px-5 md:px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800/80 border border-transparent transition-all flex items-center gap-2" onclick="switchMainTab('realm')">
+                        <i class="fa-solid fa-layer-group"></i>境界對照表
                     </button>
                 </div>
             </div>
@@ -160,7 +171,7 @@
                 </p>
             </div>
 
-            <!-- 新增：關係圖搜尋框 (漂浮右上角) -->
+            <!-- 關係圖搜尋框 -->
             <div class="absolute top-4 right-4 z-20 flex flex-col md:flex-row items-end md:items-center gap-2">
                 <div class="relative w-56 md:w-64">
                     <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-500/80 text-sm"></i>
@@ -172,6 +183,161 @@
             </div>
 
             <div id="echarts-container" class="w-full h-full cursor-move"></div>
+        </div>
+
+        <!-- ================= View: Realm Table ================= -->
+        <div id="view-realm" class="hidden w-full relative">
+            <div class="glass-card rounded-2xl p-6 border border-gray-700 shadow-2xl mb-10">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-serif font-bold text-amber-400 mb-2"><i class="fa-solid fa-book-journal-whills mr-2"></i>萬族境界對照總表</h2>
+                        <p class="text-sm text-gray-400 font-light leading-relaxed">
+                            修仙界浩瀚無垠，各族功法體系繁雜。此表以人族「道修」體系為基準，將妖族、魔族、靈界百族（飛靈族、靈族等）的職階與稱號進行橫向對齊，助道友快速釐清實力層級。
+                        </p>
+                    </div>
+                    <div class="flex gap-3 text-xs font-bold">
+                        <span class="px-3 py-1 rounded bg-emerald-900/30 text-emerald-400 border border-emerald-500/30">人界篇階段</span>
+                        <span class="px-3 py-1 rounded bg-cyan-900/30 text-cyan-400 border border-cyan-500/30">靈界篇階段</span>
+                        <span class="px-3 py-1 rounded bg-amber-900/30 text-amber-400 border border-amber-500/30">仙界篇階段</span>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-xl border border-gray-700/80 bg-black/40">
+                    <table class="w-full text-sm text-left text-gray-300 realm-table whitespace-nowrap">
+                        <thead class="text-xs text-gray-400 uppercase tracking-wider">
+                            <tr>
+                                <th scope="col" class="px-6 py-4 font-bold text-white w-32">境界位階</th>
+                                <th scope="col" class="px-6 py-4 font-bold text-emerald-300">人族 / 道修</th>
+                                <th scope="col" class="px-6 py-4 font-bold text-cyan-300">妖族 / 海族</th>
+                                <th scope="col" class="px-6 py-4 font-bold text-purple-300">魔族</th>
+                                <th scope="col" class="px-6 py-4 font-bold text-indigo-300">異族 (靈族/飛靈族等)</th>
+                                <th scope="col" class="px-6 py-4 font-bold text-gray-300">壽元與修為特徵</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 人界篇階段 -->
+                            <tr class="realm-human-row bg-[#03060a]">
+                                <td class="font-bold text-emerald-500 bg-emerald-950/20">第一階</td>
+                                <td class="font-bold text-white">煉氣期</td>
+                                <td>一至三級妖獸</td>
+                                <td class="text-purple-400">魔卒 / 下位魔族</td>
+                                <td class="text-indigo-400">靈徒 / 異族平民</td>
+                                <td class="text-xs text-gray-400">壽元約百歲。可引氣入體，使用法器與低階法術。</td>
+                            </tr>
+                            <tr class="realm-human-row bg-[#050a14]">
+                                <td class="font-bold text-emerald-500 bg-emerald-950/20">第二階</td>
+                                <td class="font-bold text-white">築基期</td>
+                                <td>四級妖獸</td>
+                                <td class="text-purple-400">魔騎</td>
+                                <td class="text-indigo-400">靈師 / 低階飛靈</td>
+                                <td class="text-xs text-gray-400">壽元兩百餘歲。真氣液化，可辟穀、御器飛行。</td>
+                            </tr>
+                            <tr class="realm-human-row bg-[#03060a]">
+                                <td class="font-bold text-emerald-500 bg-emerald-950/20">第三階</td>
+                                <td class="font-bold text-white">結丹期</td>
+                                <td>五至七級妖獸</td>
+                                <td class="text-purple-400">魔將</td>
+                                <td class="text-indigo-400">靈將</td>
+                                <td class="text-xs text-gray-400">壽元五六百歲。丹田結出金丹，可煉製本命法寶。</td>
+                            </tr>
+                            <tr class="realm-human-row bg-[#050a14]">
+                                <td class="font-bold text-emerald-500 bg-emerald-950/20">第四階</td>
+                                <td class="font-bold text-white">元嬰期</td>
+                                <td>八至十級妖獸 <span class="text-[10px] text-gray-500 ml-1">(八級可化形)</span></td>
+                                <td class="text-purple-400">高階魔族 / 魔君</td>
+                                <td class="text-indigo-400">靈帥 / 飛靈將</td>
+                                <td class="text-xs text-gray-400">壽元千年。碎丹成嬰，元嬰出竅可保命，具備瞬移能力。</td>
+                            </tr>
+                            
+                            <!-- 靈界篇階段 -->
+                            <tr class="realm-spirit-row bg-[#03060a] border-t-2 border-cyan-900/50">
+                                <td class="font-bold text-cyan-500 bg-cyan-950/20">第五階</td>
+                                <td class="font-bold text-white">化神期</td>
+                                <td>化神期大妖</td>
+                                <td class="text-purple-400">魔尊 <span class="text-xs text-gray-500">(初階)</span></td>
+                                <td class="text-indigo-400">靈尊 / 飛靈帥 / 聖子</td>
+                                <td class="text-xs text-gray-400">壽元兩千至數千歲。可初步調動天地元氣，人界巔峰極限。</td>
+                            </tr>
+                            <tr class="realm-spirit-row bg-[#050a14]">
+                                <td class="font-bold text-cyan-500 bg-cyan-950/20">第六階</td>
+                                <td class="font-bold text-white">煉虛期</td>
+                                <td>煉虛期大妖</td>
+                                <td class="text-purple-400">魔尊 <span class="text-xs text-gray-500">(中階)</span></td>
+                                <td class="text-indigo-400">尊者 / 上族 / 聖族</td>
+                                <td class="text-xs text-gray-400">壽元理論破萬。元嬰化虛與肉身相融，可施展法相金身。</td>
+                            </tr>
+                            <tr class="realm-spirit-row bg-[#03060a]">
+                                <td class="font-bold text-cyan-500 bg-cyan-950/20">第七階</td>
+                                <td class="font-bold text-white">合體期</td>
+                                <td>合體期大妖</td>
+                                <td class="text-purple-400">魔尊 <span class="text-xs text-gray-500">(高階)</span> / 聖祖分身</td>
+                                <td class="text-indigo-400">聖階 / 聖靈 / 長老</td>
+                                <td class="text-xs text-gray-400">壽元數萬年。肉身與天地元氣徹底合一，靈界一方霸主。</td>
+                            </tr>
+                            <tr class="realm-spirit-row bg-[#050a14]">
+                                <td class="font-bold text-cyan-500 bg-cyan-950/20">第八階</td>
+                                <td class="font-bold text-white text-lg">大乘期 <br><span class="text-xs font-normal text-gray-500">(含渡劫期)</span></td>
+                                <td class="text-cyan-300 font-bold">大乘期真靈</td>
+                                <td class="text-purple-400 font-bold">魔族聖祖</td>
+                                <td class="text-indigo-400 font-bold">靈王 / 聖祭 / 大族長</td>
+                                <td class="text-xs text-gray-400">壽元十萬年以上。掌握法則皮毛，靈界/魔界法則容納之極限。</td>
+                            </tr>
+
+                            <!-- 仙界篇階段 -->
+                            <tr class="realm-immortal-row bg-[#03060a] border-t-2 border-amber-900/50">
+                                <td class="font-bold text-amber-500 bg-amber-950/20">第九階</td>
+                                <td class="font-bold text-amber-300 text-lg">真仙境</td>
+                                <td class="text-cyan-300">真仙級真靈</td>
+                                <td class="text-purple-400">真靈魔 / 魔仙</td>
+                                <td class="text-indigo-400 text-xs">飛升仙界，種族界限淡化</td>
+                                <td class="text-xs text-gray-400">壽命無盡(需度天人五衰)。凝練仙竅，轉換仙靈力。</td>
+                            </tr>
+                            <tr class="realm-immortal-row bg-[#050a14]">
+                                <td class="font-bold text-amber-500 bg-amber-950/20">第十階</td>
+                                <td class="font-bold text-amber-300 text-lg">金仙境</td>
+                                <td class="text-cyan-300">金仙級真靈</td>
+                                <td class="text-gray-500">-</td>
+                                <td class="text-gray-500">-</td>
+                                <td class="text-xs text-gray-400">掌握實質化的法則之絲，開闢專屬靈域，仙界中堅力量。</td>
+                            </tr>
+                            <tr class="realm-immortal-row bg-[#03060a]">
+                                <td class="font-bold text-amber-500 bg-amber-950/20">第十一階</td>
+                                <td class="font-bold text-amber-300 text-lg">太乙境 <br><span class="text-xs font-normal text-gray-500">(太乙玉仙)</span></td>
+                                <td class="text-cyan-300">太乙大妖</td>
+                                <td class="text-gray-500">-</td>
+                                <td class="text-gray-500">-</td>
+                                <td class="text-xs text-gray-400">法則化域，靈域具備造物之能，可擔任仙域之主。</td>
+                            </tr>
+                            <tr class="realm-immortal-row bg-[#050a14]">
+                                <td class="font-bold text-amber-500 bg-amber-950/20">第十二階</td>
+                                <td class="font-bold text-amber-400 text-xl">大羅境</td>
+                                <td class="text-cyan-400 font-bold">大羅級真靈</td>
+                                <td class="text-gray-500">-</td>
+                                <td class="text-gray-500">-</td>
+                                <td class="text-xs text-amber-400/80">斬卻三尸，法則大成。仙界真正的巨頭，輕易不涉世事。</td>
+                            </tr>
+                            <tr class="realm-immortal-row bg-[#03060a]">
+                                <td class="font-bold text-red-500 bg-amber-950/20">萬界頂點</td>
+                                <td class="font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-red-500 text-2xl">道祖境</td>
+                                <td class="text-cyan-400 font-bold">真靈始祖</td>
+                                <td class="text-purple-400 font-bold">萬魔之主</td>
+                                <td class="text-gray-500">-</td>
+                                <td class="text-sm font-bold text-amber-300">身融天道本源，一法一界之主。不可言說，言出法隨。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 補充說明 -->
+                <div class="mt-4 p-4 bg-gray-900/50 rounded-xl border border-gray-700/50 flex gap-3 text-xs text-gray-400">
+                    <i class="fa-solid fa-circle-info text-amber-500 mt-0.5"></i>
+                    <div>
+                        <p class="mb-1"><b class="text-gray-200">備註 1：</b> 妖族在八級（對應元嬰初期）即可經歷化形雷劫化為人形；十級妖獸則對應元嬰後期大圓滿。</p>
+                        <p class="mb-1"><b class="text-gray-200">備註 2：</b> 靈界異族（如飛靈族、蜉蝣族、木族等）稱號極多，通常「聖子」為化神至煉虛期天驕，「聖階」泛指合體期長老。</p>
+                        <p><b class="text-gray-200">備註 3：</b> 仙界篇由於跨度極大，且百族界限已淡化，大多統一使用「真仙、金仙、太乙、大羅」等仙家境界稱呼。</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </main>
@@ -742,22 +908,31 @@
 
         // --- Tabs Logic ---
         function switchMainTab(tab) {
-            const timelineView = document.getElementById('view-timeline');
-            const chartView = document.getElementById('view-chart');
-            const btnTimeline = document.getElementById('btn-timeline');
-            const btnChart = document.getElementById('btn-chart');
+            const views = {
+                'timeline': document.getElementById('view-timeline'),
+                'chart': document.getElementById('view-chart'),
+                'realm': document.getElementById('view-realm')
+            };
+            
+            const btns = {
+                'timeline': document.getElementById('btn-timeline'),
+                'chart': document.getElementById('btn-chart'),
+                'realm': document.getElementById('btn-realm')
+            };
 
-            if (tab === 'timeline') {
-                timelineView.classList.remove('hidden');
-                chartView.classList.add('hidden');
-                btnTimeline.className = "px-6 py-2 rounded-lg text-sm font-bold bg-gradient-to-b from-gray-700 to-gray-900 text-white shadow-md border border-gray-500 transition-all flex items-center gap-2";
-                btnChart.className = "px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800/80 border border-transparent transition-all flex items-center gap-2";
-            } else {
-                timelineView.classList.add('hidden');
-                chartView.classList.remove('hidden');
-                btnChart.className = "px-6 py-2 rounded-lg text-sm font-bold bg-gradient-to-b from-gray-700 to-gray-900 text-white shadow-md border border-gray-500 transition-all flex items-center gap-2";
-                btnTimeline.className = "px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800/80 border border-transparent transition-all flex items-center gap-2";
-                setTimeout(initChart, 50); // 延遲確保 div 顯示後再初始化避免畫布破圖
+            // 隱藏所有視圖並重置按鈕樣式
+            Object.keys(views).forEach(key => {
+                views[key].classList.add('hidden');
+                btns[key].className = "px-5 md:px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800/80 border border-transparent transition-all flex items-center gap-2";
+            });
+
+            // 顯示選擇的視圖並套用活躍按鈕樣式
+            views[tab].classList.remove('hidden');
+            btns[tab].className = "px-5 md:px-6 py-2 rounded-lg text-sm font-bold bg-gradient-to-b from-gray-700 to-gray-900 text-white shadow-md border border-gray-500 transition-all flex items-center gap-2";
+            
+            // 如果是圖表，確保重新繪製
+            if (tab === 'chart') {
+                setTimeout(initChart, 50);
             }
         }
 
