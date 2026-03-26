@@ -1,945 +1,1076 @@
 <!DOCTYPE html>
-<html lang="zh-TW" class="scroll-smooth">
+<html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>凡人修仙傳 - 極限密度星系百科</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- ECharts -->
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        serif: ['"Noto Serif TC"', 'serif'],
-                        sans: ['"Noto Sans TC"', 'sans-serif'],
-                    },
-                    colors: {
-                        xianxia: {
-                            human: '#10b981',
-                            spirit: '#06b6d4',
-                            immortal: '#fbbf24',
-                            bg: '#03060a',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body {
-            background-color: #03060a;
-            background-image: 
-                radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.04) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(251, 191, 36, 0.04) 0%, transparent 40%);
-            background-attachment: fixed;
-            color: #e2e8f0;
-            overflow-x: hidden;
-        }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #03060a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #fbbf24; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>凡人修仙傳－事件群時間線精修版 v7</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+body {
+  background:#03060a;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(16,185,129,.05), transparent 34%),
+    radial-gradient(circle at 78% 32%, rgba(6,182,212,.05), transparent 30%),
+    radial-gradient(circle at 60% 80%, rgba(251,191,36,.05), transparent 28%);
+  color:#e2e8f0;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 999px; }
+.glass {
+  background: linear-gradient(145deg, rgba(15,23,42,.82), rgba(2,6,23,.95));
+  border: 1px solid rgba(255,255,255,.07);
+  box-shadow: 0 18px 60px rgba(0,0,0,.35);
+  backdrop-filter: blur(10px);
+}
+.realm-btn.active[data-realm="全部"] { border-color:#e2e8f0; color:#fff; background:rgba(255,255,255,.08); }
+.realm-btn.active[data-realm="人界篇"] { border-color:#10b981; color:#10b981; background:rgba(16,185,129,.12); }
+.realm-btn.active[data-realm="靈界篇"] { border-color:#06b6d4; color:#06b6d4; background:rgba(6,182,212,.12); }
+.realm-btn.active[data-realm="仙界篇"] { border-color:#fbbf24; color:#fbbf24; background:rgba(251,191,36,.12); }
+.density-btn.active { border-color:#fbbf24; color:#fbbf24; background:rgba(251,191,36,.12); }
+.timeline-line {
+  position:absolute; left:24px; top:0; bottom:0; width:2px;
+  background:linear-gradient(to bottom,#10b981,#06b6d4,#fbbf24);
+  opacity:.35;
+}
+@media(min-width:1024px) {
+  .timeline-line { left:34px; }
+}
+.event-card {
+  padding-left: 4.9rem;
+}
+@media(min-width:1024px) {
+  .event-card {
+    padding-left: 5.6rem;
+  }
+}
+.event-card.selected {
+  border-color: rgba(251,191,36,.45);
+  box-shadow: 0 20px 70px rgba(0,0,0,.45), 0 0 0 1px rgba(251,191,36,.12) inset;
+}
+.event-dot {
+  position:absolute; left:20px; top:24px; width:18px; height:18px; border-radius:999px;
+  border:2px solid #0f172a; box-shadow:0 0 0 5px rgba(15,23,42,.88);
+}
+@media(min-width:1024px) {
+  .event-dot { left:30px; }
+}
+.age-chip {
+  color:#fde68a;
+  border-color:rgba(251,191,36,.38);
+  background:rgba(251,191,36,.12);
+  font-weight:700;
+}
+.scope-chip {
+  letter-spacing:.12em;
+}
+.subevent {
+  border-left: 2px solid rgba(255,255,255,.09);
+}
+.subevent.main { border-left-color: rgba(251,191,36,.65); }
+.subevent.key { border-left-color: rgba(6,182,212,.6); }
+.mini-chip {
+  display:inline-flex; align-items:center; gap:.35rem;
+  font-size:.72rem; line-height:1; padding:.38rem .55rem;
+  border-radius:999px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+  white-space:nowrap;
+}
+.sidebar-list > li {
+  position:relative; padding-left:.9rem;
+}
+.sidebar-list > li::before {
+  content:""; position:absolute; left:0; top:.62rem; width:.32rem; height:.32rem;
+  border-radius:999px; background:#64748b;
+}
+.table-wrap table tr:hover td { background: rgba(255,255,255,.03); }
+.realm-human-row td:first-child { border-left: 3px solid #10b981; }
+.realm-spirit-row td:first-child { border-left: 3px solid #06b6d4; }
+.realm-immortal-row td:first-child { border-left: 3px solid #fbbf24; }
+mark {
+  background: rgba(251,191,36,.22);
+  color: #fde68a;
+  padding: 0 .15rem;
+  border-radius: .2rem;
+}
 
-        .glass-card {
-            background: linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(3, 7, 18, 0.95));
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .timeline-center-line {
-            position: absolute; left: 50%; transform: translateX(-50%);
-            width: 2px; height: 100%;
-            background: linear-gradient(to bottom, #10b981 5%, #06b6d4 50%, #fbbf24 95%);
-            opacity: 0.3; box-shadow: 0 0 15px rgba(255,255,255,0.15);
-        }
-        .age-badge { background: #03060a; border: 2px solid; box-shadow: 0 0 15px rgba(0,0,0,0.9); z-index: 10; }
 
-        @media (max-width: 768px) {
-            .timeline-center-line { left: 24px; }
-            .mobile-timeline-offset { padding-left: 50px; }
-            .age-badge-wrapper { left: 24px !important; transform: translateX(-50%); }
-        }
+.age-rail-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap:.75rem;
+}
+.age-rail-card {
+  position:relative;
+  overflow:hidden;
+  border-radius:1rem;
+  border:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(160deg, rgba(2,6,23,.78), rgba(15,23,42,.5));
+  padding:.9rem 1rem;
+}
+.age-rail-card::after {
+  content:"";
+  position:absolute;
+  inset:auto -18% -45% auto;
+  width:120px;
+  height:120px;
+  border-radius:999px;
+  background:radial-gradient(circle, rgba(255,255,255,.08), transparent 60%);
+}
+.graph-mode-btn.active {
+  border-color:#fbbf24;
+  color:#fbbf24;
+  background:rgba(251,191,36,.12);
+}
+.micro-node {
+  border:1px dashed rgba(255,255,255,.12);
+  background:rgba(255,255,255,.025);
+}
 
-        .event-card { cursor: pointer; overflow: hidden; }
-        .event-card:hover { border-color: rgba(251, 191, 36, 0.4); box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 15px rgba(251,191,36,0.1); }
-        .collapse-content {
-            max-height: 0; opacity: 0; overflow: hidden;
-            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, padding 0.4s ease;
-        }
-        .event-card.expanded .collapse-content {
-            max-height: 1500px; opacity: 1; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.08);
-        }
-        .chevron-icon { transition: transform 0.4s ease; }
-        .event-card.expanded .chevron-icon { transform: rotate(180deg); color: #fbbf24; }
+.context-pane {
+  min-height: 300px;
+}
+@media (min-width: 1280px) {
+  .context-pane {
+    max-height: calc(100vh - 150px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
 
-        .mini-tag {
-            font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; 
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); 
-            display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
-        }
 
-        .filter-btn.active#filter-全部 { border-color: white; color: white; background: rgba(255,255,255,0.1); }
-        .filter-btn.active#filter-人界篇 { border-color: #10b981; color: #10b981; background: rgba(16, 185, 129, 0.15); box-shadow: 0 0 10px rgba(16, 185, 129, 0.2); }
-        .filter-btn.active#filter-靈界篇 { border-color: #06b6d4; color: #06b6d4; background: rgba(6, 182, 212, 0.15); box-shadow: 0 0 10px rgba(6, 182, 212, 0.2); }
-        .filter-btn.active#filter-仙界篇 { border-color: #fbbf24; color: #fbbf24; background: rgba(251, 191, 36, 0.15); box-shadow: 0 0 10px rgba(251, 191, 36, 0.2); }
+/* ===== v6 timeline redesign overrides ===== */
+#ageRail { display:none !important; }
+#timelineContainer { padding-left:0 !important; }
 
-        /* 境界對照表樣式 */
-        .realm-table th { background: rgba(15, 23, 42, 0.9); backdrop-blur: 5px; border-bottom: 2px solid rgba(255,255,255,0.1); position: sticky; top: 0; }
-        .realm-table td { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 1rem; }
-        .realm-table tr:hover td { background: rgba(255,255,255,0.03); }
-        .realm-human-row td { border-left: 3px solid #10b981; }
-        .realm-spirit-row td { border-left: 3px solid #06b6d4; }
-        .realm-immortal-row td { border-left: 3px solid #fbbf24; }
-    </style>
+.timeline-line {
+  left: 15px !important;
+  width: 2px;
+  opacity: .38;
+}
+@media(min-width:1024px) {
+  .timeline-line { left: 19px !important; }
+}
+
+.timeline-entry {
+  position: relative;
+  padding-left: 2.85rem;
+  margin-bottom: 1rem;
+}
+@media(min-width:1024px) {
+  .timeline-entry {
+    padding-left: 3.65rem;
+    margin-bottom: 1.15rem;
+  }
+}
+
+.realm-divider {
+  position: relative;
+  padding-left: 2.85rem;
+  margin: 1.25rem 0 .95rem;
+}
+@media(min-width:1024px) {
+  .realm-divider {
+    padding-left: 3.65rem;
+    margin: 1.55rem 0 1.05rem;
+  }
+}
+.realm-divider-line {
+  position:absolute;
+  left:15px;
+  top:-.5rem;
+  bottom:-.25rem;
+  width:2px;
+  border-radius:999px;
+  opacity:.55;
+}
+@media(min-width:1024px) {
+  .realm-divider-line { left:19px; }
+}
+.realm-divider-row {
+  display:flex;
+  align-items:flex-start;
+  gap:.9rem;
+  flex-wrap:wrap;
+}
+.realm-divider-pill {
+  display:inline-flex;
+  align-items:center;
+  gap:.5rem;
+  padding:.62rem .9rem;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(2,6,23,.74);
+  font-size:.8rem;
+  font-weight:800;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  flex-shrink:0;
+}
+.realm-divider-copy {
+  min-width:0;
+  padding-top:.15rem;
+}
+.realm-divider-title {
+  font-size:1.15rem;
+  font-weight:900;
+  color:#f8fafc;
+  line-height:1.2;
+}
+.realm-divider-desc {
+  margin-top:.25rem;
+  color:#94a3b8;
+  font-size:.82rem;
+  line-height:1.6;
+}
+
+.event-card {
+  padding-left: 0 !important;
+  overflow: hidden;
+  border-color: rgba(51,65,85,.9) !important;
+  background:
+    radial-gradient(circle at right top, rgba(255,255,255,.03), transparent 28%),
+    linear-gradient(155deg, rgba(10,15,26,.92), rgba(4,8,16,.95)) !important;
+}
+.event-card.selected {
+  border-color: rgba(251,191,36,.42) !important;
+  background:
+    radial-gradient(circle at right top, rgba(251,191,36,.08), transparent 26%),
+    linear-gradient(155deg, rgba(11,18,30,.98), rgba(5,10,20,.98)) !important;
+  box-shadow:
+    0 24px 72px rgba(0,0,0,.42),
+    0 0 0 1px rgba(251,191,36,.10) inset;
+}
+
+.event-dot {
+  left: 7px !important;
+  top: 31px !important;
+  width: 15px !important;
+  height: 15px !important;
+  border: 2px solid #03060a;
+  box-shadow:
+    0 0 0 8px rgba(3,6,10,.96),
+    0 12px 28px rgba(0,0,0,.28);
+}
+@media(min-width:1024px) {
+  .event-dot {
+    left: 11px !important;
+    top: 35px !important;
+    width: 16px !important;
+    height: 16px !important;
+  }
+}
+
+.event-layout {
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+@media(min-width:1024px) {
+  .event-layout {
+    grid-template-columns: minmax(172px, 196px) minmax(0, 1fr);
+    gap: 1.2rem;
+  }
+}
+
+.event-meta-panel {
+  position:relative;
+  border-radius:1.35rem;
+  border:1px solid rgba(255,255,255,.07);
+  background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.01));
+  padding:1rem 1rem .95rem;
+}
+.event-meta-panel::after {
+  content:"";
+  position:absolute;
+  inset:auto -16% -46% auto;
+  width:116px;
+  height:116px;
+  border-radius:999px;
+  background:radial-gradient(circle, rgba(255,255,255,.07), transparent 62%);
+  pointer-events:none;
+}
+.event-order {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:3.1rem;
+  padding:.26rem .55rem;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.09);
+  background:rgba(2,6,23,.6);
+  color:#94a3b8;
+  font-size:.68rem;
+  font-weight:800;
+  letter-spacing:.22em;
+}
+.event-age {
+  margin-top:.85rem;
+  font-size:1.42rem;
+  line-height:1.08;
+  font-weight:900;
+  color:#fef3c7;
+  letter-spacing:.01em;
+}
+.event-age-caption {
+  margin-top:.35rem;
+  color:#64748b;
+  font-size:.68rem;
+  font-weight:700;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+}
+.event-scope-text {
+  margin-top:.85rem;
+  font-size:.92rem;
+  line-height:1.65;
+  color:#e2e8f0;
+  font-weight:700;
+}
+.event-era-text {
+  margin-top:.48rem;
+  color:#94a3b8;
+  font-size:.76rem;
+  line-height:1.6;
+}
+
+.event-main {
+  min-width:0;
+}
+@media(min-width:1024px) {
+  .event-main {
+    padding-left:1.2rem;
+    border-left:1px solid rgba(255,255,255,.06);
+  }
+}
+
+.event-summary {
+  font-size:.95rem;
+  line-height:1.95;
+  color:#cbd5e1;
+}
+@media(min-width:1024px) {
+  .event-summary { font-size:1rem; }
+}
+
+.event-headline {
+  font-size:1.35rem;
+  line-height:1.25;
+}
+@media(min-width:1024px) {
+  .event-headline { font-size:1.62rem; }
+}
+
+.event-chip-row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:.5rem;
+}
+
+</style>
 </head>
-<body class="font-sans antialiased min-h-screen flex flex-col">
+<body class="font-sans">
+<header class="sticky top-0 z-50 border-b border-slate-800 bg-[#03060a]/88 backdrop-blur-xl">
+  <div class="max-w-[1680px] mx-auto px-4 lg:px-8 py-4 flex flex-col gap-4">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div>
+        <div class="text-[11px] uppercase tracking-[0.35em] text-slate-500">Han Li Event System Rebuild</div>
+        <h1 class="mt-1 text-2xl lg:text-3xl font-black tracking-wide bg-gradient-to-r from-emerald-400 via-cyan-400 to-amber-400 bg-clip-text text-transparent">
+          凡人修仙傳－事件群時間線精修版 v7
+        </h1>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button class="tab-btn px-4 py-2 rounded-xl glass text-sm font-bold text-white" data-tab="timeline"><i class="fa-solid fa-timeline mr-2"></i>事件時間線</button>
+        <button class="tab-btn px-4 py-2 rounded-xl border border-slate-700 text-slate-300 text-sm font-bold hover:text-white" data-tab="graph"><i class="fa-solid fa-diagram-project mr-2"></i>事件因果網</button>
+        <button class="tab-btn px-4 py-2 rounded-xl border border-slate-700 text-slate-300 text-sm font-bold hover:text-white" data-tab="realm"><i class="fa-solid fa-layer-group mr-2"></i>境界對照表</button>
+      </div>
+    </div>
+    <div class="text-sm text-slate-400 leading-6 max-w-5xl">
+      這版延續將<strong>年齡與階段直接嵌入時間線卡本體</strong>的做法，並補齊靈界、仙界事件密度、固定可操作的篩選列，以及仙界補充分流稱謂對照。
+    </div>
+  </div>
+</header>
 
-    <!-- Header -->
-    <header class="bg-[#03060a]/90 backdrop-blur-lg sticky top-0 z-50 border-b border-gray-800 shadow-2xl">
-        <div class="max-w-[1600px] mx-auto px-4 lg:px-8 py-3 flex flex-col lg:flex-row justify-between items-center gap-4">
-            <h1 class="text-xl md:text-2xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-amber-500 tracking-widest flex items-center drop-shadow-lg shrink-0">
-                <i class="fa-solid fa-yin-yang text-amber-500 mr-3 animate-[spin_8s_linear_infinite]"></i>凡人修仙傳百科
-            </h1>
-            
-            <div class="flex flex-col md:flex-row items-center gap-4 w-full lg:w-auto overflow-x-auto pb-1 md:pb-0">
-                <div class="flex space-x-2 bg-black/50 p-1.5 rounded-xl border border-gray-700/50 shadow-inner min-w-max">
-                    <button id="btn-timeline" class="px-5 md:px-6 py-2 rounded-lg text-sm font-bold bg-gradient-to-b from-gray-700 to-gray-900 text-white shadow-md border border-gray-500 transition-all flex items-center gap-2" onclick="switchMainTab('timeline')">
-                        <i class="fa-solid fa-stream"></i>極密時間線
-                    </button>
-                    <button id="btn-chart" class="px-5 md:px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800/80 border border-transparent transition-all flex items-center gap-2" onclick="switchMainTab('chart')">
-                        <i class="fa-solid fa-diagram-project"></i>萬界因果網
-                    </button>
-                    <button id="btn-realm" class="px-5 md:px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800/80 border border-transparent transition-all flex items-center gap-2" onclick="switchMainTab('realm')">
-                        <i class="fa-solid fa-layer-group"></i>境界對照表
-                    </button>
-                </div>
-            </div>
+<main class="max-w-[1680px] mx-auto px-4 lg:px-8 py-6">
+  <section id="view-timeline">
+    <div id="timelineControls" class="glass rounded-3xl p-4 lg:p-5 mb-6 sticky top-[88px] z-40 border border-slate-800/90 shadow-2xl">
+      <div class="flex flex-col xl:flex-row gap-4 xl:items-center xl:justify-between">
+        <div class="flex flex-col gap-3">
+          <div class="flex flex-wrap gap-2">
+            <button class="realm-btn active px-3 py-1.5 rounded-full border border-slate-700 text-sm font-bold text-slate-300" data-realm="全部">全部</button>
+            <button class="realm-btn px-3 py-1.5 rounded-full border border-slate-700 text-sm font-bold text-slate-300" data-realm="人界篇">人界篇</button>
+            <button class="realm-btn px-3 py-1.5 rounded-full border border-slate-700 text-sm font-bold text-slate-300" data-realm="靈界篇">靈界篇</button>
+            <button class="realm-btn px-3 py-1.5 rounded-full border border-slate-700 text-sm font-bold text-slate-300" data-realm="仙界篇">仙界篇</button>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button class="density-btn px-3 py-1.5 rounded-full border border-slate-700 text-sm font-bold text-slate-300" data-density="brief">簡略</button>
+            <button class="density-btn active px-3 py-1.5 rounded-full border border-slate-700 text-sm font-bold text-slate-300" data-density="standard">標準</button>
+            <button class="density-btn px-3 py-1.5 rounded-full border border-slate-700 text-sm font-bold text-slate-300" data-density="detail">詳細</button>
+          </div>
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="flex-grow relative max-w-[1600px] mx-auto w-full px-4 lg:px-8 py-6">
-        
-        <!-- ================= View: Timeline ================= -->
-        <div id="view-timeline" class="w-full relative block">
-            
-            <div class="flex flex-col md:flex-row justify-between items-center mb-10 sticky top-[75px] z-40 bg-[#0a0f18]/90 backdrop-blur-md py-3 px-6 rounded-2xl border border-gray-700 shadow-[0_10px_30px_rgba(0,0,0,0.8)] gap-4">
-                <div class="flex flex-wrap justify-center gap-2">
-                    <button onclick="filterTimeline('全部')" class="filter-btn active px-4 py-1.5 rounded-full border border-gray-600 text-gray-300 hover:text-white text-xs font-bold transition-all" id="filter-全部">全部紀元</button>
-                    <button onclick="filterTimeline('人界篇')" class="filter-btn px-4 py-1.5 rounded-full border border-gray-700 text-gray-400 hover:border-emerald-500 hover:text-emerald-400 text-xs font-bold transition-all" id="filter-人界篇">人界篇</button>
-                    <button onclick="filterTimeline('靈界篇')" class="filter-btn px-4 py-1.5 rounded-full border border-gray-700 text-gray-400 hover:border-cyan-500 hover:text-cyan-400 text-xs font-bold transition-all" id="filter-靈界篇">靈界篇</button>
-                    <button onclick="filterTimeline('仙界篇')" class="filter-btn px-4 py-1.5 rounded-full border border-gray-700 text-gray-400 hover:border-amber-500 hover:text-amber-400 text-xs font-bold transition-all" id="filter-仙界篇">仙界篇</button>
-                </div>
-                <div class="flex items-center gap-3 w-full md:w-auto justify-end">
-                    <span id="resultCount" class="text-xs text-amber-500/80 font-mono tracking-wider bg-black/40 px-2 py-1 rounded hidden sm:block"></span>
-                    <div class="relative w-full md:w-56">
-                        <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs"></i>
-                        <input type="text" id="searchTimeline" placeholder="搜功法、法寶、戰役..." class="bg-black/50 border border-gray-700 text-gray-200 text-xs rounded-lg focus:ring-1 focus:ring-amber-500 focus:border-amber-500 block w-full pl-8 py-2 outline-none transition-all" oninput="renderTimeline()">
-                    </div>
-                    <button onclick="toggleAllCards()" id="toggleAllBtn" class="shrink-0 text-xs text-gray-300 hover:text-amber-400 font-bold flex items-center gap-1 bg-gray-800 px-3 py-2 rounded-lg border border-gray-700 transition-all hover:border-amber-500">
-                        <i class="fa-solid fa-angles-down"></i> <span class="hidden sm:inline">全部展開</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="relative w-full">
-                <div class="timeline-center-line hidden md:block"></div>
-                <div class="absolute left-[24px] w-[2px] h-full bg-gradient-to-b from-emerald-500 via-cyan-500 to-amber-500 opacity-30 md:hidden"></div>
-                <div id="timeline-container" class="relative w-full pb-20 flex flex-col gap-6 mobile-timeline-offset md:p-0"></div>
-            </div>
+        <div class="flex flex-col md:flex-row gap-3 md:items-center">
+          <div class="text-[11px] tracking-[0.24em] uppercase text-slate-500 xl:hidden">篩選列固定於上方，可隨捲動持續切換</div>
+          <div class="text-xs text-amber-400 tracking-widest px-3 py-2 rounded-xl bg-black/30 border border-slate-800" id="resultCount"></div>
+          <div class="relative min-w-[240px]">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+            <input id="searchInput" type="text" placeholder="搜尋事件、人物、功法、靈寶…" class="w-full rounded-xl border border-slate-700 bg-black/30 py-2.5 pl-9 pr-3 text-sm text-slate-100 outline-none focus:border-amber-400">
+          </div>
         </div>
+      </div>
+    </div>
 
-        <!-- ================= View: Relational Cosmos (Graph) ================= -->
-        <div id="view-chart" class="hidden w-full h-[85vh] bg-[#020408] rounded-2xl border border-gray-800 shadow-2xl relative overflow-hidden">
-            
-            <!-- 關係圖資訊 -->
-            <div class="absolute top-4 left-4 z-10 text-gray-200 bg-black/70 backdrop-blur-xl p-4 rounded-xl border border-gray-700 shadow-2xl pointer-events-none hidden md:block">
-                <h3 class="font-serif text-lg text-amber-500 mb-1 tracking-widest"><i class="fa-solid fa-network-wired mr-2"></i>萬界星系因果網</h3>
-                <p class="text-[11px] text-gray-400 leading-relaxed font-sans">
-                    • 點擊圖例隱藏/顯示陣營<br>
-                    • 滾輪縮放，自由拖曳節點重組<br>
-                    • 關係文字已全面顯示，請細細品味
-                </p>
-            </div>
+    <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.6fr)_380px] gap-6 items-start">
+      <div class="glass rounded-3xl p-4 lg:p-5 relative overflow-hidden">
+        <div class="timeline-line"></div>
+        <div id="ageRail" class="hidden"></div>
+        <div class="relative pl-10 lg:pl-14" id="timelineContainer"></div>
+      </div>
 
-            <!-- 關係圖搜尋框 -->
-            <div class="absolute top-4 right-4 z-20 flex flex-col md:flex-row items-end md:items-center gap-2">
-                <div class="relative w-56 md:w-64">
-                    <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-amber-500/80 text-sm"></i>
-                    <input type="text" id="searchGraph" placeholder="搜角色 (例: 曲魂、南宮婉)" class="bg-black/80 border border-gray-600 text-gray-200 text-sm rounded-lg focus:ring-1 focus:ring-amber-500 focus:border-amber-500 block w-full pl-9 py-2 outline-none transition-all shadow-lg backdrop-blur-md" oninput="searchChartNode()">
-                </div>
-                <button onclick="resetChartSearch()" class="bg-gray-800/90 hover:bg-gray-700 text-gray-300 p-2 rounded-lg border border-gray-600 transition-all shadow-lg backdrop-blur-md" title="重置因果網">
-                    <i class="fa-solid fa-rotate-right"></i>
-                </button>
-            </div>
+      <aside class="context-pane glass rounded-3xl p-5 xl:sticky xl:top-[206px]">
+        <div id="sidebarContent"></div>
+      </aside>
+    </div>
+  </section>
 
-            <div id="echarts-container" class="w-full h-full cursor-move"></div>
+  <section id="view-graph" class="hidden">
+    <div class="glass rounded-3xl p-4 lg:p-5">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
+        <div>
+          <h2 class="text-xl font-bold text-amber-400">事件因果網</h2>
+          <p class="text-sm text-slate-400 mt-1">事件網保留分層切換；時間線本體則改為閱讀優先的敘事排版，讓主事件、年齡段與子事件能同時存在而不互相打架。</p>
         </div>
-
-        <!-- ================= View: Realm Table ================= -->
-        <div id="view-realm" class="hidden w-full relative">
-            <div class="glass-card rounded-2xl p-6 border border-gray-700 shadow-2xl mb-10">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                    <div>
-                        <h2 class="text-2xl font-serif font-bold text-amber-400 mb-2"><i class="fa-solid fa-book-journal-whills mr-2"></i>萬族境界對照總表</h2>
-                        <p class="text-sm text-gray-400 font-light leading-relaxed">
-                            修仙界浩瀚無垠，各族功法體系繁雜。此表以人族「道修」體系為基準，將妖族、魔族、靈界百族（飛靈族、靈族等）的職階與稱號進行橫向對齊，助道友快速釐清實力層級。
-                        </p>
-                    </div>
-                    <div class="flex gap-3 text-xs font-bold">
-                        <span class="px-3 py-1 rounded bg-emerald-900/30 text-emerald-400 border border-emerald-500/30">人界篇階段</span>
-                        <span class="px-3 py-1 rounded bg-cyan-900/30 text-cyan-400 border border-cyan-500/30">靈界篇階段</span>
-                        <span class="px-3 py-1 rounded bg-amber-900/30 text-amber-400 border border-amber-500/30">仙界篇階段</span>
-                    </div>
-                </div>
-
-                <div class="overflow-x-auto rounded-xl border border-gray-700/80 bg-black/40">
-                    <table class="w-full text-sm text-left text-gray-300 realm-table whitespace-nowrap">
-                        <thead class="text-xs text-gray-400 uppercase tracking-wider">
-                            <tr>
-                                <th scope="col" class="px-6 py-4 font-bold text-white w-32">境界位階</th>
-                                <th scope="col" class="px-6 py-4 font-bold text-emerald-300">人族 / 道修</th>
-                                <th scope="col" class="px-6 py-4 font-bold text-cyan-300">妖族 / 海族</th>
-                                <th scope="col" class="px-6 py-4 font-bold text-purple-300">魔族</th>
-                                <th scope="col" class="px-6 py-4 font-bold text-indigo-300">異族 (靈族/飛靈族等)</th>
-                                <th scope="col" class="px-6 py-4 font-bold text-gray-300">壽元與修為特徵</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- 人界篇階段 -->
-                            <tr class="realm-human-row bg-[#03060a]">
-                                <td class="font-bold text-emerald-500 bg-emerald-950/20">第一階</td>
-                                <td class="font-bold text-white">煉氣期</td>
-                                <td>一至三級妖獸</td>
-                                <td class="text-purple-400">魔卒 / 下位魔族</td>
-                                <td class="text-indigo-400">靈徒 / 異族平民</td>
-                                <td class="text-xs text-gray-400">壽元約百歲。可引氣入體，使用法器與低階法術。</td>
-                            </tr>
-                            <tr class="realm-human-row bg-[#050a14]">
-                                <td class="font-bold text-emerald-500 bg-emerald-950/20">第二階</td>
-                                <td class="font-bold text-white">築基期</td>
-                                <td>四級妖獸</td>
-                                <td class="text-purple-400">魔騎</td>
-                                <td class="text-indigo-400">靈師 / 低階飛靈</td>
-                                <td class="text-xs text-gray-400">壽元兩百餘歲。真氣液化，可辟穀、御器飛行。</td>
-                            </tr>
-                            <tr class="realm-human-row bg-[#03060a]">
-                                <td class="font-bold text-emerald-500 bg-emerald-950/20">第三階</td>
-                                <td class="font-bold text-white">結丹期</td>
-                                <td>五至七級妖獸</td>
-                                <td class="text-purple-400">魔將</td>
-                                <td class="text-indigo-400">靈將</td>
-                                <td class="text-xs text-gray-400">壽元五六百歲。丹田結出金丹，可煉製本命法寶。</td>
-                            </tr>
-                            <tr class="realm-human-row bg-[#050a14]">
-                                <td class="font-bold text-emerald-500 bg-emerald-950/20">第四階</td>
-                                <td class="font-bold text-white">元嬰期</td>
-                                <td>八至十級妖獸 <span class="text-[10px] text-gray-500 ml-1">(八級可化形)</span></td>
-                                <td class="text-purple-400">高階魔族 / 魔君</td>
-                                <td class="text-indigo-400">靈帥 / 飛靈將</td>
-                                <td class="text-xs text-gray-400">壽元千年。碎丹成嬰，元嬰出竅可保命，具備瞬移能力。</td>
-                            </tr>
-                            
-                            <!-- 靈界篇階段 -->
-                            <tr class="realm-spirit-row bg-[#03060a] border-t-2 border-cyan-900/50">
-                                <td class="font-bold text-cyan-500 bg-cyan-950/20">第五階</td>
-                                <td class="font-bold text-white">化神期</td>
-                                <td>化神期大妖</td>
-                                <td class="text-purple-400">魔尊 <span class="text-xs text-gray-500">(初階)</span></td>
-                                <td class="text-indigo-400">靈尊 / 飛靈帥 / 聖子</td>
-                                <td class="text-xs text-gray-400">壽元兩千至數千歲。可初步調動天地元氣，人界巔峰極限。</td>
-                            </tr>
-                            <tr class="realm-spirit-row bg-[#050a14]">
-                                <td class="font-bold text-cyan-500 bg-cyan-950/20">第六階</td>
-                                <td class="font-bold text-white">煉虛期</td>
-                                <td>煉虛期大妖</td>
-                                <td class="text-purple-400">魔尊 <span class="text-xs text-gray-500">(中階)</span></td>
-                                <td class="text-indigo-400">尊者 / 上族 / 聖族</td>
-                                <td class="text-xs text-gray-400">壽元理論破萬。元嬰化虛與肉身相融，可施展法相金身。</td>
-                            </tr>
-                            <tr class="realm-spirit-row bg-[#03060a]">
-                                <td class="font-bold text-cyan-500 bg-cyan-950/20">第七階</td>
-                                <td class="font-bold text-white">合體期</td>
-                                <td>合體期大妖</td>
-                                <td class="text-purple-400">魔尊 <span class="text-xs text-gray-500">(高階)</span> / 聖祖分身</td>
-                                <td class="text-indigo-400">聖階 / 聖靈 / 長老</td>
-                                <td class="text-xs text-gray-400">壽元數萬年。肉身與天地元氣徹底合一，靈界一方霸主。</td>
-                            </tr>
-                            <tr class="realm-spirit-row bg-[#050a14]">
-                                <td class="font-bold text-cyan-500 bg-cyan-950/20">第八階</td>
-                                <td class="font-bold text-white text-lg">大乘期 <br><span class="text-xs font-normal text-gray-500">(含渡劫期)</span></td>
-                                <td class="text-cyan-300 font-bold">大乘期真靈</td>
-                                <td class="text-purple-400 font-bold">魔族聖祖</td>
-                                <td class="text-indigo-400 font-bold">靈王 / 聖祭 / 大族長</td>
-                                <td class="text-xs text-gray-400">壽元十萬年以上。掌握法則皮毛，靈界/魔界法則容納之極限。</td>
-                            </tr>
-
-                            <!-- 仙界篇階段 -->
-                            <tr class="realm-immortal-row bg-[#03060a] border-t-2 border-amber-900/50">
-                                <td class="font-bold text-amber-500 bg-amber-950/20">第九階</td>
-                                <td class="font-bold text-amber-300 text-lg">真仙境</td>
-                                <td class="text-cyan-300">真仙級真靈</td>
-                                <td class="text-purple-400">真靈魔 / 魔仙</td>
-                                <td class="text-indigo-400 text-xs">飛升仙界，種族界限淡化</td>
-                                <td class="text-xs text-gray-400">壽命無盡(需度天人五衰)。凝練仙竅，轉換仙靈力。</td>
-                            </tr>
-                            <tr class="realm-immortal-row bg-[#050a14]">
-                                <td class="font-bold text-amber-500 bg-amber-950/20">第十階</td>
-                                <td class="font-bold text-amber-300 text-lg">金仙境</td>
-                                <td class="text-cyan-300">金仙級真靈</td>
-                                <td class="text-gray-500">-</td>
-                                <td class="text-gray-500">-</td>
-                                <td class="text-xs text-gray-400">掌握實質化的法則之絲，開闢專屬靈域，仙界中堅力量。</td>
-                            </tr>
-                            <tr class="realm-immortal-row bg-[#03060a]">
-                                <td class="font-bold text-amber-500 bg-amber-950/20">第十一階</td>
-                                <td class="font-bold text-amber-300 text-lg">太乙境 <br><span class="text-xs font-normal text-gray-500">(太乙玉仙)</span></td>
-                                <td class="text-cyan-300">太乙大妖</td>
-                                <td class="text-gray-500">-</td>
-                                <td class="text-gray-500">-</td>
-                                <td class="text-xs text-gray-400">法則化域，靈域具備造物之能，可擔任仙域之主。</td>
-                            </tr>
-                            <tr class="realm-immortal-row bg-[#050a14]">
-                                <td class="font-bold text-amber-500 bg-amber-950/20">第十二階</td>
-                                <td class="font-bold text-amber-400 text-xl">大羅境</td>
-                                <td class="text-cyan-400 font-bold">大羅級真靈</td>
-                                <td class="text-gray-500">-</td>
-                                <td class="text-gray-500">-</td>
-                                <td class="text-xs text-amber-400/80">斬卻三尸，法則大成。仙界真正的巨頭，輕易不涉世事。</td>
-                            </tr>
-                            <tr class="realm-immortal-row bg-[#03060a]">
-                                <td class="font-bold text-red-500 bg-amber-950/20">萬界頂點</td>
-                                <td class="font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-red-500 text-2xl">道祖境</td>
-                                <td class="text-cyan-400 font-bold">真靈始祖</td>
-                                <td class="text-purple-400 font-bold">萬魔之主</td>
-                                <td class="text-gray-500">-</td>
-                                <td class="text-sm font-bold text-amber-300">身融天道本源，一法一界之主。不可言說，言出法隨。</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <!-- 補充說明 -->
-                <div class="mt-4 p-4 bg-gray-900/50 rounded-xl border border-gray-700/50 flex gap-3 text-xs text-gray-400">
-                    <i class="fa-solid fa-circle-info text-amber-500 mt-0.5"></i>
-                    <div>
-                        <p class="mb-1"><b class="text-gray-200">備註 1：</b> 妖族在八級（對應元嬰初期）即可經歷化形雷劫化為人形；十級妖獸則對應元嬰後期大圓滿。</p>
-                        <p class="mb-1"><b class="text-gray-200">備註 2：</b> 靈界異族（如飛靈族、蜉蝣族、木族等）稱號極多，通常「聖子」為化神至煉虛期天驕，「聖階」泛指合體期長老。</p>
-                        <p><b class="text-gray-200">備註 3：</b> 仙界篇由於跨度極大，且百族界限已淡化，大多統一使用「真仙、金仙、太乙、大羅」等仙家境界稱呼。</p>
-                    </div>
-                </div>
-            </div>
+        <div class="flex flex-col items-start lg:items-end gap-3">
+          <div class="flex flex-wrap gap-2" id="graphModeWrap">
+            <button class="graph-mode-btn active px-3 py-1.5 rounded-full border border-slate-700 text-sm font-bold text-slate-300" data-mode="events">只看事件</button>
+            <button class="graph-mode-btn px-3 py-1.5 rounded-full border border-slate-700 text-sm font-bold text-slate-300" data-mode="core">事件＋核心人物</button>
+            <button class="graph-mode-btn px-3 py-1.5 rounded-full border border-slate-700 text-sm font-bold text-slate-300" data-mode="all">事件＋全部人物</button>
+          </div>
+          <div class="text-xs text-slate-400">實線代表時間推進，虛線代表人物與事件的持續關聯；點擊事件節點可切回時間線並定位。</div>
         </div>
+      </div>
+      <div id="graphContainer" class="h-[78vh] rounded-2xl bg-black/25 border border-slate-800"></div>
+    </div>
+  </section>
 
-    </main>
+  <section id="view-realm" class="hidden">
+    <div class="glass rounded-3xl p-5 lg:p-6">
+      <div class="mb-5">
+        <h2 class="text-2xl font-bold text-amber-400">境界對照表</h2>
+        <p class="text-sm text-slate-400 mt-2 leading-6">主表保留三界主線性位階，並在下方補上仙界常見的補充分流與稱謂，例如散仙、地仙、玄仙、偽仙儡、祖神等，避免把不同修途硬塞成同一條直線。</p>
+      </div>
+      <div class="overflow-x-auto rounded-2xl border border-slate-800 table-wrap mb-6">
+        <table class="min-w-full text-sm text-left">
+          <thead class="bg-slate-900/85 text-slate-300">
+            <tr>
+              <th class="px-4 py-3">位階</th>
+              <th class="px-4 py-3">人族 / 道修</th>
+              <th class="px-4 py-3">妖族 / 海族</th>
+              <th class="px-4 py-3">魔族</th>
+              <th class="px-4 py-3">異族</th>
+              <th class="px-4 py-3">特徵</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="realm-human-row"><td class="px-4 py-3 border-b border-slate-800">第一階</td><td class="px-4 py-3 border-b border-slate-800">煉氣期</td><td class="px-4 py-3 border-b border-slate-800">一至三級妖獸</td><td class="px-4 py-3 border-b border-slate-800">魔卒 / 下位魔族</td><td class="px-4 py-3 border-b border-slate-800">靈徒 / 異族平民</td><td class="px-4 py-3 border-b border-slate-800">壽元約百歲，可引氣入體、驅使低階法器。</td></tr>
+            <tr class="realm-human-row"><td class="px-4 py-3 border-b border-slate-800">第二階</td><td class="px-4 py-3 border-b border-slate-800">築基期</td><td class="px-4 py-3 border-b border-slate-800">四級妖獸</td><td class="px-4 py-3 border-b border-slate-800">魔騎</td><td class="px-4 py-3 border-b border-slate-800">靈師 / 低階飛靈</td><td class="px-4 py-3 border-b border-slate-800">壽元兩百餘歲，真氣液化，可御器飛行。</td></tr>
+            <tr class="realm-human-row"><td class="px-4 py-3 border-b border-slate-800">第三階</td><td class="px-4 py-3 border-b border-slate-800">結丹期</td><td class="px-4 py-3 border-b border-slate-800">五至七級妖獸</td><td class="px-4 py-3 border-b border-slate-800">魔將</td><td class="px-4 py-3 border-b border-slate-800">靈將</td><td class="px-4 py-3 border-b border-slate-800">可煉本命法寶，是人界中堅戰力。</td></tr>
+            <tr class="realm-human-row"><td class="px-4 py-3 border-b border-slate-800">第四階</td><td class="px-4 py-3 border-b border-slate-800">元嬰期</td><td class="px-4 py-3 border-b border-slate-800">八至十級妖獸</td><td class="px-4 py-3 border-b border-slate-800">高階魔族 / 魔君</td><td class="px-4 py-3 border-b border-slate-800">靈帥 / 飛靈將</td><td class="px-4 py-3 border-b border-slate-800">碎丹成嬰，可瞬移，是人界頂層戰力。</td></tr>
+            <tr class="realm-spirit-row"><td class="px-4 py-3 border-b border-slate-800">第五階</td><td class="px-4 py-3 border-b border-slate-800">化神期</td><td class="px-4 py-3 border-b border-slate-800">化神期大妖</td><td class="px-4 py-3 border-b border-slate-800">魔尊（初）</td><td class="px-4 py-3 border-b border-slate-800">靈尊 / 聖子</td><td class="px-4 py-3 border-b border-slate-800">初步調動天地元氣，人界極限。</td></tr>
+            <tr class="realm-spirit-row"><td class="px-4 py-3 border-b border-slate-800">第六階</td><td class="px-4 py-3 border-b border-slate-800">煉虛期</td><td class="px-4 py-3 border-b border-slate-800">煉虛期大妖</td><td class="px-4 py-3 border-b border-slate-800">魔尊（中）</td><td class="px-4 py-3 border-b border-slate-800">尊者 / 聖族</td><td class="px-4 py-3 border-b border-slate-800">壽元大增，法相與天地元氣融合。</td></tr>
+            <tr class="realm-spirit-row"><td class="px-4 py-3 border-b border-slate-800">第七階</td><td class="px-4 py-3 border-b border-slate-800">合體期</td><td class="px-4 py-3 border-b border-slate-800">合體期大妖</td><td class="px-4 py-3 border-b border-slate-800">魔尊（高）/ 聖祖分身</td><td class="px-4 py-3 border-b border-slate-800">聖階 / 長老</td><td class="px-4 py-3 border-b border-slate-800">靈界霸主級存在。</td></tr>
+            <tr class="realm-spirit-row"><td class="px-4 py-3 border-b border-slate-800">第八階</td><td class="px-4 py-3 border-b border-slate-800">大乘期（含渡劫）</td><td class="px-4 py-3 border-b border-slate-800">大乘真靈</td><td class="px-4 py-3 border-b border-slate-800">魔族聖祖</td><td class="px-4 py-3 border-b border-slate-800">靈王 / 大族長</td><td class="px-4 py-3 border-b border-slate-800">掌握法則皮毛，飛升前最強層級。</td></tr>
+            <tr class="realm-immortal-row"><td class="px-4 py-3 border-b border-slate-800">第九階</td><td class="px-4 py-3 border-b border-slate-800">真仙境</td><td class="px-4 py-3 border-b border-slate-800">真仙級真靈</td><td class="px-4 py-3 border-b border-slate-800">魔仙 / 真靈魔</td><td class="px-4 py-3 border-b border-slate-800">—</td><td class="px-4 py-3 border-b border-slate-800">凝練仙竅，開始真正以法則之力界定「真仙」。</td></tr>
+            <tr class="realm-immortal-row"><td class="px-4 py-3 border-b border-slate-800">第十階</td><td class="px-4 py-3 border-b border-slate-800">金仙境</td><td class="px-4 py-3 border-b border-slate-800">金仙級真靈</td><td class="px-4 py-3 border-b border-slate-800">—</td><td class="px-4 py-3 border-b border-slate-800">—</td><td class="px-4 py-3 border-b border-slate-800">法則之絲具體化，形成靈域。</td></tr>
+            <tr class="realm-immortal-row"><td class="px-4 py-3 border-b border-slate-800">第十一階</td><td class="px-4 py-3 border-b border-slate-800">太乙玉仙</td><td class="px-4 py-3 border-b border-slate-800">太乙大妖</td><td class="px-4 py-3 border-b border-slate-800">—</td><td class="px-4 py-3 border-b border-slate-800">—</td><td class="px-4 py-3 border-b border-slate-800">法則化域更深，能主掌一方仙域。</td></tr>
+            <tr class="realm-immortal-row"><td class="px-4 py-3 border-b border-slate-800">第十二階</td><td class="px-4 py-3 border-b border-slate-800">大羅境</td><td class="px-4 py-3 border-b border-slate-800">大羅級真靈</td><td class="px-4 py-3 border-b border-slate-800">—</td><td class="px-4 py-3 border-b border-slate-800">—</td><td class="px-4 py-3 border-b border-slate-800">斬卻三尸，法則大成。</td></tr>
+            <tr class="realm-immortal-row"><td class="px-4 py-3 border-b border-slate-800">萬界頂點</td><td class="px-4 py-3 border-b border-slate-800">道祖境</td><td class="px-4 py-3 border-b border-slate-800">真靈始祖</td><td class="px-4 py-3 border-b border-slate-800">萬魔之主</td><td class="px-4 py-3 border-b border-slate-800">—</td><td class="px-4 py-3 border-b border-slate-800">身融天道本源，一法一界之主。</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] gap-6">
+        <div class="rounded-2xl border border-slate-800 bg-black/20 p-4 lg:p-5">
+          <div class="text-lg font-bold text-cyan-300 mb-3">仙界補充分流與稱謂</div>
+          <div class="overflow-x-auto rounded-2xl border border-slate-800 table-wrap">
+            <table class="min-w-full text-sm text-left">
+              <thead class="bg-slate-900/85 text-slate-300">
+                <tr>
+                  <th class="px-4 py-3">名稱</th>
+                  <th class="px-4 py-3">性質</th>
+                  <th class="px-4 py-3">與主線位階關係</th>
+                  <th class="px-4 py-3">說明</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="px-4 py-3 border-b border-slate-800 font-bold text-slate-100">散仙</td><td class="px-4 py-3 border-b border-slate-800">廣義仙人類別</td><td class="px-4 py-3 border-b border-slate-800">非線性獨立階，但常落在未掌握法則者</td><td class="px-4 py-3 border-b border-slate-800">沒有掌握法則之力者通常只被稱作散仙，數量極多，並非真正意義上的「真仙」。</td></tr>
+                <tr><td class="px-4 py-3 border-b border-slate-800 font-bold text-slate-100">真仙</td><td class="px-4 py-3 border-b border-slate-800">主線正統境界</td><td class="px-4 py-3 border-b border-slate-800">對應主表第九階起點</td><td class="px-4 py-3 border-b border-slate-800">在真仙界脈絡裡，真正被稱為真仙者，是已掌握法則之力的仙人。</td></tr>
+                <tr><td class="px-4 py-3 border-b border-slate-800 font-bold text-slate-100">地仙</td><td class="px-4 py-3 border-b border-slate-800">散仙支流</td><td class="px-4 py-3 border-b border-slate-800">非主表獨立主階，偏特殊場域修途</td><td class="px-4 py-3 border-b border-slate-800">黑風海域等特殊環境中較常見，與散仙同源但走向更地方化、神道化的修行路徑。</td></tr>
+                <tr><td class="px-4 py-3 border-b border-slate-800 font-bold text-slate-100">祖神</td><td class="px-4 py-3 border-b border-slate-800">地仙雛形 / 地方神祇化</td><td class="px-4 py-3 border-b border-slate-800">非主線境界</td><td class="px-4 py-3 border-b border-slate-800">可視為地仙路線的地方化雛形，常與黑風海域、香火與地域規則綁定。</td></tr>
+                <tr><td class="px-4 py-3 border-b border-slate-800 font-bold text-slate-100">玄仙（力仙）</td><td class="px-4 py-3 border-b border-slate-800">散仙異類 / 肉身流</td><td class="px-4 py-3 border-b border-slate-800">不直接等同主表某一階</td><td class="px-4 py-3 border-b border-slate-800">玄仙主修肉身、不重仙力真元，可視為散仙中的異類，韓立在仙界前段走的就是這條力仙路線。</td></tr>
+                <tr><td class="px-4 py-3 font-bold text-slate-100">偽仙儡 / 偽仙露</td><td class="px-4 py-3">仙傀與輔材稱謂</td><td class="px-4 py-3">不是境界名稱</td><td class="px-4 py-3">偽仙多出現在「偽仙儡」「偽仙露」等稱呼中，指帶有部分仙靈性質的傀儡或稀釋仙材，不應誤當成正統境界。</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-slate-800 bg-black/20 p-4 lg:p-5">
+          <div class="text-lg font-bold text-amber-300 mb-3">閱讀提示</div>
+          <div class="space-y-3 text-sm leading-7 text-slate-300">
+            <p>1. <strong>主表</strong>看的是三界主線位階，適合配合事件時間線一起使用。</p>
+            <p>2. <strong>補充分流表</strong>看的是仙界常見稱呼、旁支修途與特殊術語，避免把不同體系誤判成直線上下位。</p>
+            <p>3. 例如<strong>玄仙</strong>是肉身流、<strong>地仙</strong>偏黑風海域環境化修途、<strong>散仙</strong>是未掌握法則之力者的廣義稱呼，彼此不是單純的「第幾階」關係。</p>
+            <p>4. <strong>偽仙儡 / 偽仙露</strong>這類詞更接近仙界材料或傀儡術語，不屬於正統境界名稱，所以我放在補充表而不是主表階梯裡。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 
-    <!-- Data & Script -->
-    <script>
-        // ================= 1. Timeline Data (保留原樣) =================
-        const timelineData = [
-            { realmType: "人界篇", age: "10歲", phase: "拜入七玄門", event: "二愣子為改善家境離開青牛鎮，通過考驗加入七玄門。因身具木屬性偽靈根被墨居仁收為記名弟子。偶然撿到神秘小瓶。", location: "越國-鏡州-七玄門", realm: "凡人", combat: "無", kills: "無", relations: "墨居仁(算計)、厲飛雨(摯友)、張鐵(師弟)", loot: "掌天瓶(未激活)", lost: "童真", techniques: "長春功、眨眼劍法", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "人界篇", age: "14歲", phase: "發現綠液奇效", event: "發現掌天瓶吸收月光凝聚綠液能催熟靈藥。暗中修煉長春功至第四層。發現張鐵失蹤，對墨大夫起疑並暗中準備。", location: "神手谷", realm: "煉氣期四層", combat: "無", kills: "無", relations: "墨居仁(防備)", loot: "無", lost: "無", techniques: "長春功", abilities: "無", formations: "無", insects: "無", herbs: "黃龍丹材料(催熟)" },
-            { realmType: "人界篇", age: "16歲", phase: "神手谷弒師求生", event: "墨大夫圖謀奪舍，韓立憑藉長春功與暗器反殺。發現張鐵已被煉成殭屍(曲魂)。吞噬余子童元神獲取修仙界知識。", location: "神手谷密室", realm: "煉氣期六層", combat: "死鬥墨居仁、吞噬余子童", kills: "墨居仁、余子童", relations: "余子童", loot: "儲物袋、曲魂(煉屍)", lost: "對人性的信任", techniques: "火彈術、引力術", abilities: "御物術", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "人界篇", age: "16歲", phase: "結緣厲飛雨", event: "以抽髓丸換取厲飛雨保護自己家人，傳授止痛秘方與世俗武功，結下深厚羈絆。", location: "七玄門", realm: "煉氣期六層", combat: "無", kills: "無", relations: "厲飛雨(生死交)", loot: "無", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "人界篇", age: "17歲", phase: "嘉元城了結塵緣", event: "前往嘉元城解決墨府恩怨，震懾嚴氏等妻女。順帶收服地方幫派四平幫，獲暖陽寶玉解去自身陰毒。", location: "越國-嘉元城", realm: "煉氣期七層", combat: "震懾墨府、制伏孫二狗", kills: "敵對幫派頭目", relations: "嚴氏、墨彩環", loot: "暖陽寶玉", lost: "凡俗牽掛", techniques: "羅煙步", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "人界篇", age: "18歲", phase: "太南小會開眼界", event: "參加修仙者集市「太南小會」，結識萬小山，首次見識真正修仙界的殘酷與交易規則。", location: "太南山", realm: "煉氣期九層", combat: "無", kills: "無", relations: "萬小山", loot: "符筆、硃砂", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "人界篇", age: "18歲", phase: "反殺金光上人", event: "太南小會結束後遭侏儒金光上人打劫，果斷以火彈術將其反殺，意外獲得「升仙令」與珍貴符寶。", location: "太南谷外", realm: "煉氣期九層", combat: "激戰金光上人", kills: "金光上人", relations: "無", loot: "升仙令、金光磚符寶", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "人界篇", age: "18歲", phase: "入黃楓谷被奪丹", event: "持升仙令加入黃楓谷。應得的築基丹被葉姓老者強行換走。被分配去馬師伯的百藥園，開啟瘋狂催熟種藥之路。", location: "黃楓谷-百藥園", realm: "煉氣期十一層", combat: "無", kills: "無", relations: "葉姓管事、馬師伯", loot: "基礎功法", lost: "首枚築基丹", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "海量百年靈藥" },
-            { realmType: "人界篇", age: "18歲", phase: "血色禁地：邊緣苟活", event: "為求築基丹原料參加血色試煉。進入禁地後極力低調偽裝，遭遇並反殺多名他派精銳弟子。", location: "血色禁地外圍", realm: "煉氣大圓滿", combat: "混戰掩月宗/清虛門精銳", kills: "多名他派精銳", relations: "向之禮(同隊苟王)", loot: "他派法器、靈石", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "紫猴花等" },
-            { realmType: "人界篇", age: "18歲", phase: "血色禁地：戰墨蛟逢南宮", event: "在禁地核心沼澤偶遇修為被壓制的掩月宗結丹長老南宮婉。兩人合力擊殺頂級妖獸墨蛟，意外吸入淫囊春風一度。", location: "血色禁地核心", realm: "煉氣大圓滿", combat: "激戰墨蛟", kills: "墨蛟", relations: "南宮婉(結髮之實)", loot: "墨蛟材料、金色箱子(天地戈)", lost: "童男之身", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "玉髓芝、天靈果" },
-            { realmType: "人界篇", age: "21歲", phase: "成功築基拜師李化元", event: "用試煉所得靈草煉出多枚築基丹，連服後成功築基。被結丹期修士李化元收為記名弟子，獲賜《青元劍訣》。", location: "黃楓谷", realm: "築基初期", combat: "無", kills: "無", relations: "李化元(師傅)", loot: "青元劍訣全本", lost: "無", techniques: "青元劍訣", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "人界篇", age: "21歲", phase: "開闢洞府初得大衍", event: "在太岳山脈開闢獨立洞府。參加秘店拍賣，結識齊雲霄與辛如音，換得《大衍決》前幾層與初階傀儡術。", location: "太岳山脈", realm: "築基初期", combat: "無", kills: "無", relations: "齊雲霄、辛如音", loot: "顛倒五行陣(殘)、傀儡獸", lost: "無", techniques: "大衍決(前)", abilities: "無", formations: "顛倒五行陣", insects: "無", herbs: "無" },
-            { realmType: "人界篇", age: "23歲", phase: "燕家堡大戰王蟬", event: "奉命赴燕家堡觀禮，遭遇魔道鬼靈門入侵。燕家叛變，韓立帶董萱兒突圍，首次激戰鬼靈門少主王蟬。", location: "越國-燕家堡", realm: "築基中期", combat: "大戰王蟬(血靈大法)", kills: "多名魔道低階", relations: "王蟬(宿敵)、董萱兒", loot: "初獲噬金蟲卵(太南谷交易得)", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "噬金蟲卵", herbs: "無" },
-            { realmType: "人界篇", age: "25歲", phase: "越京血戰誅黑煞", event: "奉命駐守越京，驚覺皇帝竟是邪修黑煞教主。聯手眾同門血戰四大血侍，拼死將結丹期的教主擊殺，獲血凝五行丹。", location: "越京皇宮", realm: "築基後期", combat: "血戰四大血侍、越皇", kills: "越皇(黑煞教主)", relations: "陳巧倩", loot: "血凝五行丹、平天尺", lost: "多名同門", techniques: "無", abilities: "無", formations: "無", insects: "噬金蟲(初現威力)", herbs: "無" },
-            { realmType: "人界篇", age: "25歲", phase: "意外收穫血玉蜘蛛", event: "越京大戰後，從清理的御靈宗修士遺物儲物袋中，意外獲得了極為罕見的「血玉蜘蛛」蟲卵，並開始悉心培育。", location: "越國", realm: "築基後期", combat: "無", kills: "無", relations: "無", loot: "血玉蜘蛛卵", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "血玉蜘蛛卵", herbs: "無" },
-            { realmType: "人界篇", age: "25歲", phase: "魔道入侵與棄子逃亡", event: "魔道六宗全面入侵，七派戰敗撤退。韓立被當作誘餌棄子，心灰意冷下脫離宗門，藉由辛如音修復的古傳送陣逃亡亂星海。", location: "越國邊境 / 傳送陣", realm: "築基後期", combat: "掩護戰、躲避魔道追殺", kills: "魔道築基追兵", relations: "辛如音、南宮婉(臨別贈玉)", loot: "大挪移令", lost: "天南故土、宗門庇護", techniques: "無", abilities: "無", formations: "修復古傳送陣", insects: "無", herbs: "無" },
-            { realmType: "人界篇", age: "25-100歲", phase: "魁星島蟄伏轉修", event: "傳送至亂星海魁星島。隱姓埋名百年，適應異國他鄉，學習語言，出海獵殺低階妖獸賺取靈石，準備結丹。", location: "亂星海-魁星島", realm: "築基大圓滿", combat: "獵殺海妖", kills: "無數低階海妖", relations: "無", loot: "無", lost: "無", techniques: "散功重修", abilities: "無", formations: "無", insects: "噬金蟲(繁衍)", herbs: "霓裳草(誘妖)" },
-            { realmType: "人界篇", age: "100-126歲", phase: "天星城結丹煉本命", event: "移居亂星海聖地天星城。成功結丹，並以耗費心血培育的三大靈木之一「金雷竹」，煉製出七十二把本命法寶。", location: "天星城-聖山", realm: "結丹初期", combat: "渡結丹雷劫", kills: "無", relations: "紫靈仙子(結識)", loot: "青竹蜂雲劍", lost: "無", techniques: "青元劍訣(全)", abilities: "辟邪神雷", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "人界篇", age: "126歲", phase: "虛天殿：獲啼魂戰玄骨", event: "虛天殿秘境開啟。於黑鐵沙漠解救元瑤，元瑤為報恩將原青陽門少主之物「啼魂獸」贈予韓立，專剋鬼物。", location: "虛天殿-黑鐵沙漠", realm: "結丹初期", combat: "擊殺青陽門少主", kills: "青陽門少主", relations: "元瑤(贈啼魂)", loot: "啼魂獸", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "啼魂獸(靈寵)", herbs: "無" },
-            { realmType: "人界篇", age: "126歲", phase: "虛天殿：反殺玄骨", event: "在冰火道中，與被困千年的魔道老祖「玄骨上人」互相算計。最終韓立出其不意，以辟邪神雷將其徹底反殺。", location: "虛天殿-冰火道", realm: "結丹初期", combat: "激戰玄骨上人", kills: "玄骨上人", relations: "玄骨上人(死敵)", loot: "九曲靈參", lost: "無", techniques: "無", abilities: "辟邪神雷", formations: "無", insects: "無", herbs: "壽元果" },
-            { realmType: "人界篇", age: "126歲", phase: "虛天殿：蜘蛛拔鼎", event: "趁元嬰老怪正魔混戰，韓立放出培育多年的血玉蜘蛛，成功拔出通天靈寶「虛天鼎」，並收服白狐器靈「銀月」。", location: "虛天殿-內殿", realm: "結丹初期", combat: "虎口奪食", kills: "無", relations: "銀月(器靈認主)、極陰祖師(追殺)", loot: "虛天鼎、補天丹、乾藍冰焰", lost: "遭全海域通緝", techniques: "無", abilities: "乾藍冰焰", formations: "無", insects: "血玉蜘蛛(耗盡精血死亡)", herbs: "無" },
-            { realmType: "人界篇", age: "126-200歲", phase: "外星海瘋狂獵妖", event: "為躲避星宮與元嬰老怪通緝，通過傳送陣逃往外星海。化身殺戮機器，瘋狂獵殺七八級妖獸取丹煉藥，實力暴漲。", location: "外星海", realm: "結丹中期", combat: "無盡獵妖", kills: "大量高階海妖", relations: "無", loot: "海量高階妖丹", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "噬金蟲(吞噬進化)", herbs: "無" },
-            { realmType: "人界篇", age: "200歲", phase: "絕地陰冥與紫靈", event: "遭遇亂星海天災「鬼霧」，被吸入無法使用法力的絕地「陰冥之地」。與紫靈、梅凝共患難，肉搏冥獸，尋得空間裂縫逃脫。", location: "陰冥之地", realm: "結丹後期", combat: "肉搏冥獸", kills: "大量冥獸", relations: "紫靈、梅凝", loot: "冥骨訣", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "啼魂(吞食冥獸壯大)", herbs: "無" },
-            { realmType: "人界篇", age: "220歲", phase: "重返天南落雲結嬰", event: "藉空間裂縫與無名傳送陣回到闊別百年的天南。隱姓埋名加入落雲宗，終於成功凝結元嬰，震驚天南。", location: "天南-落雲宗", realm: "元嬰初期", combat: "渡元嬰雷劫", kills: "無", relations: "呂洛(師兄)", loot: "無", lost: "無", techniques: "玄天練器術", abilities: "瞬移", formations: "大庚劍陣(初)", insects: "六翼霜蚣(初得)", herbs: "造化丹材料" },
-            { realmType: "人界篇", age: "225歲", phase: "掩月宗搶親結道侶", event: "得知南宮婉將被迫與他人雙修，單槍匹馬殺入掩月宗阻止大典。兩人解開誤會，正式結為雙修道侶。", location: "天南-掩月宗", realm: "元嬰初期", combat: "震懾掩月宗高層", kills: "無", relations: "南宮婉(正妻)", loot: "無", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "人界篇", age: "230歲", phase: "邊界大戰與大衍神君", event: "慕蘭法士入侵。韓立鬥法慕蘭神師，斬陰陽老魔。戰後獲裝有「大衍神君」殘魂的竹筒，得其指點神識大增。", location: "天南邊界戰場", realm: "元嬰初期", combat: "鬥慕蘭神師、斬陰陽老魔", kills: "陰陽老魔", relations: "大衍神君、慕蘭聖女", loot: "風雷翅、元神燈", lost: "多件普通法寶損毀", techniques: "大衍決(高層)", abilities: "風雷雙翅", formations: "無", insects: "成熟體噬金蟲群", herbs: "無" },
-            { realmType: "人界篇", age: "250歲", phase: "墜魔谷激戰血焰古魔", event: "南宮婉遭封印。為尋救治靈藥入天下第一凶地墜魔谷。遭遇破封的血焰古魔，展開殊死血戰險勝。", location: "墜魔谷", realm: "元嬰中期", combat: "激戰血焰古魔分魂", kills: "古魔分魂", relations: "南宮婉(封印中)", loot: "太陽精火", lost: "無", techniques: "梵聖真魔功(初)", abilities: "紫羅極火", formations: "無", insects: "噬金蟲(吞魔氣兇暴化)", herbs: "靈緲園仙草" },
-            { realmType: "人界篇", age: "350歲", phase: "晉京之行大衍坐化", event: "遊歷大晉尋突破。大衍神君將畢生機關術與功法傾囊相授後，壽元耗盡坐化，韓立敬重為其送終。期間收辛如音轉世為徒。", location: "大晉-晉京", realm: "元嬰後期(大修士)", combat: "無", kills: "無", relations: "大衍神君(逝世)、田琴兒(收徒)", loot: "頂級機關術、元嬰傀儡", lost: "大衍神君(良師益友)", techniques: "大衍決(巔峰)", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "人界篇", age: "400歲", phase: "昆吾山封魔與銀月飛升", event: "上古神山昆吾山現世。參與鎮壓魔界元剎聖祖分念，銀月恢復大晉妖妃玲瓏記憶，隨後飛升靈界回歸本體。", location: "大晉-昆吾山", realm: "元嬰後期", combat: "群修戰元剎聖祖", kills: "大晉元嬰老怪", relations: "玲瓏/銀月(飛升)、向之禮", loot: "八靈尺、黑風旗殘旗", lost: "銀月", techniques: "無", abilities: "破滅法目", formations: "大庚劍陣(成)", insects: "六翼霜蚣(進階)", herbs: "還魂草" },
-            { realmType: "人界篇", age: "500-800歲", phase: "化神無敵震懾人界", event: "回歸天南突破化神期，成為人界無敵存在。橫掃一切不服，為落雲宗留下深厚底蘊與自保之法。", location: "天南", realm: "化神初期", combat: "震懾群雄(秒殺級)", kills: "無", relations: "南宮婉(甦醒)", loot: "元磁山", lost: "無", techniques: "元磁神光", abilities: "元磁護體", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "人界篇", age: "880歲", phase: "強闖節點偷渡靈界", event: "為求長生，與冰鳳聯手強闖空間節點偷渡靈界。遭遇毀滅性空間風暴，法力散盡，身負重傷流落異界。", location: "人界空間節點", realm: "化神初期", combat: "對抗空間風暴", kills: "無", relations: "冰鳳(失散)", loot: "無", lost: "法力跌落至煉氣", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "攜帶大量絕跡種子" },
-            { realmType: "靈界篇", age: "約1000歲", phase: "流落天元艱難恢復", event: "流落靈界風元大陸天元境，法力散盡。在蠻荒躲避異族與凶獸，憑肉身與丹藥，艱難恢復修為至化神期。", location: "風元大陸-天元境", realm: "煉氣 → 化神初期", combat: "擊殺低階異族/凶獸", kills: "異族斥候", relations: "無", loot: "無", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "靈界篇", age: "約1050歲", phase: "飛靈族：偽裝聖子", event: "混入飛靈族被金悅長老看穿，被逼交易偽裝成天鵬族聖子。在地淵試煉大放異彩，學會逆天功法。", location: "飛靈族 / 地淵", realm: "化神後期", combat: "躲避木族高階追殺", kills: "木族化神", relations: "金悅、雷蘭", loot: "真靈之血(天鵬/五光孔雀)", lost: "無", techniques: "驚蟄十二變", abilities: "天鵬變", formations: "無", insects: "豹麟獸", herbs: "冥河神乳" },
-            { realmType: "靈界篇", age: "約1100歲", phase: "地淵妖王與逃離", event: "地淵遭遇四大妖王（木青、地血等）險象環生，利用辟邪神雷與計謀獲取冥河神乳後，驚險逃離飛靈族。", location: "地淵深處", realm: "化神大圓滿", combat: "周旋於合體期妖王之間", kills: "無", relations: "地淵四大妖王", loot: "極品靈石", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "冥河神乳" },
-            { realmType: "靈界篇", age: "約1200歲", phase: "天淵城青冥衛突破", event: "抵達人妖聖地「天淵城」加入青冥衛。執行邊境巡邏屢遇險境，憑藉積累成功突破至煉虛期，擺脫壽元危機。", location: "天淵城", realm: "煉虛初期", combat: "邊境巡邏激戰", kills: "異族探子", relations: "冰魄仙子(獲線索)", loot: "滅塵丹", lost: "無", techniques: "煉神術(第一層)", abilities: "法相金身", formations: "太乙青山陣", insects: "噬金蟲", herbs: "無" },
-            { realmType: "靈界篇", age: "約1250歲", phase: "百族大戰守城之戰", event: "木族與夜叉族聯軍百萬大軍圍攻天淵城。韓立在守城戰中大放異彩，越階斬殺敵方高階存在，名震天淵。", location: "天淵城牆", realm: "煉虛中期", combat: "異族攻城大戰", kills: "木族/夜叉族煉虛強者", relations: "無", loot: "大量戰功", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "靈界篇", age: "約1300歲", phase: "跨界傳送遇虛靈", event: "為尋廣寒界名額，搭乘危險跨大陸傳送陣抵達雷鳴大陸。助蜉蝣族虛靈女童解決危機，獲廣寒通行令。", location: "雷鳴大陸-蜉蝣族", realm: "煉虛中期", combat: "協助蜉蝣族退敵", kills: "高階凶獸", relations: "虛靈仙子", loot: "廣寒界通行令", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "靈界篇", age: "約1500歲", phase: "廣寒界天驕大混戰", event: "進入萬年一開的「廣寒界」。與角蚩族等超級大族天驕展開血腥混戰，奪取逆天仙草與太乙青蓮劍圖。", location: "廣寒界", realm: "煉虛後期", combat: "廣寒界大混戰", kills: "角蚩族煉虛/合體期", relations: "無", loot: "玄天果實、青蓮劍圖", lost: "無", techniques: "無", abilities: "無", formations: "春黎劍陣、青蓮劍陣", insects: "無", herbs: "無數仙界級仙草" },
-            { realmType: "靈界篇", age: "約1800歲", phase: "魔金山脈大尋寶", event: "修為達煉虛大圓滿。深入魔金山脈尋求突破機緣。遭遇高階魔族與凶獸，險象環生，收穫巨大。", location: "風元大陸-魔金山脈", realm: "煉虛大圓滿", combat: "激戰魔族尊者", kills: "魔族高階", relations: "無", loot: "珍稀魔金", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "靈界篇", age: "約2000歲", phase: "魔劫降臨與潛入魔界", event: "魔界入侵靈界。韓立浴血奮戰晉升合體。為尋解決魔劫之法潛入魔界，結識魔界始祖「寶花」並重逢紫靈。", location: "魔界", realm: "合體中期", combat: "抗擊魔族大軍", kills: "多名魔尊", relations: "寶花、紫靈", loot: "無", lost: "無", techniques: "百脈煉寶訣", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "靈界篇", age: "約2200歲", phase: "洗靈池肉身成聖", event: "在魔界苦尋終得洗靈池，洗去凡塵氣息。梵聖真魔功大成，肉身成聖，凝聚涅槃金身三頭六臂法相。", location: "魔界-洗靈池", realm: "合體後期", combat: "大戰元魘聖祖", kills: "無", relations: "元魘", loot: "洗靈池洗髓、金髓晶蟲", lost: "無", techniques: "梵聖真魔功(大成)", abilities: "涅槃金身", formations: "無", insects: "噬金蟲王(誕生)", herbs: "魔界特產" },
-            { realmType: "靈界篇", age: "約2500歲", phase: "玄天斬靈劍甦醒", event: "體內玄天果實成熟，化為玄界排名第三的玄天之寶「玄天斬靈劍」。憑此劍一劍斬裂虛空，震懾靈魔兩界群雄。", location: "靈魔兩界交界", realm: "合體後期", combat: "爭奪玄天之寶控制權", kills: "異族老怪", relations: "無", loot: "玄天斬靈劍", lost: "無", techniques: "無", abilities: "玄天一擊", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "靈界篇", age: "約8000歲", phase: "大天劫晉升大乘", event: "引動大天劫，成功晉升大乘期。以絕對實力壓服各方，成為靈界人妖兩族乃至整個靈界的第一強者。", location: "人族聖島", realm: "大乘期", combat: "度大天劫", kills: "無", relations: "無", loot: "無", lost: "無", techniques: "煉神術(第二層)", abilities: "元罡罩", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "靈界篇", age: "約8500歲", phase: "真仙馬良下界屠戮", event: "仙界真仙馬良下界，為煉製萬血靈珠瘋狂屠戮靈界生靈。角蚩族等超級大族慘遭滅族，靈界陷入恐慌。", location: "靈界各大陸", realm: "大乘期", combat: "無", kills: "無", relations: "馬良(死敵)", loot: "無", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "靈界篇", age: "約9000歲", phase: "血戰斬殺下界真仙", event: "韓立聯手明尊等靈界大乘佈下絕陣伏擊馬良。經歷慘烈血戰，韓立拼盡全力以玄天之寶將真仙斬殺。", location: "角蚩族領地", realm: "大乘期巔峰", combat: "滅世之戰斬馬良", kills: "真仙馬良", relations: "明尊(戰死)、馬良", loot: "萬物母劍、盜天瓶", lost: "玄天斬靈劍(靈性大損)", techniques: "煉神術(大成)", abilities: "時間法則(初現)", formations: "無", insects: "噬金仙(蟲王蛻變為真仙級)", herbs: "無" },
-            { realmType: "靈界篇", age: "約9500歲", phase: "平定螟蟲之母", event: "助寶花前往始印之地，徹底鎮壓企圖吞噬世界的螟蟲之母，解決靈魔兩界最後的隱患。", location: "始印之地", realm: "大乘期巔峰", combat: "鎮螟蟲之母", kills: "螟蟲之母", relations: "寶花", loot: "無", lost: "無", techniques: "無", abilities: "無", formations: "周天星斗大陣", insects: "無", herbs: "無" },
-            { realmType: "靈界篇", age: "約10000歲", phase: "度雷劫飛升仙界", event: "處理完靈界所有牽掛，安頓南宮婉等。引動飛升雷劫，成功扛過天罰，破空飛升，正式踏入真仙界。", location: "靈界飛升台", realm: "大乘期巔峰", combat: "對抗飛升天罰", kills: "無", relations: "南宮婉(留守)", loot: "無", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "仙界篇", age: "仙界初期", phase: "接引叛變與失憶流落", event: "飛升北寒仙域，接引仙使高昇叛變引來方磐暗算。韓立失去三百年記憶與金童。流落黑土仙域救下狐妖柳樂兒。", location: "北寒仙域 / 黑土仙域", realm: "真仙境(重修)", combat: "遭暗算逃亡、反殺追兵", kills: "方磐", relations: "高昇、方磐、柳樂兒", loot: "尋回掌天瓶", lost: "三百年記憶、金童", techniques: "小北斗星元功", abilities: "星辰之力", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "仙界篇", age: "仙界中期", phase: "燭龍道修真言寶輪", event: "加入燭龍道。修煉三大時間功法之一的《真言化輪經》，成功凝聚出「真言寶輪」，踏上時間大道。", location: "北寒仙域-燭龍道", realm: "半步金仙", combat: "無", kills: "無", relations: "呼言道人、百里炎", loot: "無", lost: "無", techniques: "真言化輪經", abilities: "時間減速、真言寶輪", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "仙界篇", age: "仙界中期", phase: "冥寒仙府怒斬蕭晉寒", event: "冥寒仙府現世。找回化為女童的金童。在核心區域為奪歲月神燈，突破金仙境，怒斬死敵北寒宮主蕭晉寒。", location: "冥寒仙府", realm: "金仙境", combat: "仙府混戰、死鬥金仙", kills: "蕭晉寒", relations: "金童(找回)、蛟三、蕭晉寒", loot: "歲月神燈、東乙神木", lost: "燭龍道覆滅", techniques: "水衍四時訣", abilities: "無", formations: "太乙幻陣", insects: "金童(噬金仙)", herbs: "極品仙草" },
-            { realmType: "仙界篇", age: "仙界後期", phase: "深入灰界洗煞", event: "為解煞氣危機，隨石穿空等人深入極危險的灰界洗煞池。在道祖級威壓下九死一生。", location: "灰界", realm: "太乙玉仙", combat: "灰界逃生", kills: "灰界尊者", relations: "石穿空、蛟三", loot: "無", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "仙界篇", age: "仙界後期", phase: "真言門遺址探秘", event: "進入遠古被滅的真言門遺跡，探尋時間法則更深層奧秘，見證當年天庭覆滅真言門的歷史殘影。", location: "真言門遺跡", realm: "太乙玉仙", combat: "探索遺跡", kills: "無", relations: "無", loot: "時間法則感悟", lost: "無", techniques: "無", abilities: "無", formations: "無", insects: "無", herbs: "無" },
-            { realmType: "仙界篇", age: "仙界後期", phase: "大鬧九元觀奪功法", event: "為救金童大鬧中土仙域九元觀。在歲月塔血戰奪得完整《大五行幻世訣》，將三大時間功法合一突破大羅。", location: "九元觀 / 歲月塔", realm: "大羅境中期", combat: "強闖九元觀、歲月塔死鬥", kills: "九元觀高層", relations: "輪迴殿主(前世)", loot: "大五行幻世訣(完整)", lost: "無", techniques: "大五行幻世訣", abilities: "時空穿梭", formations: "光陰天璇陣", insects: "金童(大羅)", herbs: "造化仙丹" },
-            { realmType: "仙界篇", age: "仙界終局", phase: "菩提宴與天庭之變", event: "天庭召開菩提宴。天庭之主古或今企圖發動混沌萬靈陣煉化仙界度過天人五衰。韓立與輪迴殿主殺上天庭。", location: "中土仙域-天庭", realm: "大羅巔峰", combat: "反攻天庭", kills: "多名天庭道祖", relations: "古或今、南宮婉(大羅)", loot: "無", lost: "輪迴殿主(戰死融合)", techniques: "大五行幻世訣(大成)", abilities: "言出法隨", formations: "時光大陣", insects: "無", herbs: "無" },
-            { realmType: "仙界篇", age: "仙界終局", phase: "決戰天庭時間道祖", event: "仙界終極決戰。韓立與古或今展開大道之爭，最終斬殺古或今。韓立成為新任時間道祖，與佳人逍遙世間。", location: "天庭-最高空", realm: "時間道祖", combat: "斬殺時間道祖", kills: "古或今", relations: "紫靈", loot: "天道本源、完整掌天瓶", lost: "無", techniques: "時間大道", abilities: "逆轉時空", formations: "無", insects: "金童(道祖)", herbs: "無" }
-        ];
+<script>
+const eventGroups = [{"id": "human-1", "realmType": "人界篇", "era": "凡俗開端", "title": "山村離家與七玄門入門", "range": "10歲－13歲｜七玄門前段", "summary": "韓立離開青牛鎮後進入七玄門，從凡人少年被拉進江湖與修仙的夾縫。這一段不只是背景介紹，而是整部書「從底層開始」的根。", "tags": ["啟蒙", "七玄門", "凡俗起點", "掌天瓶前夜"], "participants": ["韓立", "墨居仁", "厲飛雨", "張鐵"], "locations": ["青牛鎮", "七玄門", "煉骨崖"], "gains": ["七玄門身份", "長春功基礎", "墨大夫門下位置"], "losses": ["凡俗安穩", "童年單純"], "types": ["入門", "人物", "凡俗線", "師徒"], "impact": "建立韓立的底層出身、隱忍性格與觀察習慣，後續一切「先活下來」的選擇都能追溯到這裡。", "subevents": [{"type": "凡俗/起點", "label": "離開青牛鎮", "summary": "為改善家境與求一條活路，韓立離開山村前往七玄門。", "people": ["韓立"], "gains": ["脫離凡俗起點"], "battle": "無", "importance": "main"}, {"type": "門派/入門", "label": "通過考驗加入七玄門", "summary": "在低微出身中搶到一個向上爬的入口，被收入七玄門。", "people": ["韓立"], "gains": ["七玄門身份"], "battle": "無", "importance": "main"}, {"type": "人物/鋪墊", "label": "墨大夫收為記名弟子", "summary": "墨居仁看中其資質與可塑性，為後續奪舍陰謀埋線。", "people": ["韓立", "墨居仁"], "gains": ["長春功"], "battle": "無", "importance": "key"}, {"type": "關係", "label": "結識厲飛雨與張鐵", "summary": "一個成為生死摯友，一個成為最早的同門牽掛。", "people": ["韓立", "厲飛雨", "張鐵"], "gains": [], "battle": "無", "importance": "detail"}]}, {"id": "human-2", "realmType": "人界篇", "era": "神手谷潛修", "title": "掌天瓶甦醒與綠液秘密", "range": "13歲－15歲｜七玄門中段", "summary": "掌天瓶與綠液的發現，是整部作品第一個真正改變命運的轉折。從此韓立不只是苦修，而是開始能主動積累資源。", "tags": ["掌天瓶", "綠液", "催熟靈藥", "資源優勢"], "participants": ["韓立", "墨居仁"], "locations": ["神手谷", "藥園"], "gains": ["掌天瓶綠液", "催熟靈藥能力", "黃龍丹材料"], "losses": ["對師父的信任"], "types": ["靈物", "靈藥", "潛修"], "impact": "讓韓立從「有機會修仙」升級為「具備長線資源槓桿」，後續丹藥、靈草、境界突破全以此為底。", "subevents": [{"type": "靈物/發現", "label": "掌天瓶吸月凝液", "summary": "發現小瓶能在月夜凝出綠液，並能催熟靈藥。", "people": ["韓立"], "gains": ["掌天瓶綠液"], "battle": "無", "importance": "main"}, {"type": "修煉/積累", "label": "暗中催熟藥材修長春功", "summary": "以綠液作弊般推進修為，遠超同齡弟子。", "people": ["韓立"], "gains": ["長春功進境", "丹藥材料"], "battle": "無", "importance": "key"}, {"type": "懸疑/裂縫", "label": "張鐵失蹤與墨大夫可疑", "summary": "張鐵消失、墨大夫態度詭異，韓立開始學會先懷疑再行動。", "people": ["韓立", "墨居仁", "張鐵"], "gains": [], "battle": "無", "importance": "key"}]}, {"id": "human-3", "realmType": "人界篇", "era": "神手谷變局", "title": "弒師求生與曲魂誕生", "range": "16歲｜神手谷後段", "summary": "神手谷之變是人界篇最早的生死分水嶺。韓立第一次真正面對修仙者的惡意，也第一次以自己的手完成反殺。", "tags": ["弒師", "奪舍", "曲魂", "余子童"], "participants": ["韓立", "墨居仁", "余子童", "張鐵"], "locations": ["神手谷密室"], "gains": ["儲物袋", "曲魂", "火彈術", "修仙常識"], "losses": ["張鐵原本的人身", "少年天真"], "types": ["生死危機", "奪舍", "煉屍"], "impact": "把韓立徹底推進修仙世界的殘酷邏輯，也讓他從此對師承、合作與善意都保持距離。", "subevents": [{"type": "陰謀/揭露", "label": "墨居仁奪舍圖謀暴露", "summary": "墨居仁露出真面目，想以韓立為容器延命。", "people": ["韓立", "墨居仁"], "gains": [], "battle": "密室對峙", "importance": "main"}, {"type": "戰鬥/求生", "label": "神手谷反殺墨居仁", "summary": "韓立以算計、暗器與臨機應變擊斃墨居仁。", "people": ["韓立", "墨居仁"], "gains": ["儲物袋"], "battle": "死鬥墨居仁", "importance": "main"}, {"type": "元神/吞噬", "label": "吞噬余子童殘魂", "summary": "從余子童處獲得修仙界概念與基礎法術。", "people": ["韓立", "余子童"], "gains": ["火彈術", "引力術", "御物知識"], "battle": "奪識爭魂", "importance": "key"}, {"type": "人物/傷痕", "label": "發現張鐵已成曲魂", "summary": "童年同門變成煉屍，讓韓立對修仙界的冷酷留下刻骨印象。", "people": ["韓立", "張鐵"], "gains": ["曲魂"], "battle": "無", "importance": "key"}]}, {"id": "human-4", "realmType": "人界篇", "era": "凡俗收尾", "title": "嘉元城了結塵緣與厲飛雨線", "range": "16歲－17歲｜凡俗尾聲", "summary": "這段表面上像支線，實際上是把韓立與凡俗世界最後一次大規模綁定與切割。厲飛雨、墨家、家人保護，都在此定型。", "tags": ["嘉元城", "塵緣", "厲飛雨", "墨府"], "participants": ["韓立", "厲飛雨", "嚴氏", "墨彩環"], "locations": ["嘉元城", "墨府", "四平幫"], "gains": ["暖陽寶玉", "凡俗人脈"], "losses": ["對凡俗久留的可能"], "types": ["凡俗", "人情", "因果收尾"], "impact": "確立韓立雖然心硬，卻不是無情之人；他會斷因果，但會先把該做的事做完。", "subevents": [{"type": "因果/收尾", "label": "返回嘉元城處理墨府後事", "summary": "以更高視角回望最初的江湖與墨府恩怨。", "people": ["韓立", "嚴氏", "墨彩環"], "gains": [], "battle": "無", "importance": "main"}, {"type": "關係/摯友", "label": "與厲飛雨完成互信交換", "summary": "以抽髓丸與祕方換其照料家人，建立最早生死交情。", "people": ["韓立", "厲飛雨"], "gains": ["世俗支援"], "battle": "無", "importance": "main"}, {"type": "靈物/解毒", "label": "取得暖陽寶玉", "summary": "化解身上陰毒，也讓凡俗收尾不只剩情感層面。", "people": ["韓立"], "gains": ["暖陽寶玉"], "battle": "無", "importance": "key"}]}, {"id": "human-5", "realmType": "人界篇", "era": "修仙入門", "title": "太南小會與反殺金光上人", "range": "18歲｜太南山", "summary": "太南小會是韓立第一次真正見識修仙界的交易、貪婪與秩序。反殺金光上人則讓他拿到跨入宗門體系的關鍵門票。", "tags": ["太南小會", "金光上人", "升仙令", "符寶"], "participants": ["韓立", "萬小山", "金光上人"], "locations": ["太南山", "太南谷外"], "gains": ["升仙令", "金光磚符寶", "修仙交易見聞"], "losses": ["最後一點稚氣"], "types": ["交易", "反殺", "入門"], "impact": "把韓立從「野路子散修」推向「有資格進宗門的修士」，同時再次證明他在關鍵時刻下手極果斷。", "subevents": [{"type": "見聞/交易", "label": "太南小會開眼界", "summary": "初次完整接觸修仙市集、功法符籙與人心險惡。", "people": ["韓立", "萬小山"], "gains": ["符筆", "硃砂"], "battle": "無", "importance": "main"}, {"type": "危機/反擊", "label": "遭金光上人劫殺", "summary": "太南谷外被老修士盯上，第一次面對真正修仙者打劫。", "people": ["韓立", "金光上人"], "gains": [], "battle": "谷外伏殺", "importance": "key"}, {"type": "戰鬥/收穫", "label": "火彈術反殺金光上人", "summary": "擊殺對手並意外獲得升仙令與符寶，命運軌跡被強行改寫。", "people": ["韓立", "金光上人"], "gains": ["升仙令", "符寶"], "battle": "激戰金光上人", "importance": "main"}]}, {"id": "human-6", "realmType": "人界篇", "era": "黃楓谷前段", "title": "入黃楓谷與百藥園種藥", "range": "18歲－20歲｜黃楓谷初期", "summary": "加入黃楓谷不是得到庇護，而是迅速看清宗門資源的不公。百藥園時期則是韓立最典型的「悶聲攢家底」。", "tags": ["黃楓谷", "百藥園", "築基前夜", "靈藥"], "participants": ["韓立", "馬師伯", "葉姓管事"], "locations": ["黃楓谷", "百藥園"], "gains": ["大量靈藥", "宗門身份", "穩定修煉環境"], "losses": ["首枚築基丹"], "types": ["宗門", "靈藥", "資源經營"], "impact": "讓韓立學會在宗門制度內低調積累，並準備用自己的方式衝擊築基。", "subevents": [{"type": "宗門/現實", "label": "持升仙令加入黃楓谷", "summary": "正式進入大宗門體系，也立刻感受到階層差距。", "people": ["韓立"], "gains": ["黃楓谷弟子身份"], "battle": "無", "importance": "main"}, {"type": "資源/剝奪", "label": "應得築基丹被奪", "summary": "葉姓老者強換築基丹，讓韓立對宗門公平徹底死心。", "people": ["韓立", "葉姓管事"], "gains": [], "battle": "無", "importance": "key"}, {"type": "靈藥/經營", "label": "百藥園瘋狂催熟靈藥", "summary": "掌天瓶第一次大規模轉化為真正的修煉資本。", "people": ["韓立", "馬師伯"], "gains": ["海量百年靈藥"], "battle": "無", "importance": "main"}]}, {"id": "human-7", "realmType": "人界篇", "era": "血色禁地", "title": "禁地外圍獵奪與苟活", "range": "20歲｜血色禁地外圍", "summary": "血色禁地不能只算一個點。光是外圍苟活、反殺、搜集靈草，就已經是一整段高密度生存事件。", "tags": ["血色禁地", "外圍混戰", "靈草", "苟道"], "participants": ["韓立", "向之禮", "他派精銳"], "locations": ["血色禁地外圍"], "gains": ["靈草", "法器", "試煉經驗"], "losses": ["對同門與他派的信任"], "types": ["副本", "生存", "反殺"], "impact": "奠定韓立在秘境裡「低調進、狠手出」的節奏，也讓血色禁地不再只是南宮婉前置。", "subevents": [{"type": "副本/入場", "label": "進入血色禁地", "summary": "為築基丹原料冒死入場，開始真正的宗門級秘境競逐。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "生存/偽裝", "label": "外圍低調蒐集靈草", "summary": "盡量避戰、保命與收集並行，是韓立一貫節奏。", "people": ["韓立"], "gains": ["紫猴花等靈草"], "battle": "無", "importance": "key"}, {"type": "戰鬥/清場", "label": "反殺多名他派精銳", "summary": "在被逼到角落時狠手清掉對手，逐步建立禁地優勢。", "people": ["韓立"], "gains": ["法器", "靈石"], "battle": "禁地外圍混戰", "importance": "main"}, {"type": "人物/映照", "label": "與向之禮形成另類對照", "summary": "兩個同樣低調的人在同一秘境裡留下互相觀察的印象。", "people": ["韓立", "向之禮"], "gains": [], "battle": "無", "importance": "detail"}]}, {"id": "human-8", "realmType": "人界篇", "era": "血色禁地核心", "title": "墨蛟之戰與南宮婉結緣", "range": "20歲｜禁地核心", "summary": "真正讓血色禁地成為長線主線的，是墨蛟之戰與南宮婉。這不是偶遇紅顏，而是往後千年因果的起點。", "tags": ["南宮婉", "墨蛟", "天地戈", "情緣"], "participants": ["韓立", "南宮婉"], "locations": ["血色禁地核心", "沼澤"], "gains": ["墨蛟材料", "天地戈", "天靈果", "玉髓芝"], "losses": ["童男之身", "情感上的無退路"], "types": ["戰鬥", "結識", "靈草", "情感"], "impact": "南宮婉線、韓立的情感底色與日後許多重大決策，都從這場意外結緣開始。", "subevents": [{"type": "人物/相逢", "label": "禁地核心遇見南宮婉", "summary": "在對方修為受限的特殊狀態下結成短暫同盟。", "people": ["韓立", "南宮婉"], "gains": [], "battle": "無", "importance": "main"}, {"type": "戰鬥/合作", "label": "聯手斬殺墨蛟", "summary": "這是韓立早期少數真正與高階修士並肩合作的硬仗。", "people": ["韓立", "南宮婉"], "gains": ["墨蛟材料", "金色箱子"], "battle": "激戰墨蛟", "importance": "main"}, {"type": "情感/因果", "label": "吸入淫囊結下實質因果", "summary": "不是普通曖昧，而是直接把兩人命運綁在一起。", "people": ["韓立", "南宮婉"], "gains": [], "battle": "無", "importance": "key"}, {"type": "靈物/收穫", "label": "取得核心靈草與異寶", "summary": "對後續築基與戰力都形成實際幫助。", "people": ["韓立"], "gains": ["天靈果", "玉髓芝", "天地戈"], "battle": "無", "importance": "detail"}]}, {"id": "human-9", "realmType": "人界篇", "era": "築基起步", "title": "築基成功與李化元師承", "range": "21歲｜黃楓谷", "summary": "禁地之後不是立即飛升，而是漫長的煉丹、築基與師承確立。這一段把韓立正式從低階弟子提升為可獨立經營的修士。", "tags": ["築基", "李化元", "青元劍訣", "煉丹"], "participants": ["韓立", "李化元"], "locations": ["黃楓谷"], "gains": ["築基修為", "青元劍訣", "正式師承"], "losses": ["煉氣期身份"], "types": ["突破", "師承", "功法"], "impact": "青元劍訣與築基成功，奠定本命飛劍、大庚劍陣與整條青竹蜂雲劍體系的原點。", "subevents": [{"type": "丹藥/鋪墊", "label": "煉製多枚築基丹", "summary": "把禁地冒死收穫轉成真正可用的境界資源。", "people": ["韓立"], "gains": ["築基丹"], "battle": "無", "importance": "key"}, {"type": "突破/進階", "label": "成功築基", "summary": "正式跨進築基期，開始與煉氣弟子拉開本質差距。", "people": ["韓立"], "gains": ["築基修為"], "battle": "衝關築基", "importance": "main"}, {"type": "師承/功法", "label": "被李化元收為記名弟子", "summary": "獲得《青元劍訣》，也與黃楓谷核心圈建立連結。", "people": ["韓立", "李化元"], "gains": ["青元劍訣"], "battle": "無", "importance": "main"}]}, {"id": "human-10", "realmType": "人界篇", "era": "洞府經營", "title": "辛如音、齊雲霄與大衍決", "range": "21歲－23歲｜太岳山脈", "summary": "這段是韓立的「系統建設期」。洞府、陣法、傀儡、神識功法，都在這裡第一次成形。", "tags": ["大衍決", "辛如音", "顛倒五行陣", "傀儡術"], "participants": ["韓立", "辛如音", "齊雲霄"], "locations": ["太岳山脈洞府", "秘店"], "gains": ["大衍決", "顛倒五行陣", "傀儡獸"], "losses": ["單純散修狀態"], "types": ["洞府", "神識", "陣法", "傀儡"], "impact": "它讓韓立不再只靠法力與法器，而開始走向「多系統疊加」的戰鬥風格。", "subevents": [{"type": "洞府/自立", "label": "開闢第一個真正屬於自己的洞府", "summary": "開始有穩定的個人修煉基地。", "people": ["韓立"], "gains": ["獨立洞府"], "battle": "無", "importance": "main"}, {"type": "人物/機緣", "label": "結識辛如音與齊雲霄", "summary": "兩位配角對韓立的陣法與器物體系影響極深。", "people": ["韓立", "辛如音", "齊雲霄"], "gains": [], "battle": "無", "importance": "main"}, {"type": "功法/神識", "label": "得到大衍決前幾層", "summary": "神識強化線就此打開，後面一路影響傀儡、控寶與佈局。", "people": ["韓立"], "gains": ["大衍決"], "battle": "無", "importance": "main"}, {"type": "陣法/防禦", "label": "獲得顛倒五行陣", "summary": "讓韓立在洞府經營、防禦與伏擊上都有了質變。", "people": ["韓立", "辛如音"], "gains": ["顛倒五行陣"], "battle": "無", "importance": "key"}]}, {"id": "human-11", "realmType": "人界篇", "era": "越國風暴", "title": "燕家堡變局與王蟬宿敵線", "range": "23歲｜燕家堡", "summary": "燕家堡事件不只是一次逃命，而是鬼靈門、王蟬、董萱兒等多條線同時啟動的交叉口。", "tags": ["燕家堡", "王蟬", "鬼靈門", "董萱兒"], "participants": ["韓立", "王蟬", "董萱兒", "燕家修士"], "locations": ["燕家堡"], "gains": ["噬金蟲卵", "宿敵線"], "losses": ["對越國局勢的最後幻想"], "types": ["戰鬥", "宿敵", "逃亡"], "impact": "王蟬從這裡開始變成長線死敵，也預告魔道對越國的大規模滲透。", "subevents": [{"type": "任務/赴會", "label": "奉命前往燕家堡觀禮", "summary": "原本看似普通宗門任務，實則是風暴前夜。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "detail"}, {"type": "背叛/爆發", "label": "燕家叛變鬼靈門現身", "summary": "越國局勢由暗流轉為全面翻臉。", "people": ["韓立", "王蟬"], "gains": [], "battle": "燕家堡突變", "importance": "main"}, {"type": "戰鬥/宿敵", "label": "首次正面激戰王蟬", "summary": "王蟬作為宿敵正式上線，雙方彼此記住。", "people": ["韓立", "王蟬"], "gains": [], "battle": "大戰王蟬", "importance": "main"}, {"type": "靈蟲/伏筆", "label": "噬金蟲線正式啟動", "summary": "這條線後續一路成為韓立最恐怖的隱藏兵器。", "people": ["韓立"], "gains": ["噬金蟲卵"], "battle": "無", "importance": "key"}]}, {"id": "human-12", "realmType": "人界篇", "era": "越京篇", "title": "越京黑煞教與血玉蜘蛛", "range": "25歲｜越京", "summary": "越京篇包含皇室邪修、同門合作、越皇死戰與靈蟲收穫，是早期最完整的一段都市型大事件。", "tags": ["越京", "黑煞教", "陳巧倩", "血玉蜘蛛"], "participants": ["韓立", "陳巧倩", "越皇", "黑煞教眾"], "locations": ["越京皇宮"], "gains": ["血凝五行丹", "平天尺", "血玉蜘蛛卵"], "losses": ["多名同門"], "types": ["皇城", "邪修", "戰鬥", "靈蟲"], "impact": "把韓立的實戰層次再往上抬，也讓血玉蜘蛛這條虛天殿關鍵伏筆落地。", "subevents": [{"type": "任務/潛伏", "label": "奉命駐守越京", "summary": "從門派任務一路摸到皇城深處的黑幕。", "people": ["韓立", "陳巧倩"], "gains": [], "battle": "無", "importance": "detail"}, {"type": "揭露/邪修", "label": "發現越皇即黑煞教主", "summary": "把凡俗王朝與邪修勢力徹底連起來。", "people": ["韓立", "越皇"], "gains": [], "battle": "無", "importance": "key"}, {"type": "戰鬥/血戰", "label": "力戰四大血侍與越皇", "summary": "屬於築基期階段壓力極高的一場惡戰。", "people": ["韓立", "陳巧倩"], "gains": ["血凝五行丹", "平天尺"], "battle": "皇宮血戰", "importance": "main"}, {"type": "靈蟲/收穫", "label": "意外取得血玉蜘蛛卵", "summary": "後面能拔出虛天鼎，這裡是實際源頭。", "people": ["韓立"], "gains": ["血玉蜘蛛卵"], "battle": "無", "importance": "main"}]}, {"id": "human-13", "realmType": "人界篇", "era": "越國終局", "title": "魔道入侵與古傳送陣逃亡", "range": "25歲｜越國崩盤", "summary": "越國崩盤是人界前期最大的世界格局切換。韓立從宗門弟子被迫變成獨立逃亡者，故事尺度也從一國擴到亂星海。", "tags": ["魔道入侵", "古傳送陣", "辛如音", "南宮婉"], "participants": ["韓立", "辛如音", "南宮婉"], "locations": ["越國邊境", "古傳送陣"], "gains": ["大挪移令", "脫離追殺的機會"], "losses": ["天南故土", "宗門庇護"], "types": ["逃亡", "傳送", "世界轉場"], "impact": "韓立此後再也不能把宗門當靠山，整個角色真正獨立起來。", "subevents": [{"type": "戰局/崩潰", "label": "魔道六宗全面壓境", "summary": "七派潰敗，原本的秩序瞬間崩掉。", "people": ["韓立"], "gains": [], "battle": "越國大撤退", "importance": "main"}, {"type": "現實/冷酷", "label": "被當成棄子誘餌", "summary": "讓韓立徹底對宗門機制死心。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "key"}, {"type": "陣法/逃生", "label": "經辛如音修復古傳送陣逃往亂星海", "summary": "把人界篇推進到新地圖與新規則。", "people": ["韓立", "辛如音", "南宮婉"], "gains": ["大挪移令"], "battle": "邊境追殺", "importance": "main"}]}, {"id": "human-14", "realmType": "人界篇", "era": "亂星海起步", "title": "魁星島蟄伏與霓裳草獵妖", "range": "25歲－100歲｜亂星海前段", "summary": "亂星海前段最大的特徵就是長時間蟄伏。這不是空白，而是韓立把偽裝、語言、獵妖與資源迴圈磨成熟的過程。", "tags": ["亂星海", "魁星島", "霓裳草", "獵妖"], "participants": ["韓立"], "locations": ["魁星島", "外海"], "gains": ["獵妖經驗", "海量妖丹", "噬金蟲繁衍"], "losses": ["天南身份", "短期安穩"], "types": ["蟄伏", "獵妖", "長線經營"], "impact": "把韓立的求生模式徹底轉成成熟散修模式，也為結丹期鋪下最厚的資本。", "subevents": [{"type": "異域/適應", "label": "抵達魁星島重新立足", "summary": "從零適應亂星海語言、規矩與勢力結構。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "靈藥/套路", "label": "以霓裳草引妖獵殺", "summary": "開始建立一套可重複運轉的資源獲取迴圈。", "people": ["韓立"], "gains": ["妖丹", "材料"], "battle": "無", "importance": "main"}, {"type": "靈蟲/培育", "label": "噬金蟲群逐步壯大", "summary": "一條後續戰力線在長時間蟄伏中靜靜成熟。", "people": ["韓立"], "gains": ["噬金蟲繁衍"], "battle": "無", "importance": "key"}]}, {"id": "human-15", "realmType": "人界篇", "era": "亂星海人脈", "title": "妙音門與紫靈線啟動", "range": "亂星海中段｜結丹前後", "summary": "妙音門與紫靈不該只當作陪襯。這一段讓韓立第一次在亂星海建立較穩定的人脈與情感波動。", "tags": ["紫靈", "妙音門", "亂星海人脈", "交易"], "participants": ["韓立", "紫靈"], "locations": ["天星城", "妙音門"], "gains": ["人脈線", "交易經驗", "紫靈羈絆"], "losses": ["絕對獨行狀態"], "types": ["人物", "交易", "情感線"], "impact": "紫靈線後續在陰冥之地、魔界重逢等多次回響，這裡是最初的情感種子。", "subevents": [{"type": "人物/結識", "label": "與紫靈仙子正式建立交集", "summary": "不是一次性見面，而是亂星海重要情感與利益交叉點。", "people": ["韓立", "紫靈"], "gains": [], "battle": "無", "importance": "main"}, {"type": "勢力/周旋", "label": "與妙音門產生交易往來", "summary": "讓韓立開始學會在海域勢力間游走，而非單純躲避。", "people": ["韓立", "紫靈"], "gains": ["交易渠道"], "battle": "無", "importance": "key"}, {"type": "情感/埋線", "label": "對紫靈留下長線印象", "summary": "日後陰冥、魔界與仙界部分情感層次都會回溯到這裡。", "people": ["韓立", "紫靈"], "gains": [], "battle": "無", "importance": "detail"}]}, {"id": "human-16", "realmType": "人界篇", "era": "亂星海突破", "title": "天星城結丹與青竹蜂雲劍", "range": "100歲－126歲｜天星城", "summary": "結丹與煉本命法寶必須單列。因為青竹蜂雲劍這條線後面幾乎貫穿三界。", "tags": ["結丹", "青竹蜂雲劍", "金雷竹", "辟邪神雷"], "participants": ["韓立", "紫靈"], "locations": ["天星城", "天星城聖山"], "gains": ["結丹修為", "青竹蜂雲劍", "辟邪神雷"], "losses": ["長期躲藏的安全感"], "types": ["突破", "本命法寶", "靈木"], "impact": "這是韓立第一次完成真正意義上的本命法寶體系搭建。", "subevents": [{"type": "突破/進階", "label": "在天星城成功結丹", "summary": "從築基跨入結丹，戰力與地位同步上升。", "people": ["韓立"], "gains": ["結丹修為"], "battle": "渡結丹雷劫", "importance": "main"}, {"type": "法寶/體系", "label": "以金雷竹煉青竹蜂雲劍", "summary": "後續劍陣、神雷與飛劍戰法都從此展開。", "people": ["韓立"], "gains": ["青竹蜂雲劍", "辟邪神雷"], "battle": "無", "importance": "main"}, {"type": "人物/連結", "label": "與紫靈交集加深", "summary": "使亂星海情感線不再只是點綴。", "people": ["韓立", "紫靈"], "gains": [], "battle": "無", "importance": "detail"}]}, {"id": "human-17", "realmType": "人界篇", "era": "虛天殿前段", "title": "黑鐵沙漠、元瑤與啼魂", "range": "126歲｜虛天殿", "summary": "虛天殿絕不是單一奪寶，而是多個獨立高密度事件。黑鐵沙漠與元瑤、啼魂這一支，完全足以單列。", "tags": ["虛天殿", "黑鐵沙漠", "元瑤", "啼魂"], "participants": ["韓立", "元瑤", "青陽門少主"], "locations": ["虛天殿黑鐵沙漠"], "gains": ["啼魂獸", "與元瑤的長線羈絆"], "losses": ["穩定奪寶節奏"], "types": ["副本", "靈寵", "結識"], "impact": "啼魂後續一路成長成韓立極重要的靈寵，元瑤線也因此穩定延續。", "subevents": [{"type": "副本/探索", "label": "深入虛天殿黑鐵沙漠", "summary": "在荒漠區域先打開屬於自己的副本節奏。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "救援/結識", "label": "解救元瑤", "summary": "不只是救人，還建立日後反覆回收的重要關係線。", "people": ["韓立", "元瑤"], "gains": [], "battle": "沙漠激鬥", "importance": "main"}, {"type": "靈寵/收穫", "label": "取得啼魂獸", "summary": "拿到專剋鬼物與陰魂的重量級靈寵。", "people": ["韓立", "元瑤"], "gains": ["啼魂獸"], "battle": "無", "importance": "main"}]}, {"id": "human-18", "realmType": "人界篇", "era": "虛天殿中段", "title": "冰火道玄骨反殺", "range": "126歲｜虛天殿", "summary": "玄骨上人這條線是虛天殿最典型的互算計事件，跟黑鐵沙漠、拔鼎內殿都應該分開看。", "tags": ["玄骨上人", "冰火道", "壽元果", "九曲靈參"], "participants": ["韓立", "玄骨上人"], "locations": ["虛天殿冰火道"], "gains": ["九曲靈參", "壽元果", "對老怪算計經驗"], "losses": ["對高階老怪的最後敬畏"], "types": ["算計", "反殺", "靈藥"], "impact": "證明韓立已經能在老怪物的局裡不只求生，還能反過來吃掉對方。", "subevents": [{"type": "人物/對弈", "label": "與玄骨上人互相利用", "summary": "雙方都在等對方露出破綻。", "people": ["韓立", "玄骨上人"], "gains": [], "battle": "無", "importance": "main"}, {"type": "戰鬥/反殺", "label": "以辟邪神雷反殺玄骨", "summary": "韓立第一次把高質量底牌用得如此乾淨。", "people": ["韓立", "玄骨上人"], "gains": ["九曲靈參"], "battle": "冰火道死戰", "importance": "main"}, {"type": "靈藥/補強", "label": "收取壽元果等資源", "summary": "讓這條支線同時兼具生存與長線養成價值。", "people": ["韓立"], "gains": ["壽元果"], "battle": "無", "importance": "key"}]}, {"id": "human-19", "realmType": "人界篇", "era": "虛天殿後段", "title": "內殿奪鼎與銀月認主", "range": "126歲｜虛天殿內殿", "summary": "真正讓虛天殿封神的，是內殿奪鼎。血玉蜘蛛、虛天鼎、補天丹、銀月，全部集中在此爆發。", "tags": ["虛天鼎", "銀月", "補天丹", "乾藍冰焰"], "participants": ["韓立", "銀月", "極陰祖師", "正魔老怪"], "locations": ["虛天殿內殿"], "gains": ["虛天鼎", "補天丹", "乾藍冰焰", "銀月"], "losses": ["血玉蜘蛛", "海域安穩身份"], "types": ["奪寶", "器靈", "通緝"], "impact": "它不只是收穫爆棚，更標誌韓立開始敢從元嬰老怪口中搶肉。", "subevents": [{"type": "奪寶/亂局", "label": "正魔老怪混戰內殿", "summary": "亂局給了韓立最危險也最寶貴的窗口。", "people": ["韓立", "極陰祖師"], "gains": [], "battle": "內殿混戰", "importance": "key"}, {"type": "靈蟲/犧牲", "label": "血玉蜘蛛拔出虛天鼎", "summary": "越京埋下的伏筆在此兌現，但代價極大。", "people": ["韓立"], "gains": ["虛天鼎"], "battle": "虎口奪食", "importance": "main"}, {"type": "器靈/認主", "label": "收服白狐器靈銀月", "summary": "從此銀月成為最重要的器靈與伴隨者之一。", "people": ["韓立", "銀月"], "gains": ["銀月", "補天丹", "乾藍冰焰"], "battle": "無", "importance": "main"}, {"type": "後果/追殺", "label": "遭全海域通緝", "summary": "一場副本直接改變亂星海後續生存狀態。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "key"}]}, {"id": "human-20", "realmType": "人界篇", "era": "亂星海後段", "title": "外星海獵妖與元嬰鋪墊", "range": "126歲－200歲｜外星海", "summary": "外星海幾十年的獵妖不是過場，而是韓立用時間把實力與家底硬堆起來的真正發育期。", "tags": ["外星海", "獵妖", "妖丹", "長線發育"], "participants": ["韓立"], "locations": ["外星海"], "gains": ["高階妖丹", "大量材料", "噬金蟲進化"], "losses": ["所有安穩生活"], "types": ["獵妖", "長線養成", "靈蟲"], "impact": "把虛天殿暴富轉化成可持續戰力，為元嬰期打下厚到可怕的基礎。", "subevents": [{"type": "逃亡/轉場", "label": "避開海域通緝深入外海", "summary": "把追殺壓力轉成自我鍛打的機會。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "獵妖/成長", "label": "長年獵殺高階海妖", "summary": "不是單一戰鬥，而是漫長的資源流水線。", "people": ["韓立"], "gains": ["大量妖丹", "煉丹材料"], "battle": "無盡獵妖", "importance": "main"}, {"type": "靈蟲/進化", "label": "噬金蟲群持續強化", "summary": "讓韓立手上最陰的一張牌越來越兇。", "people": ["韓立"], "gains": ["成熟噬金蟲群"], "battle": "無", "importance": "key"}]}, {"id": "human-21", "realmType": "人界篇", "era": "絕地篇", "title": "陰冥之地與紫靈梅凝", "range": "約200歲｜陰冥之地", "summary": "陰冥之地之所以重要，在於它把韓立拉出單純法力鬥法，逼他在不能用法力的極端環境裡純靠肉身與判斷求生。", "tags": ["陰冥之地", "紫靈", "梅凝", "冥骨訣"], "participants": ["韓立", "紫靈", "梅凝"], "locations": ["陰冥之地"], "gains": ["冥骨訣", "與紫靈的共患難羈絆"], "losses": ["可依賴法力的舒適區"], "types": ["絕境", "共患難", "煉體"], "impact": "強化了韓立的生存廣度，也讓紫靈線從「欣賞」升級到「共同熬過死境」。", "subevents": [{"type": "災厄/困入", "label": "遭鬼霧捲入陰冥之地", "summary": "意外把韓立送進另一種規則主導的世界。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "人物/共患難", "label": "與紫靈、梅凝結伴求生", "summary": "三人關係在生死壓力下被快速壓縮與放大。", "people": ["韓立", "紫靈", "梅凝"], "gains": [], "battle": "無", "importance": "main"}, {"type": "戰鬥/肉身", "label": "無法力下肉搏冥獸", "summary": "韓立罕見地不靠法寶法力，而靠硬生存。", "people": ["韓立"], "gains": ["冥骨訣"], "battle": "肉搏冥獸", "importance": "key"}, {"type": "脫困/轉機", "label": "循空間裂縫尋得出路", "summary": "把死局硬熬成一條活路。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "key"}]}, {"id": "human-22", "realmType": "人界篇", "era": "回歸天南", "title": "落雲宗立足與凝結元嬰", "range": "220歲｜天南回歸", "summary": "回到天南不只是返鄉，而是帶著亂星海整段經歷回來重新洗牌。落雲宗與凝嬰，讓韓立在人界重新立旗。", "tags": ["落雲宗", "元嬰", "回歸天南", "六翼霜蚣"], "participants": ["韓立", "呂洛"], "locations": ["天南", "落雲宗"], "gains": ["元嬰修為", "六翼霜蚣", "大庚劍陣雛形"], "losses": ["亂星海的匿名身份"], "types": ["回歸", "突破", "宗門立足"], "impact": "韓立終於從「會逃的結丹修士」變成「有資格改變一方局勢的元嬰修士」。", "subevents": [{"type": "回歸/隱身", "label": "借空間裂縫返回天南", "summary": "闊別百年的故土重新變成熟悉又陌生的舞台。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "宗門/立足", "label": "隱姓埋名加入落雲宗", "summary": "以新身份重新嵌入天南修仙界。", "people": ["韓立", "呂洛"], "gains": ["落雲宗立足點"], "battle": "無", "importance": "key"}, {"type": "突破/定級", "label": "成功凝結元嬰", "summary": "整個人界篇上半最重要的境界躍升之一。", "people": ["韓立"], "gains": ["元嬰修為"], "battle": "渡元嬰雷劫", "importance": "main"}, {"type": "靈蟲/側線", "label": "獲得六翼霜蚣並培育劍陣", "summary": "為後續多線戰力補上新拼圖。", "people": ["韓立"], "gains": ["六翼霜蚣", "大庚劍陣雛形"], "battle": "無", "importance": "detail"}]}, {"id": "human-23", "realmType": "人界篇", "era": "情感主線", "title": "掩月宗搶親與道侶確立", "range": "225歲｜掩月宗", "summary": "南宮婉線到這裡才真正從因果與牽掛，落實成公開而明確的道侶關係。", "tags": ["南宮婉", "搶親", "雙修道侶"], "participants": ["韓立", "南宮婉"], "locations": ["掩月宗"], "gains": ["道侶身份", "情感穩定核心"], "losses": ["僅止於秘密情緣的模糊性"], "types": ["情感", "道侶", "宗門震懾"], "impact": "後面韓立許多行動與選擇都有明確情感支點，不再只是孤身前進。", "subevents": [{"type": "消息/刺激", "label": "得知南宮婉將被迫雙修", "summary": "韓立被迫正面處理拖了多年的感情線。", "people": ["韓立", "南宮婉"], "gains": [], "battle": "無", "importance": "key"}, {"type": "強闖/表態", "label": "單槍匹馬闖入掩月宗", "summary": "這不是偷情，而是公開宣示立場與能力。", "people": ["韓立", "南宮婉"], "gains": [], "battle": "震懾掩月宗", "importance": "main"}, {"type": "關係/落地", "label": "與南宮婉正式結為道侶", "summary": "情感線從曖昧、因果、牽掛，轉為穩定核心。", "people": ["韓立", "南宮婉"], "gains": ["正式道侶關係"], "battle": "無", "importance": "main"}]}, {"id": "human-24", "realmType": "人界篇", "era": "邊界戰場", "title": "慕蘭戰爭、風雷翅與大衍神君", "range": "230歲｜天南邊境", "summary": "邊界戰場把韓立的人際與戰力兩條線同時拔高：前者是大衍神君，後者是風雷翅與戰場名望。", "tags": ["慕蘭", "風雷翅", "大衍神君", "元神燈"], "participants": ["韓立", "大衍神君", "慕蘭聖女"], "locations": ["天南邊界戰場"], "gains": ["風雷翅", "元神燈", "大衍決高層"], "losses": ["多件普通法寶"], "types": ["戰場", "神識", "飛遁", "傳承"], "impact": "從這裡開始，韓立不只靠法寶與靈蟲，神識與高速機動也成為明顯優勢。", "subevents": [{"type": "大戰/升級", "label": "參與天南慕蘭大戰", "summary": "在大規模戰場裡累積真正的元嬰級對抗經驗。", "people": ["韓立"], "gains": [], "battle": "邊界大戰", "importance": "main"}, {"type": "戰利/飛遁", "label": "取得風雷翅與元神燈", "summary": "飛遁與保命能力直接躍升。", "people": ["韓立"], "gains": ["風雷翅", "元神燈"], "battle": "無", "importance": "main"}, {"type": "傳承/導師", "label": "獲得大衍神君殘魂指點", "summary": "一位真正能改變韓立神識上限的前輩正式上線。", "people": ["韓立", "大衍神君"], "gains": ["大衍決高層"], "battle": "無", "importance": "main"}]}, {"id": "human-25", "realmType": "人界篇", "era": "墜魔谷前段", "title": "入谷、外谷殺機與各方角力", "range": "250歲前後｜墜魔谷外谷", "summary": "墜魔谷不應再被壓成一句「為救南宮婉入谷」。外谷本身就有隊伍拆分、勢力互防、環境凶險與多線探索。", "tags": ["墜魔谷", "外谷", "隊伍角力", "禁地"], "participants": ["韓立", "南隴侯", "眾元嬰修士"], "locations": ["墜魔谷外谷"], "gains": ["內谷線索", "禁制見聞"], "losses": ["臨時盟約的穩定性"], "types": ["禁地", "探索", "組隊"], "impact": "把墜魔谷從單一終戰改回真正的「多節點禁地長副本」。", "subevents": [{"type": "入谷/分流", "label": "眾修入谷後迅速各自行事", "summary": "聯盟只維持在表面，真正的算計從踏入開始。", "people": ["韓立", "南隴侯"], "gains": [], "battle": "無", "importance": "main"}, {"type": "探路/殺機", "label": "外谷灰霧與古獸帶來持續壓力", "summary": "環境本身就是副本裡的一個敵人。", "people": ["韓立"], "gains": ["外谷路線情報"], "battle": "外谷遭遇戰", "importance": "key"}, {"type": "組隊/盤算", "label": "在合作與提防間反覆切換", "summary": "這正是韓立最擅長的禁地生存節奏。", "people": ["韓立", "南隴侯"], "gains": [], "battle": "無", "importance": "detail"}]}, {"id": "human-26", "realmType": "人界篇", "era": "墜魔谷後段", "title": "內谷、靈緲園與血焰古魔", "range": "250歲前後｜墜魔谷內谷", "summary": "內谷則是另一個事件群：靈藥、古魔、魔功與救南宮婉的直接目標全部在此爆發。", "tags": ["血焰古魔", "靈緲園", "太陽精火", "梵聖真魔功"], "participants": ["韓立", "南宮婉", "古魔分魂"], "locations": ["墜魔谷內谷", "靈緲園"], "gains": ["太陽精火", "靈緲園仙草", "梵聖真魔功"], "losses": ["大量元氣與安全"], "types": ["禁地", "古魔", "靈藥", "魔功"], "impact": "墜魔谷真正把韓立的肉身、魔功與高危秘境經驗推到更高階段。", "subevents": [{"type": "靈藥/目的", "label": "為救南宮婉搜尋關鍵靈藥", "summary": "情感目標讓這段禁地探索不只是貪寶。", "people": ["韓立", "南宮婉"], "gains": ["靈緲園仙草"], "battle": "無", "importance": "main"}, {"type": "異火/收穫", "label": "取得太陽精火等重寶", "summary": "不只是補資源，也大幅改善對火屬手段的配置。", "people": ["韓立"], "gains": ["太陽精火"], "battle": "無", "importance": "key"}, {"type": "戰鬥/生死", "label": "血戰血焰古魔分魂", "summary": "屬於人界篇後期最兇險的一場高壓戰鬥。", "people": ["韓立", "古魔分魂"], "gains": ["梵聖真魔功"], "battle": "激戰血焰古魔", "importance": "main"}]}, {"id": "human-27", "realmType": "人界篇", "era": "大晉遊歷", "title": "遊歷大晉、小極宮與體系補強", "range": "250歲－350歲｜大晉中段", "summary": "大晉遊歷常被一句帶過，但其實包含功法體系補強、寒焰與佛宗資源、各方拍賣與高階交流，屬於典型的中後期養成帶。", "tags": ["大晉", "小極宮", "功法補強", "遊歷"], "participants": ["韓立", "小極宮修士", "諸多大晉修士"], "locations": ["大晉", "小極宮", "拍賣會"], "gains": ["寒焰系資源", "煉體與神通補強", "高階見聞"], "losses": ["長期安定"], "types": ["遊歷", "功法", "異火", "交易"], "impact": "讓韓立在進入最終人界篇高潮前，先把多套系統補得更完整。", "subevents": [{"type": "地域/升級", "label": "進入大晉見識高階修仙文明", "summary": "天南之外的修仙世界在此真正展開。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "勢力/往來", "label": "與小極宮等勢力周旋交易", "summary": "不是單一敵友，而是高階圈子的長期試探。", "people": ["韓立"], "gains": ["寒焰相關資源"], "battle": "無", "importance": "key"}, {"type": "養成/補強", "label": "逐步完善多線戰力組合", "summary": "為後續昆吾山與化神前夜蓄力。", "people": ["韓立"], "gains": ["神通與材料補強"], "battle": "無", "importance": "detail"}]}, {"id": "human-28", "realmType": "人界篇", "era": "晉京終章", "title": "大衍神君坐化與辛如音轉世線", "range": "350歲｜晉京", "summary": "晉京篇的情感重量非常高。大衍神君走到生命盡頭，韓立則把神識與機關傳承正式接過來。", "tags": ["大衍神君", "晉京", "田琴兒", "機關術"], "participants": ["韓立", "大衍神君", "田琴兒"], "locations": ["晉京"], "gains": ["頂級機關術", "元嬰傀儡", "傳承完成"], "losses": ["大衍神君"], "types": ["傳承", "離別", "弟子線"], "impact": "這是人界篇最重要的師徒型情感收束之一，也把韓立的傀儡體系推到高峰。", "subevents": [{"type": "傳承/傾囊相授", "label": "大衍神君交付最後所學", "summary": "把神識、傀儡與機關核心全部交到韓立手上。", "people": ["韓立", "大衍神君"], "gains": ["頂級機關術", "元嬰傀儡"], "battle": "無", "importance": "main"}, {"type": "離別/送終", "label": "大衍神君壽盡坐化", "summary": "韓立少數真正發自內心敬重與哀悼的前輩之一。", "people": ["韓立", "大衍神君"], "gains": [], "battle": "無", "importance": "main"}, {"type": "因果/延續", "label": "收下辛如音轉世相關線索", "summary": "把前期人物線以另一種形式延續下來。", "people": ["韓立", "田琴兒"], "gains": [], "battle": "無", "importance": "key"}]}, {"id": "human-29", "realmType": "人界篇", "era": "人界高潮", "title": "昆吾山封魔與銀月飛升", "range": "400歲｜昆吾山", "summary": "昆吾山集結了封魔、群修混戰、銀月真身與飛升離別，應被視為人界篇最後一座超級事件山。", "tags": ["昆吾山", "元剎聖祖", "銀月", "飛升"], "participants": ["韓立", "銀月", "向之禮", "諸大修士"], "locations": ["昆吾山"], "gains": ["八靈尺", "黑風旗殘旗", "破滅法目"], "losses": ["銀月"], "types": ["封魔", "離別", "群戰"], "impact": "銀月的離開，象徵韓立在人界這一批核心同行者開始逐步散場。", "subevents": [{"type": "神山/現世", "label": "昆吾山開啟引來群修雲集", "summary": "整個人界頂層力量被吸到同一舞台。", "people": ["韓立", "向之禮"], "gains": [], "battle": "無", "importance": "key"}, {"type": "決戰/封魔", "label": "群修合力鎮壓元剎聖祖分念", "summary": "屬於人界篇規模極大的大亂戰。", "people": ["韓立", "銀月"], "gains": ["八靈尺", "破滅法目"], "battle": "昆吾山封魔戰", "importance": "main"}, {"type": "人物/離別", "label": "銀月恢復玲瓏記憶後飛升靈界", "summary": "陪伴很久的器靈與同伴，在此完成最重要的分離。", "people": ["韓立", "銀月"], "gains": [], "battle": "無", "importance": "main"}]}, {"id": "human-30", "realmType": "人界篇", "era": "飛升前夜", "title": "化神無敵、元磁山與偷渡靈界", "range": "500歲－880歲｜人界終章", "summary": "人界終章的核心不是再打誰，而是韓立終於站到人界頂端後，如何離開這個天花板已經碰到頭的世界。", "tags": ["化神", "元磁山", "元磁神光", "空間節點"], "participants": ["韓立", "南宮婉", "冰鳳"], "locations": ["天南", "人界空間節點"], "gains": ["化神修為", "元磁神光", "飛升資格"], "losses": ["人界停留權", "穩定法力"], "types": ["巔峰", "飛升", "空間風暴"], "impact": "完成整個人界篇的結束動作：從凡人少年走到人界巔峰，再被世界規則拋進更大的舞台。", "subevents": [{"type": "突破/巔峰", "label": "突破化神震懾人界", "summary": "從此在人界幾乎沒有真正對手。", "people": ["韓立", "南宮婉"], "gains": ["化神修為", "元磁神光"], "battle": "無", "importance": "main"}, {"type": "佈局/收尾", "label": "安頓落雲宗與南宮婉相關安排", "summary": "不是一走了之，而是先處理好留下的一切。", "people": ["韓立", "南宮婉"], "gains": [], "battle": "無", "importance": "key"}, {"type": "飛升/災變", "label": "與冰鳳強闖空間節點偷渡靈界", "summary": "成功跨界，但付出法力散盡與失散重傷的代價。", "people": ["韓立", "冰鳳"], "gains": ["跨界成功"], "battle": "對抗空間風暴", "importance": "main"}]}, {"id": "spirit-1", "realmType": "靈界篇", "era": "靈界開局", "title": "陌生之地甦醒與安遠城立足", "range": "靈界前段｜初到靈界", "summary": "靈界開局不是普通飛升，而是重傷、失散、法力近空後的荒野求生。這一段韓立是從靈界底層重新爬起來。", "tags": ["靈界開局", "陌生之地", "安遠城", "重建"], "participants": ["韓立", "南歧子", "符老"], "locations": ["陌生荒野", "安遠城"], "gains": ["重新恢復修煉的基礎", "靈界常識"], "losses": ["人界巔峰的優勢感"], "types": ["重建", "求生", "異界"], "impact": "把韓立從人界最強瞬間砸回靈界底層，也讓靈界篇一開始就有強烈生存壓力。", "subevents": [{"type": "災後/求生", "label": "空間風暴後重傷甦醒", "summary": "偷渡後並沒有英雄式降臨，而是被靈界先狠狠干了一次。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "見聞/適應", "label": "逐步了解靈界基礎規則", "summary": "新的貨幣、勢力與生存尺度全面壓來。", "people": ["韓立", "南歧子", "符老"], "gains": ["靈界常識"], "battle": "無", "importance": "key"}, {"type": "落腳/立足", "label": "進入安遠城暫時落腳", "summary": "終於擁有一個能重新恢復修為與蒐集情報的立足點。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}]}, {"id": "spirit-2", "realmType": "靈界篇", "era": "靈界前段", "title": "天東商號、血咒文書與初期恢復", "range": "靈界前段｜安遠城後", "summary": "安遠城之後不是立即強起，而是在商號、任務與各方壓力中慢慢恢復。這段能看出韓立在陌生大世界裡的低調滲透能力。", "tags": ["天東商號", "血咒文書", "靈具", "恢復"], "participants": ["韓立", "天東商號修士"], "locations": ["安遠城", "周邊蠻荒"], "gains": ["任務報酬", "靈界生存網絡"], "losses": ["完全自由行動的可能"], "types": ["商號", "任務", "恢復"], "impact": "讓韓立重新把自己的能力接回靈界秩序，而不是被迫當野人。", "subevents": [{"type": "商號/接觸", "label": "與天東商號產生往來", "summary": "透過較穩定的組織環境重新接回修煉與情報。", "people": ["韓立"], "gains": ["任務渠道"], "battle": "無", "importance": "main"}, {"type": "危機/壓力", "label": "血咒文書與靈具問題浮現", "summary": "靈界不是單純高階版人界，而是更殘酷、規則更多的世界。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "key"}, {"type": "恢復/發育", "label": "在任務與戰鬥中恢復實力", "summary": "從受創狀態慢慢回到可控節奏。", "people": ["韓立"], "gains": ["修為回穩"], "battle": "邊地遭遇戰", "importance": "main"}]}, {"id": "spirit-3", "realmType": "靈界篇", "era": "靈界前段", "title": "落日之墓、噬靈天火與靈族線索", "range": "約300歲｜靈界初入中段", "summary": "韓立在落日之墓相關線上不只自保，還藉由吞噬噬炎完成噬靈天火的成熟，正式把靈界前段的生存壓力轉成一項可長期使用的底牌。", "tags": ["落日之墓", "噬靈天火", "靈族", "神血線索"], "participants": ["韓立", "噬炎", "靈族"], "locations": ["落日之墓"], "gains": ["噬靈天火", "靈族記憶碎片", "神血線索"], "losses": ["初入靈界的安全感"], "types": ["靈火", "秘地", "反殺", "情報"], "impact": "靈界前段最重要的戰力增幅之一，之後火道、潛行與反制都更有把握。", "subevents": [{"type": "秘地/探查", "label": "落日之墓逐步深入", "summary": "在陌生靈界規則下摸索墓地禁制與靈族目的。", "people": ["韓立"], "gains": ["墓地情報"], "battle": "墓中探索戰", "importance": "main"}, {"type": "反殺/吞噬", "label": "噬炎入體反被煉化", "summary": "噬炎侵入體內後被太陰真火與神識反制，最終化為噬靈天火養分。", "people": ["韓立", "噬炎"], "gains": ["噬靈天火"], "battle": "體內奪火", "importance": "main"}, {"type": "情報/延伸", "label": "藉靈族記憶得知神血與叛逆線", "summary": "韓立不只贏下一戰，也順手拿到靈界前段重要劇情線索。", "people": ["韓立", "靈族"], "gains": ["神血線索"], "battle": "無", "importance": "key"}]}, {"id": "spirit-4", "realmType": "靈界篇", "era": "飛靈族線", "title": "偽裝天鵬聖子與真靈之血", "range": "靈界前段｜飛靈族", "summary": "飛靈族線是靈界篇早期最重要的身份偽裝事件。韓立不是硬打進去，而是利用局勢變成被需要的人。", "tags": ["飛靈族", "天鵬族", "真靈之血", "聖子"], "participants": ["韓立", "金悅", "雷蘭"], "locations": ["飛靈族領地"], "gains": ["真靈之血", "天鵬族身份", "驚蟄十二變路線"], "losses": ["單純人族身份"], "types": ["偽裝", "種族", "變身"], "impact": "打開了韓立在靈界篇最有特色的一條能力線：真靈變身與多族資源混用。", "subevents": [{"type": "身份/轉機", "label": "被捲入飛靈族聖子體系", "summary": "意外得到一個能向上借力的身份位置。", "people": ["韓立", "金悅"], "gains": [], "battle": "無", "importance": "main"}, {"type": "交易/合作", "label": "與金悅等高層達成互利安排", "summary": "韓立再一次把被動局面翻成可利用局面。", "people": ["韓立", "金悅", "雷蘭"], "gains": ["天鵬族資源"], "battle": "無", "importance": "main"}, {"type": "能力/開線", "label": "獲得真靈之血與驚蟄十二變相關機緣", "summary": "後續靈界大量硬仗都吃這條能力線的紅利。", "people": ["韓立"], "gains": ["真靈之血", "驚蟄十二變"], "battle": "無", "importance": "key"}]}, {"id": "spirit-5", "realmType": "靈界篇", "era": "飛靈族線", "title": "飛靈族洗禮、風雷翅強化與聖子角逐", "range": "約400歲｜飛靈族中段", "summary": "偽裝天鵬聖子之後，真正讓這段劇情變厚的，是韓立一邊保命一邊把飛靈族資源、身法、羽翅與聖子秩序都消化進自己體系。", "tags": ["飛靈族", "天鵬聖子", "風雷翅", "洗禮"], "participants": ["韓立", "飛靈族諸聖子"], "locations": ["飛靈族領地"], "gains": ["風雷翅強化", "飛靈族身法資源", "真靈之血相關收益"], "losses": ["低調身分"], "types": ["偽裝", "種族線", "身法", "資源"], "impact": "把韓立的機動性與種族偽裝能力再往上拉，也讓他學會在百族大族秩序內周旋。", "subevents": [{"type": "身份/維持", "label": "穩住天鵬聖子偽裝", "summary": "不只是假冒身份，而是要在族規與競爭中活下來。", "people": ["韓立"], "gains": ["聖子身份"], "battle": "無", "importance": "main"}, {"type": "洗禮/收益", "label": "完成飛靈族洗禮與資源吸收", "summary": "把種族洗禮與真靈血脈收益轉進自身體系。", "people": ["韓立"], "gains": ["風雷翅強化"], "battle": "無", "importance": "main"}, {"type": "競爭/壓力", "label": "在諸聖子角力中保住位置", "summary": "飛靈族篇不是單線潛伏，而是持續權衡暴露與收穫。", "people": ["韓立", "飛靈族諸聖子"], "gains": ["族內人脈"], "battle": "聖子競逐", "importance": "key"}]}, {"id": "spirit-6", "realmType": "靈界篇", "era": "地淵外層", "title": "地淵試煉前段與芝仙線索", "range": "靈界前段｜地淵", "summary": "地淵不能只記成冥河神乳。進入地淵、環境壓制、路線選擇與仙芝線索，本身就是一段完整事件。", "tags": ["地淵", "芝仙", "試煉", "深淵探索"], "participants": ["韓立", "雷蘭", "飛靈族同伴"], "locations": ["地淵外層"], "gains": ["地淵情報", "靈藥線索"], "losses": ["外層安全區"], "types": ["試煉", "探索", "靈藥"], "impact": "讓靈界篇早期開始有真正的超大型秘境節奏。", "subevents": [{"type": "副本/入場", "label": "進入地淵深處試煉", "summary": "地淵的規格遠超人界秘境，是靈界級壓力測試。", "people": ["韓立", "雷蘭"], "gains": [], "battle": "無", "importance": "main"}, {"type": "探索/線索", "label": "追索芝仙與深淵機緣", "summary": "不只是闖關，也在辨認哪些東西值得冒命去拿。", "people": ["韓立"], "gains": ["芝仙線索"], "battle": "無", "importance": "key"}, {"type": "環境/壓制", "label": "深淵環境本身就是敵人", "summary": "層層危險逼著韓立使用比人界更成熟的探索節奏。", "people": ["韓立"], "gains": [], "battle": "地淵遭遇戰", "importance": "detail"}]}, {"id": "spirit-7", "realmType": "靈界篇", "era": "地淵中段", "title": "芝仙追索、妖王博弈與木青角力", "range": "約500歲｜地淵中段", "summary": "地淵不是單純副本，而是一段持續多方角力的長線劇情。芝仙、妖王、木青與韓立之間的彼此算計，讓這段的事件密度其實很高。", "tags": ["地淵", "芝仙", "木青", "妖王"], "participants": ["韓立", "木青", "芝仙", "地淵妖王"], "locations": ["地淵中段"], "gains": ["芝仙線索", "地淵資源", "後續冥河路徑"], "losses": ["大量安全餘裕"], "types": ["副本", "妖王", "算計", "追索"], "impact": "把地淵從單點冒險拉成真正的多層事件群，也為後面冥河神乳爭奪墊高張力。", "subevents": [{"type": "追索/靈物", "label": "沿芝仙線索深入地淵", "summary": "芝仙是地淵線的真正驅動器之一，不只是可愛支線。", "people": ["韓立", "芝仙"], "gains": ["芝仙線索"], "battle": "無", "importance": "main"}, {"type": "博弈/妖王", "label": "與木青等妖王互相借力防算", "summary": "韓立始終在利用與被利用之間找活路。", "people": ["韓立", "木青", "地淵妖王"], "gains": ["臨時合作空間"], "battle": "地淵追逐", "importance": "main"}, {"type": "路徑/鋪墊", "label": "摸清前往冥河核心的條件", "summary": "真正的高價值收穫，在於為下一階段的神乳線鋪路。", "people": ["韓立"], "gains": ["冥河路徑"], "battle": "無", "importance": "key"}]}, {"id": "spirit-8", "realmType": "靈界篇", "era": "地淵核心", "title": "四大妖王、冥河神乳與脫身", "range": "靈界前段｜地淵深處", "summary": "真正讓地淵線封神的，是四大妖王夾縫生存與冥河神乳到手。這裡的壓迫感是靈界篇早期最高點之一。", "tags": ["四大妖王", "冥河神乳", "木青", "地血"], "participants": ["韓立", "木青", "地血"], "locations": ["地淵深處"], "gains": ["冥河神乳", "極品靈石", "豹麟獸"], "losses": ["臨時盟友", "穩定退路"], "types": ["奪寶", "妖王", "脫身"], "impact": "證明韓立即使在合體級存在的視線下，也能偷到最該偷的東西然後活著離場。", "subevents": [{"type": "夾縫/周旋", "label": "在四大妖王間維持脆弱平衡", "summary": "任何一步走錯都會被高階妖王直接碾死。", "people": ["韓立", "木青", "地血"], "gains": [], "battle": "無", "importance": "main"}, {"type": "重寶/到手", "label": "取得冥河神乳等核心資源", "summary": "對修為與體質都有極大補益。", "people": ["韓立"], "gains": ["冥河神乳", "極品靈石"], "battle": "無", "importance": "main"}, {"type": "靈獸/收穫", "label": "收服豹麟獸等助力", "summary": "讓這條線不只出資源，也出新戰力。", "people": ["韓立"], "gains": ["豹麟獸"], "battle": "無", "importance": "key"}, {"type": "逃生/完成", "label": "在妖王追索下脫身", "summary": "奪寶成功後最難的往往是離開，韓立這次也扛住了。", "people": ["韓立"], "gains": [], "battle": "深淵脫逃", "importance": "main"}]}, {"id": "spirit-9", "realmType": "靈界篇", "era": "人族立足", "title": "返回人族疆域與天淵城落腳", "range": "靈界中前段｜天淵城前夜", "summary": "飛靈族與地淵之後，韓立開始把自己重新安回人族地盤。天淵城是靈界篇真正的長期基地。", "tags": ["人族疆域", "天淵城", "立足", "邊城"], "participants": ["韓立"], "locations": ["人族領地", "天淵城"], "gains": ["穩定基地", "人族身份網絡"], "losses": ["流亡感"], "types": ["城池", "基地", "立足"], "impact": "有了天淵城，韓立才能開始走更長線、更正面的靈界中期成長。", "subevents": [{"type": "回歸/身份", "label": "重新以人族修士身分活動", "summary": "結束前段大量偽裝與借位的狀態。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "城池/基地", "label": "進入天淵城建立長期據點", "summary": "從此很多大戰、突破與任務都以此為核心展開。", "people": ["韓立"], "gains": ["天淵城基地"], "battle": "無", "importance": "main"}, {"type": "秩序/再嵌入", "label": "重新接入人族軍政與任務體系", "summary": "讓韓立在靈界不再只是漂泊求生。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "key"}]}, {"id": "spirit-10", "realmType": "靈界篇", "era": "天淵城篇", "title": "青冥衛任務與煉虛突破", "range": "靈界中段｜天淵城", "summary": "青冥衛與煉虛期，不只是修為提升，而是韓立開始能在靈界正面打出名字。", "tags": ["青冥衛", "煉虛", "邊境任務", "天淵衛"], "participants": ["韓立", "冰魄仙子"], "locations": ["天淵城", "邊境戰場"], "gains": ["煉虛修為", "邊境戰功"], "losses": ["純粹潛伏的自由"], "types": ["突破", "軍功", "名望"], "impact": "這裡完成了韓立在靈界的第一次「正式出頭」。", "subevents": [{"type": "體系/加入", "label": "進入青冥衛體系", "summary": "開始以半軍事、半守城模式活動。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "戰鬥/任務", "label": "在邊境任務中快速累積戰功", "summary": "韓立的節奏從潛伏轉向能打能撤。", "people": ["韓立"], "gains": ["戰功"], "battle": "邊境巡守戰", "importance": "key"}, {"type": "突破/升階", "label": "成功晉升煉虛", "summary": "正式跨入靈界中高階層次。", "people": ["韓立"], "gains": ["煉虛修為"], "battle": "閉關破境", "importance": "main"}]}, {"id": "spirit-11", "realmType": "靈界篇", "era": "天淵城篇", "title": "木玲花、金髓煉體與戰功累積", "range": "約900歲｜天淵城中段", "summary": "天淵城篇不只是服役與突破，還包括長時間的資源換取、煉體積累與戰功堆疊。這些看似零碎，其實正是韓立在靈界站穩的底盤。", "tags": ["天淵城", "木玲花", "金髓煉體", "戰功"], "participants": ["韓立", "天淵城修士", "妖物交易者"], "locations": ["天淵城", "邊境戰區"], "gains": ["木玲花", "金髓晶蟲", "煉體資源", "戰功"], "losses": ["平靜修煉時間"], "types": ["資源", "煉體", "守城", "積累"], "impact": "把靈界中段的實力成長補成連續曲線，不再像只靠幾次大事件跳級。", "subevents": [{"type": "交易/資源", "label": "大量換取木玲花與晶蟲材料", "summary": "用掌天瓶與資源優勢持續換取煉體必需品。", "people": ["韓立"], "gains": ["木玲花", "金髓晶蟲"], "battle": "無", "importance": "main"}, {"type": "煉體/進境", "label": "以金髓煉體推進肉身強度", "summary": "此線讓韓立的玄功與後續肉身路線不再是突然變強。", "people": ["韓立"], "gains": ["肉身提升"], "battle": "無", "importance": "main"}, {"type": "服役/累積", "label": "在天淵城任務中堆高戰功與威望", "summary": "為後續廣寒令、組隊與資源調動打下信用。", "people": ["韓立"], "gains": ["戰功", "威望"], "battle": "邊境任務", "importance": "key"}]}, {"id": "spirit-12", "realmType": "靈界篇", "era": "跨域前置", "title": "蜉蝣族、虛靈仙子與廣寒令", "range": "靈界中段｜雷鳴大陸前後", "summary": "廣寒界不是突然出現的大副本，它前面有完整的跨域鋪墊：傳送、蜉蝣族、虛靈仙子與通行令。", "tags": ["蜉蝣族", "虛靈仙子", "廣寒令", "跨域"], "participants": ["韓立", "虛靈仙子"], "locations": ["雷鳴大陸", "蜉蝣族"], "gains": ["廣寒令", "跨域資格", "外域人脈"], "losses": ["天淵城安穩節奏"], "types": ["跨域", "勢力", "機緣前置"], "impact": "這讓廣寒界之戰不再像硬塞副本，而是明確的中期長線目標。", "subevents": [{"type": "跨域/轉場", "label": "離開原本大陸前往新地帶", "summary": "靈界篇世界觀在此再次擴張。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "人物/互利", "label": "協助虛靈仙子一方解局", "summary": "韓立以實力與判斷換到真正有價值的通路。", "people": ["韓立", "虛靈仙子"], "gains": ["廣寒令"], "battle": "無", "importance": "main"}, {"type": "資格/前置", "label": "取得進入廣寒界的重要門票", "summary": "大型副本的邏輯在這裡先建立起來。", "people": ["韓立"], "gains": ["廣寒令"], "battle": "無", "importance": "key"}]}, {"id": "spirit-13", "realmType": "靈界篇", "era": "廣寒界前段", "title": "廣寒界搜索、組隊與前置混戰", "range": "靈界中段｜廣寒界前半", "summary": "廣寒界不能只記最後的玄天果實。前段的路線選擇、天驕衝突與組隊/翻臉，本身就很有事件密度。", "tags": ["廣寒界", "天驕", "組隊", "仙草"], "participants": ["韓立", "各族天驕"], "locations": ["廣寒界"], "gains": ["前段仙草", "地圖情報"], "losses": ["臨時同盟"], "types": ["副本", "天驕", "組隊"], "impact": "讓廣寒界這個大副本有真正的中段鋪陳，而不是一路直衝終點。", "subevents": [{"type": "副本/入場", "label": "多族修士同入廣寒界", "summary": "從一開始就不是單人闖關，而是高密度天驕競逐。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "組隊/拆夥", "label": "在合作與背刺間反覆切換", "summary": "大型秘境的信任半徑被壓到極低。", "people": ["韓立", "各族天驕"], "gains": [], "battle": "前段遭遇戰", "importance": "key"}, {"type": "資源/蒐集", "label": "先期收攏仙草與情報", "summary": "為核心區最後衝刺預做布局。", "people": ["韓立"], "gains": ["前段仙草"], "battle": "無", "importance": "detail"}]}, {"id": "spirit-14", "realmType": "靈界篇", "era": "廣寒界核心", "title": "玄天果實、青蓮劍圖與大混戰", "range": "靈界中段｜廣寒界後半", "summary": "真正的廣寒界高潮，是韓立在各族天驕混戰中搶到最關鍵的兩樣東西：玄天果實與太乙青蓮劍圖。", "tags": ["玄天果實", "太乙青蓮劍圖", "天驕混戰", "仙草"], "participants": ["韓立", "角蚩族天驕", "多族強者"], "locations": ["廣寒界核心區"], "gains": ["玄天果實", "太乙青蓮劍圖", "大量仙草"], "losses": ["安全退路"], "types": ["副本核心", "奪寶", "群戰"], "impact": "玄天之寶與後續大劍道線，很多都從這裡抬頭。", "subevents": [{"type": "核心/衝刺", "label": "各族天驕湧向核心區", "summary": "真正的高密度修羅場在此展開。", "people": ["韓立", "各族天驕"], "gains": [], "battle": "無", "importance": "key"}, {"type": "重寶/奪取", "label": "搶下玄天果實", "summary": "為玄天斬靈劍最終出世埋下主幹伏筆。", "people": ["韓立"], "gains": ["玄天果實"], "battle": "核心混戰", "importance": "main"}, {"type": "功法/圖譜", "label": "拿到太乙青蓮劍圖", "summary": "讓韓立在劍道體系外又多一條更高階的可能性。", "people": ["韓立"], "gains": ["太乙青蓮劍圖"], "battle": "無", "importance": "main"}]}, {"id": "spirit-15", "realmType": "靈界篇", "era": "廣寒界收束", "title": "廣寒界收束、玄天機緣回流與名聲擴張", "range": "約1200歲｜廣寒界後段", "summary": "廣寒界不是核心混戰結束就完，而是大量機緣、人脈與名聲回流到現實世界。這一層補上後，靈界中後段的成長會更完整。", "tags": ["廣寒界", "玄天果實", "名聲", "回流"], "participants": ["韓立", "各族隊伍"], "locations": ["廣寒界", "天淵城"], "gains": ["名聲擴張", "後續突破資糧", "跨族人脈"], "losses": ["低調空間"], "types": ["副本收束", "名聲", "人脈"], "impact": "讓廣寒界事件的影響從副本內部延伸到整個靈界格局。", "subevents": [{"type": "副本/收束", "label": "整理廣寒界所得與損耗", "summary": "把混戰中得到的果實、圖譜與線索轉成可持續資源。", "people": ["韓立"], "gains": ["突破資糧"], "battle": "無", "importance": "main"}, {"type": "名聲/擴散", "label": "韓立名號在各族間持續發酵", "summary": "廣寒界後，韓立已不再只是天淵城一個能打的修士。", "people": ["韓立"], "gains": ["跨族名聲"], "battle": "無", "importance": "key"}, {"type": "人脈/延伸", "label": "把組隊關係延伸成後續可用人脈", "summary": "此後很多合作與敵意，都能追溯到廣寒界。", "people": ["韓立", "各族隊伍"], "gains": ["跨族人脈"], "battle": "無", "importance": "detail"}]}, {"id": "spirit-16", "realmType": "靈界篇", "era": "天淵城高潮", "title": "百族大戰守城與名震邊關", "range": "靈界中段｜天淵城", "summary": "百族大戰守城不應只是「守過了」。這是韓立在靈界打響人族名聲的核心事件。", "tags": ["百族大戰", "天淵城", "守城", "戰功"], "participants": ["韓立", "木族", "夜叉族", "人族守軍"], "locations": ["天淵城城牆"], "gains": ["大量戰功", "名望", "更高層人脈"], "losses": ["閒散自由"], "types": ["城戰", "名望", "種族戰"], "impact": "從這裡開始，韓立在靈界不再只是隱藏高手，而是被真正看見的中堅強者。", "subevents": [{"type": "戰局/升級", "label": "木族與夜叉族等聯軍壓境", "summary": "守城戰把天淵城推到極限。", "people": ["韓立", "木族", "夜叉族"], "gains": [], "battle": "異族攻城", "importance": "main"}, {"type": "戰場/爆發", "label": "韓立在守城中大放異彩", "summary": "多系統疊加的戰法在城戰裡特別有壓迫感。", "people": ["韓立"], "gains": ["戰功", "名望"], "battle": "無", "importance": "main"}, {"type": "後果/定名", "label": "正式名震天淵城", "summary": "靈界篇中期人脈與話語權由此迅速提升。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "key"}]}, {"id": "spirit-17", "realmType": "靈界篇", "era": "百族大戰餘波", "title": "戰後震動、族群再分配與合體前夜", "range": "約1400歲｜百族大戰後", "summary": "百族大戰不是守住就結束，戰後的資源再分配、敵我重排與韓立個人威望暴增，同樣構成重要事件層。", "tags": ["百族大戰", "戰後格局", "合體前夜"], "participants": ["韓立", "天淵城高層", "百族勢力"], "locations": ["天淵城", "邊境"], "gains": ["戰後資源", "更高話語權"], "losses": ["原有邊境均勢"], "types": ["戰後", "格局", "突破前置"], "impact": "把百族大戰與合體突破之間的空檔補成連續劇情，不再像直接跳段。", "subevents": [{"type": "戰後/盤點", "label": "天淵城盤點戰損與功勞", "summary": "韓立在制度內部的地位被進一步確認。", "people": ["韓立", "天淵城高層"], "gains": ["功勞兌換空間"], "battle": "無", "importance": "main"}, {"type": "格局/變化", "label": "百族勢力重新排位", "summary": "韓立後續行動能更自由，與這段戰後震動密切相關。", "people": ["韓立", "百族勢力"], "gains": ["話語權"], "battle": "無", "importance": "key"}, {"type": "突破/前置", "label": "為合體進境做最後積蓄", "summary": "真正的大境界突破，前面其實累了很長一段。", "people": ["韓立"], "gains": ["合體前置資糧"], "battle": "無", "importance": "detail"}]}, {"id": "spirit-18", "realmType": "靈界篇", "era": "合體前夜", "title": "魔金山脈尋寶與突破契機", "range": "靈界中後段｜魔金山脈", "summary": "魔金山脈常被略過，但它其實是韓立往合體、玄天與魔界線過渡的重要橋。", "tags": ["魔金山脈", "珍稀魔金", "尋寶", "合體前夜"], "participants": ["韓立"], "locations": ["魔金山脈"], "gains": ["珍稀魔金", "突破契機"], "losses": ["天淵城穩定節奏"], "types": ["尋寶", "材料", "過渡"], "impact": "把韓立從人族守城強者，往靈魔兩界更高層的舞台推。", "subevents": [{"type": "尋寶/冒進", "label": "深入魔金山脈尋找高階材料", "summary": "不只是貪寶，而是在為更高階突破找關鍵拼圖。", "people": ["韓立"], "gains": ["珍稀魔金"], "battle": "無", "importance": "main"}, {"type": "戰鬥/壓測", "label": "與高階對手多次短兵相接", "summary": "屬於合體前的硬碰硬壓力測試。", "people": ["韓立"], "gains": [], "battle": "山脈遭遇戰", "importance": "key"}, {"type": "過渡/醞釀", "label": "為後續魔劫與魔界線蓄力", "summary": "很多真正的大事件都在這種過渡帶裡慢慢發酵。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "detail"}]}, {"id": "spirit-19", "realmType": "靈界篇", "era": "魔劫前置", "title": "玄天之寶培育與多線戰力成熟", "range": "靈界中後段｜魔劫前夜", "summary": "在真正進入魔界大線前，韓立手上的劍、煉體、神雷、靈蟲其實都已經成熟到非常可怕。這段是系統匯流。", "tags": ["玄天果實", "戰力成熟", "多系統疊加"], "participants": ["韓立"], "locations": ["人族疆域", "祕地"], "gains": ["玄天之寶胚胎", "戰力匯流"], "losses": ["純單線成長方式"], "types": ["法寶", "煉體", "靈蟲", "過渡"], "impact": "讓後續魔界與聖祖級對局顯得合理，而不是突然升級。", "subevents": [{"type": "法寶/醞釀", "label": "玄天果實逐步成熟", "summary": "真正的玄天之寶還沒完全出世，但威壓已在形成。", "people": ["韓立"], "gains": ["玄天之寶胚胎"], "battle": "無", "importance": "main"}, {"type": "體系/匯流", "label": "劍、蟲、雷、煉體同時成形", "summary": "韓立手牌第一次完整呈現立體化。", "people": ["韓立"], "gains": ["多線戰力成熟"], "battle": "無", "importance": "key"}, {"type": "節奏/蓄勢", "label": "為真正大劫前做最後整備", "summary": "不是安靜期，而是暴風雨前最後一次整理兵器。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "detail"}]}, {"id": "spirit-20", "realmType": "靈界篇", "era": "魔劫開啟", "title": "魔劫降臨、寶花結盟與紫靈重逢", "range": "靈界後段｜魔界入口前後", "summary": "靈界篇中後段最大的劇情斷層就是魔劫。韓立開始不只在靈界打，而是被逼著去理解魔界與聖祖級存在。", "tags": ["魔劫", "寶花", "紫靈", "魔界"], "participants": ["韓立", "寶花", "紫靈"], "locations": ["靈界戰場", "魔界入口"], "gains": ["與寶花的互信基礎", "紫靈線再啟"], "losses": ["靈界單一立場"], "types": ["魔劫", "結盟", "重逢"], "impact": "寶花與紫靈兩條線讓這段不只是災厄，也帶有關係格局的大幅擴張。", "subevents": [{"type": "災厄/爆發", "label": "靈界遭逢魔劫", "summary": "世界級規模的戰爭與災變把原本秩序全面打散。", "people": ["韓立"], "gains": [], "battle": "靈界魔劫", "importance": "main"}, {"type": "前輩/結盟", "label": "與寶花建立互利合作", "summary": "這是韓立少數面對頂層存在還能談到相對平衡的合作。", "people": ["韓立", "寶花"], "gains": ["高階情報與通路"], "battle": "無", "importance": "main"}, {"type": "人物/重逢", "label": "在魔界線上與紫靈再會", "summary": "把亂星海以來的情感線往更深處推了一步。", "people": ["韓立", "紫靈"], "gains": [], "battle": "無", "importance": "key"}]}, {"id": "spirit-21", "realmType": "靈界篇", "era": "魔劫支線", "title": "紫靈重逢、情感支線回流與魔劫內部張力", "range": "約2200歲｜魔劫中段", "summary": "魔劫篇不只是一連串高階戰鬥，紫靈重逢與舊因果回流，也讓這段不只是格局大，更有人物層的重量。", "tags": ["紫靈", "魔劫", "寶花", "重逢"], "participants": ["韓立", "紫靈", "寶花"], "locations": ["魔劫戰區", "魔界相關區域"], "gains": ["紫靈線回收", "更完整盟友網"], "losses": ["情感上的平靜"], "types": ["重逢", "情感", "魔劫"], "impact": "補強魔劫篇的人物濃度，避免只剩境界與大戰升級。", "subevents": [{"type": "重逢/人物", "label": "在魔劫線中與紫靈重逢", "summary": "把人界延伸到靈界的長線人物因果重新接上。", "people": ["韓立", "紫靈"], "gains": ["人物線回收"], "battle": "無", "importance": "main"}, {"type": "夾縫/站位", "label": "在寶花與多方勢力間維持微妙平衡", "summary": "韓立既要取利，又不能被任何一方真正吃死。", "people": ["韓立", "寶花", "紫靈"], "gains": ["盟友彈性"], "battle": "魔劫混戰", "importance": "key"}, {"type": "情感/回流", "label": "過去人界因果在高階戰場中重新浮現", "summary": "讓這段不只是戰鬥數值成長，也有人物重量。", "people": ["韓立", "紫靈"], "gains": [], "battle": "無", "importance": "detail"}]}, {"id": "spirit-22", "realmType": "靈界篇", "era": "魔界篇", "title": "潛入魔界與洗靈池前哨", "range": "靈界後段｜魔界", "summary": "真正進入魔界後，節奏從對外抗魔變成深入敵境。這裡不是大戰連打，而是潛伏、偽裝、借勢與尋找關鍵之地。", "tags": ["魔界", "潛入", "洗靈池前哨", "聖祖地盤"], "participants": ["韓立", "寶花", "紫靈"], "locations": ["魔界"], "gains": ["魔界情報", "通往洗靈池的路"], "losses": ["人族陣營安全帶"], "types": ["潛入", "偽裝", "情報"], "impact": "這段讓韓立在跨界滲透與高階局面應對上又升一級。", "subevents": [{"type": "跨界/深入", "label": "真正潛入魔界活動", "summary": "從防守者改成敵後行動者，風險層級完全不同。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "偽裝/周旋", "label": "在魔界多方勢力間低調挪移", "summary": "韓立最擅長的不是硬推，而是先找到最薄的縫。", "people": ["韓立", "寶花"], "gains": ["魔界路線情報"], "battle": "無", "importance": "key"}, {"type": "目標/逼近", "label": "逐步靠近洗靈池等核心機緣", "summary": "真正的大突破在前面，但這段前哨不能被省略。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "detail"}]}, {"id": "spirit-23", "realmType": "靈界篇", "era": "肉身大成", "title": "洗靈池、淨靈蓮與涅槃聖體", "range": "靈界後段｜洗靈池", "summary": "洗靈池是靈界篇最關鍵的肉身/體質事件之一。它對韓立的提升不是單一數值，而是整個生存層級的改變。", "tags": ["洗靈池", "淨靈蓮", "涅槃聖體", "梵聖真魔功"], "participants": ["韓立", "元魘"], "locations": ["洗靈池"], "gains": ["肉身大幅躍升", "梵聖真魔功深化", "金髓晶蟲線"], "losses": ["舊有體質瓶頸"], "types": ["煉體", "洗髓", "聖體"], "impact": "讓韓立在之後面對聖祖、大乘與真仙級壓力時，能靠肉身硬吃很多原本不能吃的傷害。", "subevents": [{"type": "機緣/入池", "label": "進入洗靈池洗髓", "summary": "這是靈界後期真正頂級的體質機緣。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "煉體/大進", "label": "梵聖真魔功與肉身同步精進", "summary": "肉身線在此被推上新高度。", "people": ["韓立"], "gains": ["肉身大幅躍升", "涅槃聖體"], "battle": "無", "importance": "main"}, {"type": "戰鬥/壓力", "label": "與元魘等高階存在糾纏", "summary": "高壓戰鬥反過來驗證這次洗髓的價值。", "people": ["韓立", "元魘"], "gains": ["金髓晶蟲"], "battle": "洗靈池周邊惡戰", "importance": "key"}]}, {"id": "spirit-24", "realmType": "靈界篇", "era": "魔界中段", "title": "魔界積累、蟹道人後手與大戰前成熟", "range": "約2400歲｜魔界中後段", "summary": "洗靈池與涅槃聖體之外，韓立在魔界還完成了大量底牌成熟：蟹道人、噬金蟲、肉身、法則感知都在同步抬升。", "tags": ["魔界", "蟹道人", "噬金蟲", "底牌成熟"], "participants": ["韓立", "蟹道人"], "locations": ["魔界"], "gains": ["蟹道人後手", "噬金蟲成熟", "底牌整體升級"], "losses": ["潛伏安全性"], "types": ["潛行", "底牌", "成熟"], "impact": "把洗靈池後的魔界段落補成真正的戰力收束期，與後面玄天斬靈劍出世更連貫。", "subevents": [{"type": "底牌/成熟", "label": "多項底牌在魔界同時成熟", "summary": "肉身、蟲群、傀儡與法則感知同步拉高。", "people": ["韓立"], "gains": ["底牌整體升級"], "battle": "無", "importance": "main"}, {"type": "傀儡/後手", "label": "蟹道人與其他後手配置完成", "summary": "之後面對更高層敵人時不再只能靠單點硬扛。", "people": ["韓立", "蟹道人"], "gains": ["蟹道人後手"], "battle": "無", "importance": "key"}, {"type": "潛伏/風險", "label": "魔界潛伏壓力持續升高", "summary": "收穫大，但一旦暴露代價也會極高。", "people": ["韓立"], "gains": [], "battle": "潛行逃脫", "importance": "detail"}]}, {"id": "spirit-25", "realmType": "靈界篇", "era": "玄天主線", "title": "玄天斬靈劍出世與大乘前夕", "range": "靈界後段｜大乘前", "summary": "玄天斬靈劍的誕生，不能只當作一個裝備更新。它代表韓立正式握有能左右頂層戰局的權柄武器。", "tags": ["玄天斬靈劍", "玄天之寶", "大乘前夕"], "participants": ["韓立"], "locations": ["靈界"], "gains": ["玄天斬靈劍"], "losses": ["原本的武器上限"], "types": ["法寶", "權柄", "終局前夜"], "impact": "從這裡起，韓立手上終於有真正能與靈界頂層棋局對接的兵器。", "subevents": [{"type": "果實/成熟", "label": "玄天果實終於完全成熟", "summary": "廣寒界遠遠埋下的主線在這裡收果。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "key"}, {"type": "法寶/權柄", "label": "玄天斬靈劍出世", "summary": "韓立的上限被重新定義。", "people": ["韓立"], "gains": ["玄天斬靈劍"], "battle": "無", "importance": "main"}, {"type": "節奏/轉折", "label": "故事正式進入靈界終局前奏", "summary": "之後的大乘、馬良與斬仙都因此更有邏輯。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "detail"}]}, {"id": "spirit-26", "realmType": "靈界篇", "era": "大乘前夜", "title": "兩界震懾、玄天之寶定型與大乘前準備", "range": "約3000歲｜大乘前夕", "summary": "玄天斬靈劍出世後，韓立已不只是強，而是進入靈魔兩界都必須正視的級別。這段要補出那種進入頂層前夜的壓迫感。", "tags": ["玄天斬靈劍", "兩界震懾", "大乘前夕"], "participants": ["韓立", "靈魔兩界群雄"], "locations": ["兩界交界"], "gains": ["玄天之寶完全定型", "頂層威懾力"], "losses": ["低調可能"], "types": ["玄天之寶", "威懾", "收束"], "impact": "讓從玄天之寶出世到大乘渡劫之間，不再只是空白跳接。", "subevents": [{"type": "威懾/成形", "label": "玄天斬靈劍威名徹底坐實", "summary": "從此韓立真正具有震懾頂尖老怪的資格。", "people": ["韓立"], "gains": ["頂層威懾力"], "battle": "玄天之寶爭奪餘波", "importance": "main"}, {"type": "準備/渡劫", "label": "開始為大乘天劫整體佈局", "summary": "不是單靠天資，而是把法體魂寶全部拉到臨界。", "people": ["韓立"], "gains": ["渡劫準備"], "battle": "無", "importance": "main"}, {"type": "格局/變化", "label": "靈魔兩界對韓立評價全面升高", "summary": "之後馬良與螟蟲線才更合理地落到他身上。", "people": ["韓立", "靈魔兩界群雄"], "gains": [], "battle": "無", "importance": "key"}]}, {"id": "spirit-27", "realmType": "靈界篇", "era": "靈界終局前段", "title": "大乘天劫、第一強者定位與靈界震動", "range": "約8000歲｜大乘初成", "summary": "大乘不是簡單升階，而是韓立正式坐上靈界最頂層棋盤的開始。這個轉折值得獨立成段。", "tags": ["大乘", "天劫", "第一強者"], "participants": ["韓立"], "locations": ["人族聖島"], "gains": ["大乘修為", "靈界第一強者定位"], "losses": ["最後的隱身空間"], "types": ["渡劫", "巔峰", "定位"], "impact": "從這裡開始，韓立面對的已不再是單一勢力，而是整個界面的頂層災難。", "subevents": [{"type": "渡劫/極限", "label": "硬撐大天劫成功晉升大乘", "summary": "法體魂寶全面過關，韓立終於站到靈界巔峰。", "people": ["韓立"], "gains": ["大乘修為"], "battle": "度大天劫", "importance": "main"}, {"type": "定位/震動", "label": "成為公認的一界頂層戰力", "summary": "此後任何界面危機都幾乎繞不開他。", "people": ["韓立"], "gains": ["第一強者定位"], "battle": "無", "importance": "main"}, {"type": "格局/轉換", "label": "靈界視角從邊境戰轉為界面危機", "summary": "後面的馬良與螟蟲線因此自然接上。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "key"}]}, {"id": "spirit-28", "realmType": "靈界篇", "era": "靈界終局前段", "title": "真仙馬良下界、萬血靈珠與靈界大亂", "range": "約8500歲｜真仙降世", "summary": "馬良下界是靈界篇真正進入仙界層級壓迫的開始。這段應單獨成立，因為它把整個靈界篇的威脅維度徹底改寫。", "tags": ["馬良", "真仙", "萬血靈珠", "屠界"], "participants": ["韓立", "馬良", "靈界各族"], "locations": ["靈界各大陸"], "gains": ["對仙界層級的直接認識"], "losses": ["各族生靈", "原有界面秩序"], "types": ["真仙", "屠界", "界面危機"], "impact": "把靈界終局的對手從本界老怪直接拔高到仙界真仙。", "subevents": [{"type": "降臨/壓迫", "label": "馬良下界展開屠戮", "summary": "靈界第一次真正感受到仙界真仙的碾壓感。", "people": ["韓立", "馬良"], "gains": [], "battle": "無", "importance": "main"}, {"type": "災難/擴散", "label": "各大族被屠殺，萬血靈珠線展開", "summary": "危機規模已經超出任何單一勢力能承受。", "people": ["馬良", "靈界各族"], "gains": [], "battle": "屠界", "importance": "main"}, {"type": "對手/認知", "label": "韓立正式把視線拉到仙界層級敵人", "summary": "之後斬仙奪瓶，才不會像突然升級。", "people": ["韓立", "馬良"], "gains": ["對仙界真仙的直接認識"], "battle": "無", "importance": "key"}]}, {"id": "spirit-29", "realmType": "靈界篇", "era": "靈界終局核心", "title": "斬仙奪瓶與時間法則初顯", "range": "靈界終局｜斬仙之戰", "summary": "斬殺馬良是整部作品最震撼的跨位階事件之一。更重要的是，盜天瓶與時間法則主線在此被真正點亮。", "tags": ["斬仙", "盜天瓶", "時間法則", "馬良"], "participants": ["韓立", "馬良", "明尊"], "locations": ["靈界戰場"], "gains": ["盜天瓶", "時間法則雛形", "萬物母劍"], "losses": ["明尊等戰友"], "types": ["斬仙", "法則", "通天靈寶"], "impact": "它直接把靈界篇與仙界篇主線接起來，並賦予韓立未來最大的底牌。", "subevents": [{"type": "伏擊/賭命", "label": "與諸強聯手設局馬良", "summary": "不是正面碾壓，而是以全部智慧與犧牲換一線機會。", "people": ["韓立", "馬良", "明尊"], "gains": [], "battle": "無", "importance": "main"}, {"type": "決戰/逆位階", "label": "完成下界斬仙壯舉", "summary": "韓立生涯裡少數真正改變世界觀天花板的戰鬥。", "people": ["韓立", "馬良"], "gains": ["盜天瓶", "萬物母劍"], "battle": "斬仙之戰", "importance": "main"}, {"type": "法則/點亮", "label": "時間法則開始真正浮現", "summary": "之後的仙界篇已在這裡先發出第一道光。", "people": ["韓立"], "gains": ["時間法則雛形"], "battle": "無", "importance": "key"}]}, {"id": "spirit-30", "realmType": "靈界篇", "era": "靈界收束", "title": "始印之地開啟、群雄集結與蟲劫前哨", "range": "約9200歲｜始印之地前夜", "summary": "馬良死後並非立刻飛升，真正最後的大關是始印之地與螟蟲之母。這段前哨應該獨立，才能讓終局不顯得擠在一起。", "tags": ["始印之地", "螟蟲之母", "群雄集結"], "participants": ["韓立", "寶花", "蟹道人", "靈界群雄"], "locations": ["始印之地"], "gains": ["終局陣容", "對始印之地的掌握"], "losses": ["最後喘息時間"], "types": ["前哨", "集結", "終局"], "impact": "把靈界最終段拉開層次，讓螟蟲之母決戰更有前置重量。", "subevents": [{"type": "前哨/集結", "label": "各方頂層戰力向始印之地匯流", "summary": "靈界最後危機終於把真正的核心角色全拉上場。", "people": ["韓立", "寶花", "蟹道人"], "gains": ["終局陣容"], "battle": "無", "importance": "main"}, {"type": "情報/鋪陳", "label": "逐步摸清始印之地與蟲母甦醒規模", "summary": "真正的壓迫感來自知道敵人還沒完全恢復。", "people": ["韓立"], "gains": ["始印之地情報"], "battle": "無", "importance": "key"}, {"type": "節奏/壓縮", "label": "飛升前的最後餘裕徹底消失", "summary": "全書節奏在這裡被拉進最終直線。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "detail"}]}, {"id": "spirit-31", "realmType": "靈界篇", "era": "靈界終局核心", "title": "螟蟲之母決戰、界面收束與飛升準備", "range": "約9300歲｜飛升前夜", "summary": "螟蟲之母之戰是靈界篇真正最後的界面級大戰。打完這一役，韓立才有資格把目光徹底轉向仙界。", "tags": ["螟蟲之母", "始印之地", "飛升前夜"], "participants": ["韓立", "寶花", "蟹道人", "螟蟲之母"], "locations": ["始印之地"], "gains": ["界面安定", "飛升前整理空間"], "losses": ["最後一段凡界牽連"], "types": ["終戰", "界面收束", "飛升前"], "impact": "完成靈界篇的真正收束，並把掌天瓶、法則與韓立本人全部推到飛升門檻。", "subevents": [{"type": "決戰/界面", "label": "與螟蟲之母展開最終決戰", "summary": "玄天之物、靈域與頂層合作在此全面碰撞。", "people": ["韓立", "寶花", "蟹道人", "螟蟲之母"], "gains": [], "battle": "始印之地終戰", "importance": "main"}, {"type": "收束/清場", "label": "靈界級危機終於被壓下", "summary": "這不是局部勝負，而是整個界面重新穩定。", "people": ["韓立"], "gains": ["界面安定"], "battle": "無", "importance": "main"}, {"type": "飛升/整理", "label": "完成飛升前最後整理", "summary": "韓立終於能把靈界線徹底收起，轉向真仙界。", "people": ["韓立"], "gains": ["飛升準備"], "battle": "無", "importance": "key"}]}, {"id": "immortal-1", "realmType": "仙界篇", "era": "仙界開局", "title": "飛升暗算、失憶與仙界初墜", "range": "仙界初期｜飛升後最初段", "summary": "韓立飛升仙界後並不是平順登仙，而是一上來就被暗算、失憶、法力受損。這一段應獨立，因為它定下了仙界篇的基調：即使已飛升，仍然先得活下來。", "tags": ["飛升", "暗算", "失憶", "初墜"], "participants": ["韓立", "未知追兵"], "locations": ["飛升通道", "黑土仙域外圍"], "gains": ["殘存仙界常識"], "losses": ["大半記憶", "完整戰力", "原有節奏"], "types": ["飛升", "暗算", "失憶"], "impact": "把仙界篇開場從單純換地圖，升級為一次身份與狀態雙重清零。", "subevents": [{"type": "飛升/變故", "label": "飛升後遭遇暗算與追殺", "summary": "韓立根本沒有正常落地適應的時間。", "people": ["韓立"], "gains": [], "battle": "飛升通道變故", "importance": "main"}, {"type": "狀態/崩落", "label": "失去大段記憶與原有節奏", "summary": "不只是受傷，而是整個自我敘事暫時斷裂。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "求生/墜落", "label": "帶著殘存意識跌入陌生仙域", "summary": "仙界篇最初的求生感在此建立。", "people": ["韓立"], "gains": ["殘存仙界常識"], "battle": "無", "importance": "key"}]}, {"id": "immortal-2", "realmType": "仙界篇", "era": "仙界開局", "title": "金童失散、蟹道人沉睡與最初孤身", "range": "仙界初期｜失序段", "summary": "除了失憶，韓立還在開場就失去金童與蟹道人這些重要支撐，仙界篇因此更像一次高階版的重新白手起家。", "tags": ["金童", "蟹道人", "孤身"], "participants": ["韓立", "金童", "蟹道人"], "locations": ["黑土仙域外圍"], "gains": ["重新獨立求生的警覺"], "losses": ["金童", "蟹道人即時助力"], "types": ["失散", "夥伴線", "求生"], "impact": "補足仙界篇開局的情感與戰力斷裂，不再只剩一句金童失散。", "subevents": [{"type": "失散/夥伴", "label": "與金童徹底失散", "summary": "這讓冥寒仙府的重逢後勁更強。", "people": ["韓立", "金童"], "gains": [], "battle": "無", "importance": "main"}, {"type": "沉睡/後手", "label": "蟹道人暫時無法提供支援", "summary": "韓立在仙界開局幾乎又回到單打獨鬥。", "people": ["韓立", "蟹道人"], "gains": [], "battle": "無", "importance": "key"}, {"type": "孤身/調整", "label": "以最小資源重新摸索仙界規則", "summary": "仙界不是高配靈界，而是更殘酷的新棋盤。", "people": ["韓立"], "gains": ["重新白手起家的警覺"], "battle": "無", "importance": "detail"}]}, {"id": "immortal-3", "realmType": "仙界篇", "era": "黑土立足", "title": "黑土仙域、柳樂兒與重新起步", "range": "仙界前段｜黑土仙域", "summary": "黑土仙域像是人界青牛鎮與靈界安遠城的仙界版：韓立得先從一個偏遠角落重新站穩。", "tags": ["黑土仙域", "柳樂兒", "重建", "白石真人"], "participants": ["韓立", "柳樂兒", "白石真人"], "locations": ["黑土仙域", "余府"], "gains": ["柳樂兒這條情感支點", "重新起步的立足點"], "losses": ["完整過去身份"], "types": ["立足", "情感", "重建"], "impact": "柳樂兒線讓仙界篇前段不至於只剩追殺與記憶缺失，而是有一條柔軟但重要的人際支點。", "subevents": [{"type": "立足/求生", "label": "在黑土仙域邊緣重新站穩", "summary": "仙界並沒有立即給韓立任何優勢，只給壓力。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "人物/羈絆", "label": "救下柳樂兒並建立兄妹般聯結", "summary": "這條線對韓立的情感面很重要。", "people": ["韓立", "柳樂兒"], "gains": ["情感支點"], "battle": "無", "importance": "main"}, {"type": "世界/摸索", "label": "透過地方勢力重新摸索仙界規則", "summary": "把黑土仙域當成重新學習仙界的第一課。", "people": ["韓立", "白石真人"], "gains": [], "battle": "無", "importance": "key"}]}, {"id": "immortal-4", "realmType": "仙界篇", "era": "黑土立足", "title": "烏蒙島立足、煉身路線再啟與地方因果", "range": "仙界初期｜黑土仙域中段", "summary": "黑土仙域不是只有柳樂兒，韓立還在烏蒙島等地方勢力中重新建立落腳點，把玄仙肉身路線、地方因果與修煉節奏重新接上。", "tags": ["烏蒙島", "黑土仙域", "煉身", "地方勢力"], "participants": ["韓立", "柳樂兒", "洛風"], "locations": ["黑土仙域", "烏蒙島"], "gains": ["地方立足點", "煉身資源", "新仙界人脈"], "losses": ["隱身餘裕"], "types": ["立足", "煉身", "地方線"], "impact": "把仙界前段的重新起步補成更扎實的生活面與勢力面。", "subevents": [{"type": "立足/地方", "label": "在地方勢力中建立可用落腳點", "summary": "韓立仙界前段真正的穩定，不是來自大宗門，而是先有一塊能喘息的地盤。", "people": ["韓立", "洛風"], "gains": ["地方立足點"], "battle": "島上守戰", "importance": "main"}, {"type": "煉身/延續", "label": "把靈界後期的肉身路線延續到仙界", "summary": "玄仙之路在仙界前段正式被明確化。", "people": ["韓立"], "gains": ["煉身進境"], "battle": "無", "importance": "main"}, {"type": "人脈/重新編織", "label": "和柳樂兒等人形成新的仙界初期人脈", "summary": "這讓韓立不是完全漂浮的異鄉人。", "people": ["韓立", "柳樂兒"], "gains": ["新仙界人脈"], "battle": "無", "importance": "key"}]}, {"id": "immortal-5", "realmType": "仙界篇", "era": "仙界前置", "title": "追索記憶、黑風海域與前世線陰影", "range": "仙界前中段｜黑風海域前後", "summary": "黑土之後，韓立開始更主動追查自己的缺失記憶與被追殺原因。這是仙界篇真正的主線啟動。", "tags": ["追索記憶", "黑風海域", "輪迴殿陰影", "前世線"], "participants": ["韓立", "方磐", "輪迴殿勢力"], "locations": ["黑風海域", "北寒仙域"], "gains": ["關於自身過去的更多線索"], "losses": ["短暫平靜"], "types": ["追索", "前世", "逃亡"], "impact": "讓仙界篇從「失憶求生」轉向「主動追問我是誰、誰在追我」。", "subevents": [{"type": "追索/主動", "label": "開始主動追查失落記憶", "summary": "韓立從被動受擊轉為主動查案。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "勢力/浮現", "label": "輪迴殿與天庭陰影逐步壓近", "summary": "仙界的真正大勢力輪廓開始浮現。", "people": ["韓立"], "gains": ["主線情報"], "battle": "無", "importance": "key"}, {"type": "轉場/擴張", "label": "活動範圍由黑土擴到更大海域與仙域", "summary": "仙界篇場景開始大幅擴張。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "detail"}]}, {"id": "immortal-6", "realmType": "仙界篇", "era": "仙界前置", "title": "黑風海域、散仙地仙玄仙與仙界規則開眼界", "range": "仙界初期｜黑風海域", "summary": "黑風海域不只是冒險場景，更是韓立第一次真正理解仙界內部修途分流的地方：散仙、地仙、玄仙與真正掌握法則之力的真仙，開始被清楚區分。", "tags": ["黑風海域", "散仙", "地仙", "玄仙"], "participants": ["韓立", "魔光"], "locations": ["黑風海域"], "gains": ["仙界修途認知", "地仙與祖神概念", "玄仙定位"], "losses": ["對仙界位階的單線想像"], "types": ["世界觀", "黑風海域", "修途"], "impact": "這段是你要求納入等階對照表的核心來源之一。", "subevents": [{"type": "世界觀/修正", "label": "得知仙界不等於人人都是真仙", "summary": "散仙與真仙的區分，讓仙界位階第一次變得立體。", "people": ["韓立", "魔光"], "gains": ["散仙概念"], "battle": "無", "importance": "main"}, {"type": "支線/分流", "label": "理解地仙、祖神與玄仙屬於不同分流", "summary": "韓立開始知道自己走的力仙道路，在仙界其實是少數異類。", "people": ["韓立", "魔光"], "gains": ["地仙與玄仙概念"], "battle": "無", "importance": "main"}, {"type": "場域/特性", "label": "黑風海域成為特殊修途孳生地", "summary": "此地規則特殊，才會讓地仙與祖神雛形常見。", "people": ["韓立"], "gains": ["黑風海域規則認知"], "battle": "無", "importance": "key"}]}, {"id": "immortal-7", "realmType": "仙界篇", "era": "時間大道起點", "title": "燭龍道入門與真言寶輪", "range": "仙界中段｜燭龍道", "summary": "加入燭龍道不是換個宗門而已，而是韓立正式踏進時間大道。真言寶輪從這裡開始貫穿仙界篇。", "tags": ["燭龍道", "真言化輪經", "真言寶輪", "時間大道"], "participants": ["韓立", "呼言道人", "百里炎"], "locations": ["燭龍道"], "gains": ["真言寶輪", "時間法則正式路線"], "losses": ["低調藏身空間"], "types": ["宗門", "法則", "功法"], "impact": "決定韓立在仙界不是走普通金仙路，而是直接往法則核心走。", "subevents": [{"type": "宗門/切入", "label": "進入燭龍道活動", "summary": "在仙界找到第一個真正能深入學法則的地方。", "people": ["韓立", "呼言道人"], "gains": [], "battle": "無", "importance": "main"}, {"type": "功法/核心", "label": "修成真言化輪經凝聚真言寶輪", "summary": "時間大道主線正式點亮。", "people": ["韓立"], "gains": ["真言寶輪"], "battle": "無", "importance": "main"}, {"type": "人脈/拓展", "label": "與呼言道人、百里炎等建立聯繫", "summary": "為後續許多法則與遺址線埋下基礎。", "people": ["韓立", "呼言道人", "百里炎"], "gains": [], "battle": "無", "importance": "key"}]}, {"id": "immortal-8", "realmType": "仙界篇", "era": "燭龍道變局", "title": "方磐追殺、燭龍道震盪與輪迴殿影子", "range": "仙界中段｜燭龍道中後", "summary": "燭龍道不是避風港，而是很快就被天庭與其他勢力的陰影籠罩。韓立又一次在半公開身份中逃命。", "tags": ["方磐", "燭龍道", "輪迴殿", "追殺"], "participants": ["韓立", "方磐", "呼言道人"], "locations": ["燭龍道", "北寒仙域"], "gains": ["更多主線情報"], "losses": ["燭龍道穩定依靠"], "types": ["追殺", "宗門震盪", "主線推進"], "impact": "把韓立從宗門修法則的穩定節奏，再度推回高壓流亡。", "subevents": [{"type": "追殺/壓迫", "label": "方磐等勢力持續追索", "summary": "韓立始終沒辦法在仙界安穩太久。", "people": ["韓立", "方磐"], "gains": [], "battle": "無", "importance": "main"}, {"type": "宗門/動盪", "label": "燭龍道逐漸捲入更高層棋局", "summary": "說明仙界沒有真正與天庭切乾淨的安全角落。", "people": ["韓立", "呼言道人"], "gains": [], "battle": "無", "importance": "key"}, {"type": "線索/深化", "label": "輪迴殿與自身過去關聯更深", "summary": "韓立離真正的答案又近了一步。", "people": ["韓立"], "gains": ["主線線索"], "battle": "無", "importance": "detail"}]}, {"id": "immortal-9", "realmType": "仙界篇", "era": "魔域線開啟", "title": "積鱗空境、石穿空與魔域因果啟動", "range": "仙界中期｜空境與魔域支線", "summary": "仙界篇中段不是只有燭龍道與仙府，積鱗空境、石穿空與魔域線把韓立的活動範圍再一次推寬，後面灰界、啼魂與魔域因果都從這裡發芽。", "tags": ["積鱗空境", "石穿空", "魔域", "啼魂"], "participants": ["韓立", "石穿空", "啼魂", "蟹道人"], "locations": ["積鱗空境", "魔域相關空間"], "gains": ["石穿空線", "魔域路徑", "空境資源"], "losses": ["原本修煉節奏"], "types": ["空境", "魔域", "新夥伴線"], "impact": "把仙界中段從單線時間大道，擴成多線並行的真正長篇結構。", "subevents": [{"type": "異境/踏入", "label": "進入積鱗空境展開新支線", "summary": "仙界不是一條直線升級，而是不斷橫向擴圖。", "people": ["韓立"], "gains": ["空境資源"], "battle": "異境求生", "importance": "main"}, {"type": "人物/建立", "label": "與石穿空建立高含金量同盟關係", "summary": "石穿空是仙界篇中段最重要的同行者之一。", "people": ["韓立", "石穿空"], "gains": ["石穿空線"], "battle": "無", "importance": "main"}, {"type": "魔域/伏筆", "label": "魔域與啼魂因果開始真正接上", "summary": "之後灰界與魔域相關段落更有前置。", "people": ["韓立", "啼魂"], "gains": ["魔域路徑"], "battle": "無", "importance": "key"}]}, {"id": "immortal-10", "realmType": "仙界篇", "era": "冥寒仙府前段", "title": "各方勢力入場與仙府開局", "range": "仙界中段｜冥寒仙府前半", "summary": "冥寒仙府不應只剩最後一戰。從入府、各方勢力交鋒到路線選擇，本身就是一座非常完整的大副本。", "tags": ["冥寒仙府", "各方勢力", "副本開局"], "participants": ["韓立", "蛟三", "蕭晉寒", "多方仙人"], "locations": ["冥寒仙府"], "gains": ["仙府情報", "前段資源"], "losses": ["外界穩定性"], "types": ["副本", "探索", "群雄"], "impact": "把冥寒仙府從「結果論副本」改回真正有過程感的長事件。", "subevents": [{"type": "副本/開啟", "label": "冥寒仙府臨世各方湧入", "summary": "從一開始就帶著大型爭奪戰氣息。", "people": ["韓立", "蕭晉寒", "蛟三"], "gains": [], "battle": "無", "importance": "main"}, {"type": "路線/博弈", "label": "在仙府內判斷各方節奏與利益", "summary": "不是一頭往前衝，而是邊走邊讀局。", "people": ["韓立"], "gains": ["仙府路線情報"], "battle": "無", "importance": "key"}, {"type": "前段/蒐集", "label": "先期收攏對後面有幫助的資源", "summary": "大副本的前半節奏不能被省略。", "people": ["韓立"], "gains": ["前段資源"], "battle": "無", "importance": "detail"}]}, {"id": "immortal-11", "realmType": "仙界篇", "era": "冥寒仙府前段", "title": "仙府分隊、機關層與前段奪寶壓力", "range": "仙界中期｜冥寒仙府中段", "summary": "冥寒仙府前段不是一個入口，而是一整段層層機關、各隊博弈與前段奪寶。把這段拆出來後，仙府核心才不會顯得突然爆衝。", "tags": ["冥寒仙府", "奪寶", "機關", "分隊"], "participants": ["韓立", "蛟三", "各方隊伍"], "locations": ["冥寒仙府外層", "冥寒仙府中層"], "gains": ["前段重寶", "核心路徑資訊"], "losses": ["隊伍穩定性"], "types": ["秘境", "分隊", "奪寶"], "impact": "讓冥寒仙府變成完整事件群，而不是只有找回金童和斬蕭晉寒。", "subevents": [{"type": "分隊/博弈", "label": "仙府內各隊伍彼此試探與分合", "summary": "冥寒仙府其實是一整段持續的隊伍政治。", "people": ["韓立", "蛟三", "各方隊伍"], "gains": ["隊伍情報"], "battle": "仙府遭遇戰", "importance": "main"}, {"type": "機關/突破", "label": "逐層破解仙府機關與禁制", "summary": "沒有這層，核心奪寶會顯得少了過程。", "people": ["韓立"], "gains": ["核心路徑資訊"], "battle": "機關層戰鬥", "importance": "main"}, {"type": "前段/奪寶", "label": "在外中層先行收走一批關鍵資源", "summary": "仙府價值不是只在最後一戰。", "people": ["韓立"], "gains": ["前段重寶"], "battle": "奪寶混戰", "importance": "key"}]}, {"id": "immortal-12", "realmType": "仙界篇", "era": "冥寒仙府核心", "title": "金童重逢、歲月神燈與斬蕭晉寒", "range": "仙界中段｜冥寒仙府後半", "summary": "冥寒仙府的真正爆點集中在這裡：金童回收、歲月神燈到手、蕭晉寒被斬，韓立也正式往金仙層級邁進。", "tags": ["金童", "歲月神燈", "蕭晉寒", "金仙"], "participants": ["韓立", "金童", "蕭晉寒", "蛟三"], "locations": ["冥寒仙府核心"], "gains": ["金童", "歲月神燈", "東乙神木", "金仙突破契機"], "losses": ["燭龍道殘餘安穩"], "types": ["重逢", "斬敵", "法寶", "突破"], "impact": "是仙界篇前半真正的第一次大爆發。", "subevents": [{"type": "重逢/回收", "label": "在仙府核心找回金童", "summary": "這條情感與戰力雙線終於補回來。", "people": ["韓立", "金童"], "gains": ["金童"], "battle": "無", "importance": "main"}, {"type": "重寶/奪取", "label": "奪得歲月神燈", "summary": "時間大道相關重寶再補上一塊關鍵拼圖。", "people": ["韓立"], "gains": ["歲月神燈", "東乙神木"], "battle": "仙府核心混戰", "importance": "main"}, {"type": "宿敵/斬殺", "label": "擊斃蕭晉寒", "summary": "屬於仙界篇早中期最痛快的一次主敵清算。", "people": ["韓立", "蕭晉寒"], "gains": [], "battle": "金仙級死戰", "importance": "main"}]}, {"id": "immortal-13", "realmType": "仙界篇", "era": "冥寒仙府核心", "title": "歲月神燈奪取、晉金仙與燭龍道崩解", "range": "仙界中期｜冥寒仙府末段", "summary": "金童重逢之外，仙府核心還包含歲月神燈奪取、正式晉金仙，以及燭龍道體系的崩裂餘波，值得獨立成段。", "tags": ["歲月神燈", "金仙", "燭龍道", "蕭晉寒"], "participants": ["韓立", "金童", "蕭晉寒", "蛟三"], "locations": ["冥寒仙府核心"], "gains": ["歲月神燈", "金仙修為", "東乙神木"], "losses": ["燭龍道殘存秩序"], "types": ["重寶", "突破", "舊勢力崩解"], "impact": "把仙界前半最大爆點拆成更完整的三層節奏。", "subevents": [{"type": "重寶/奪取", "label": "拿到歲月神燈等核心時間重寶", "summary": "時間大道主線再次大幅躍進。", "people": ["韓立"], "gains": ["歲月神燈", "東乙神木"], "battle": "仙府核心混戰", "importance": "main"}, {"type": "突破/晉階", "label": "在極壓下正式踏入金仙層級", "summary": "韓立從此進入仙界中堅強者序列。", "people": ["韓立"], "gains": ["金仙修為"], "battle": "死戰突破", "importance": "main"}, {"type": "餘波/崩解", "label": "燭龍道與既有格局進一步崩裂", "summary": "韓立再也不可能單純掛靠原先體系發育。", "people": ["韓立", "蕭晉寒"], "gains": [], "battle": "斬蕭晉寒", "importance": "key"}]}, {"id": "immortal-14", "realmType": "仙界篇", "era": "法則深化", "title": "真言門殘影與時間大道補完", "range": "仙界中後段｜真言門線", "summary": "真言門遺址讓時間大道不再只是功法修煉，而開始連接歷史、覆滅與大道傳承本身。", "tags": ["真言門", "時間大道", "歷史殘影", "法則"], "participants": ["韓立"], "locations": ["真言門遺址"], "gains": ["更深層時間法則感悟"], "losses": ["對真言體系的表面理解"], "types": ["遺址", "法則", "歷史"], "impact": "使韓立對時間大道的理解從「會用」升級到「知道它曾經怎麼被建立與摧毀」。", "subevents": [{"type": "遺址/探索", "label": "深入真言門相關遺址", "summary": "開始看見時間大道的歷史厚度。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "main"}, {"type": "殘影/感悟", "label": "從殘影與遺物中加深法則理解", "summary": "這種知識不是戰利品，而是大道視野。", "people": ["韓立"], "gains": ["時間法則感悟"], "battle": "無", "importance": "main"}, {"type": "主線/對接", "label": "把自己修的真言體系與上古傳承接起來", "summary": "之後九元觀與道祖線才會更順。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "key"}]}, {"id": "immortal-15", "realmType": "仙界篇", "era": "灰界篇", "title": "灰界洗煞、石穿空與生死同行", "range": "仙界中後段｜灰界", "summary": "灰界是仙界篇另一種高壓副本：沒有太多正面對轟，更多是道祖陰影下的生死逃竄與洗煞求存。", "tags": ["灰界", "洗煞", "石穿空", "蛟三"], "participants": ["韓立", "石穿空", "蛟三"], "locations": ["灰界"], "gains": ["洗煞成果", "與石穿空的深厚交情"], "losses": ["安穩節奏", "大量餘裕"], "types": ["絕境", "洗煞", "同行"], "impact": "讓韓立的法則線不只停在功法，還進入與生死、煞氣、時間壓迫相關的更危險層級。", "subevents": [{"type": "絕境/入界", "label": "為洗煞深入灰界", "summary": "主動走進極高風險地帶。", "people": ["韓立", "石穿空"], "gains": [], "battle": "無", "importance": "main"}, {"type": "同行/互救", "label": "與石穿空在灰界多次互救", "summary": "這條友情線在仙界篇裡含金量很高。", "people": ["韓立", "石穿空"], "gains": [], "battle": "灰界逃生戰", "importance": "main"}, {"type": "成果/洗煞", "label": "完成重要洗煞成果", "summary": "把自身狀態與大道承載力往上拉。", "people": ["韓立"], "gains": ["洗煞成果"], "battle": "無", "importance": "key"}]}, {"id": "immortal-16", "realmType": "仙界篇", "era": "魔域因果", "title": "石穿空、啼魂與魔域因果深化", "range": "仙界中後段｜灰界前後", "summary": "灰界之外，石穿空、啼魂與魔域支線也逐漸跟韓立主線綁得更深，這讓仙界篇中後段不只有大道與權力，也有夥伴線與救援線。", "tags": ["石穿空", "啼魂", "魔域", "因果"], "participants": ["韓立", "石穿空", "啼魂"], "locations": ["灰界周邊", "魔域相關地帶"], "gains": ["更深同盟", "啼魂線推進"], "losses": ["更複雜的責任"], "types": ["夥伴", "魔域", "支線深化"], "impact": "讓灰界段落不只是一個高壓副本，還與後續人際因果接在一起。", "subevents": [{"type": "同盟/深化", "label": "與石穿空的信任提升到生死層級", "summary": "這條線讓仙界篇的夥伴群像更穩。", "people": ["韓立", "石穿空"], "gains": ["生死同盟"], "battle": "灰界互救", "importance": "main"}, {"type": "救援/牽掛", "label": "啼魂與魔域因果進一步壓上主線", "summary": "韓立不再只是自己修行，還得背更多人的命運。", "people": ["韓立", "啼魂"], "gains": ["啼魂線進展"], "battle": "無", "importance": "key"}, {"type": "格局/延伸", "label": "魔域線不再是旁枝，而是會反過來影響終局資源", "summary": "之後許多後手都與此相關。", "people": ["韓立"], "gains": ["魔域因果深化"], "battle": "無", "importance": "detail"}]}, {"id": "immortal-17", "realmType": "仙界篇", "era": "前世主線", "title": "輪迴殿主、蛟三身世與前世回收", "range": "仙界後段｜輪迴殿線", "summary": "到這裡韓立已不只是追記憶，而是開始碰到前世、平行可能與輪迴殿主這種真正撬動整部作品結構的內容。", "tags": ["輪迴殿主", "蛟三", "前世", "甘如霜"], "participants": ["韓立", "輪迴殿主", "蛟三", "南宮婉"], "locations": ["輪迴殿相關據點"], "gains": ["前世真相線索", "蛟三身世信息"], "losses": ["對自身單一身份的認知"], "types": ["前世", "輪迴", "血脈"], "impact": "把韓立從單線人生，推到一個涉及輪迴與時間自我對照的更大敘事框架。", "subevents": [{"type": "真相/揭露", "label": "輪迴殿主與韓立前世線逐步明朗", "summary": "這不是普通師徒或盟友，而是與自我有深層鏡像關係。", "people": ["韓立", "輪迴殿主"], "gains": [], "battle": "無", "importance": "main"}, {"type": "血脈/震撼", "label": "蛟三身世線帶出更複雜的因果網", "summary": "讓情感與主線突然變得非常立體。", "people": ["韓立", "蛟三", "南宮婉"], "gains": ["前世血脈線索"], "battle": "無", "importance": "main"}, {"type": "視角/擴張", "label": "時間與輪迴不再只是法則，而成為人物命運本身", "summary": "大道主線與人物主線在這裡真正接合。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "key"}]}, {"id": "immortal-18", "realmType": "仙界篇", "era": "前世主線", "title": "蛟三、南宮婉與前世情感線交纏", "range": "仙界後段｜前世線深化", "summary": "輪迴殿與前世線不只是設定揭露，蛟三、南宮婉與韓立之間的情感與因果，也在這裡變得更複雜。這層若不拆出來，仙界後段會太乾。", "tags": ["蛟三", "南宮婉", "前世", "情感"], "participants": ["韓立", "蛟三", "南宮婉", "輪迴殿主"], "locations": ["輪迴殿相關據點"], "gains": ["人物主線厚度", "前世情感對照"], "losses": ["單一直線的自我理解"], "types": ["前世", "情感", "人物主線"], "impact": "補上仙界篇後段的人物層重量。", "subevents": [{"type": "人物/對照", "label": "蛟三與韓立命運映照加深", "summary": "蛟三不再只是組織高層，而是主線情感節點。", "people": ["韓立", "蛟三"], "gains": ["人物主線厚度"], "battle": "無", "importance": "main"}, {"type": "情感/回流", "label": "南宮婉相關前世因果再次被撬動", "summary": "大道與情感在仙界後段真正纏到一起。", "people": ["韓立", "南宮婉"], "gains": ["前世情感對照"], "battle": "無", "importance": "main"}, {"type": "視角/破裂", "label": "韓立對自身歷史的單線認知被打開", "summary": "也讓輪迴殿主的存在更有重量。", "people": ["韓立", "輪迴殿主"], "gains": [], "battle": "無", "importance": "key"}]}, {"id": "immortal-19", "realmType": "仙界篇", "era": "大羅前夜", "title": "輪迴交易、斬屍難題與九元觀前哨", "range": "仙界後段｜九元觀前", "summary": "九元觀大戰前，韓立其實還經歷了大羅門檻最棘手的斬屍難題與輪迴交易。這些內容補上後，突破大羅才不會只像一場副本通關。", "tags": ["斬屍", "輪迴殿", "九元觀", "大羅前夜"], "participants": ["韓立", "輪迴殿成員", "金童"], "locations": ["輪迴殿交易界面", "九元觀外圍"], "gains": ["斬屍線索", "九元觀準備"], "losses": ["大量時間與資源"], "types": ["突破難關", "交易", "前哨"], "impact": "把大羅突破前的內在門檻補出來，避免只剩外部戰鬥。", "subevents": [{"type": "瓶頸/斬屍", "label": "為大羅境關鍵的斬屍術苦尋方法", "summary": "這是仙界後段最核心的修煉難題之一。", "people": ["韓立"], "gains": ["斬屍線索"], "battle": "無", "importance": "main"}, {"type": "交易/輪迴", "label": "透過輪迴殿與各方交易換取情報", "summary": "韓立把組織資源也拉進個人突破線。", "people": ["韓立", "輪迴殿成員"], "gains": ["交易資源"], "battle": "無", "importance": "key"}, {"type": "前哨/潛入", "label": "對九元觀行動做最後佈局", "summary": "大戰真正開始前，已經在暗中走了很久。", "people": ["韓立", "金童"], "gains": ["九元觀準備"], "battle": "無", "importance": "detail"}]}, {"id": "immortal-20", "realmType": "仙界篇", "era": "大羅突破", "title": "九元觀、歲月塔與大五行幻世訣", "range": "仙界後段｜九元觀", "summary": "九元觀與歲月塔是仙界篇最標誌性的「強闖奪法則功法」事件。韓立從這裡真正跨入大羅層級。", "tags": ["九元觀", "歲月塔", "大五行幻世訣", "大羅"], "participants": ["韓立", "金童", "輪迴殿主"], "locations": ["九元觀", "歲月塔"], "gains": ["完整大五行幻世訣", "大羅修為"], "losses": ["安全退路"], "types": ["強闖", "功法合流", "突破"], "impact": "把韓立從法則競爭者推成真正能與道祖棋局對接的大羅強者。", "subevents": [{"type": "強闖/奪法", "label": "闖入九元觀追奪核心功法", "summary": "已經不是偷偷摸摸，而是直接與大勢力對著幹。", "people": ["韓立", "金童"], "gains": [], "battle": "九元觀激戰", "importance": "main"}, {"type": "塔中/死鬥", "label": "在歲月塔中死戰求勝", "summary": "這段把時間大道的壓迫感拉到非常高。", "people": ["韓立"], "gains": ["大五行幻世訣"], "battle": "歲月塔死鬥", "importance": "main"}, {"type": "突破/定位", "label": "成功晉入大羅層級", "summary": "從此進入仙界真正最上層棋盤。", "people": ["韓立"], "gains": ["大羅修為"], "battle": "無", "importance": "main"}]}, {"id": "immortal-21", "realmType": "仙界篇", "era": "終局前夜", "title": "天庭壓迫、各方集結與菩提盛宴前哨", "range": "仙界後段｜天庭前", "summary": "在最終大戰前，仙界不是安靜等待，而是天庭全面收網、各方勢力最後站隊。菩提盛宴前的張力非常足。", "tags": ["天庭", "菩提盛宴前夜", "集結", "收網"], "participants": ["韓立", "輪迴殿主", "古或今", "南宮婉"], "locations": ["中土仙域", "天庭周邊"], "gains": ["最終戰前的盟友格局"], "losses": ["最後的模糊地帶"], "types": ["集結", "政治", "終局前置"], "impact": "把最終大戰從單挑拉回全仙界的格局。", "subevents": [{"type": "壓迫/升級", "label": "天庭對各方進一步收網", "summary": "古或今不再只是在高處觀望，而是準備真正動手。", "people": ["韓立", "古或今"], "gains": [], "battle": "無", "importance": "main"}, {"type": "集結/站隊", "label": "輪迴殿與各方力量開始最後集結", "summary": "所有長線人物與勢力在此重新排位。", "people": ["韓立", "輪迴殿主", "南宮婉"], "gains": [], "battle": "無", "importance": "key"}, {"type": "前哨/醞釀", "label": "菩提盛宴前夕火藥味拉滿", "summary": "最終決戰的氛圍在這裡已經完全成形。", "people": ["韓立"], "gains": [], "battle": "無", "importance": "detail"}]}, {"id": "immortal-22", "realmType": "仙界篇", "era": "終局前段", "title": "菩提盛宴、天庭之變與混沌萬靈陣", "range": "仙界終局｜天庭", "summary": "菩提盛宴不是排場，而是最終棋局揭底的入口。混沌萬靈陣的啟動把天庭之戰從權力鬥爭直接推成世界存亡。", "tags": ["菩提盛宴", "天庭之變", "混沌萬靈陣", "古或今"], "participants": ["韓立", "古或今", "輪迴殿主", "南宮婉"], "locations": ["天庭"], "gains": ["攻入天庭的機會"], "losses": ["大量盟友與穩定秩序"], "types": ["揭底", "陣法", "攻天庭"], "impact": "讓最終戰不只是韓立對古或今，而是整個仙界對被扭曲秩序的一次反撲。", "subevents": [{"type": "盛宴/揭底", "label": "菩提盛宴揭開真正意圖", "summary": "古或今的大局在此不再遮掩。", "people": ["韓立", "古或今"], "gains": [], "battle": "無", "importance": "main"}, {"type": "陣法/滅世", "label": "混沌萬靈陣啟動", "summary": "世界級危機瞬間成形，留給眾人的選擇只剩反攻。", "people": ["韓立", "輪迴殿主"], "gains": [], "battle": "天庭突變", "importance": "main"}, {"type": "反擊/攻天", "label": "韓立等人正式殺上天庭", "summary": "從此進入全書最後一段直線終局。", "people": ["韓立", "輪迴殿主", "南宮婉"], "gains": [], "battle": "攻天庭", "importance": "key"}]}, {"id": "immortal-23", "realmType": "仙界篇", "era": "終局前段", "title": "攻天庭、終局盟友排布與最後布陣", "range": "仙界終局｜攻天庭前後", "summary": "菩提盛宴與混沌萬靈陣啟動之後，真正的攻天庭與終局布陣應該再拆出來，才能讓最後大戰不顯得全部擠在一張卡裡。", "tags": ["攻天庭", "終局盟友", "布陣"], "participants": ["韓立", "輪迴殿主", "南宮婉", "蛟三"], "locations": ["天庭周邊", "最終戰場前線"], "gains": ["終局站位", "最終戰準備"], "losses": ["最後退路"], "types": ["終局", "攻天庭", "佈陣"], "impact": "把仙界終局從兩張卡，拉回更像長篇應有的多層推進。", "subevents": [{"type": "進軍/攻天", "label": "韓立等人正式向天庭核心推進", "summary": "這已經不是潛行，而是正面改寫秩序。", "people": ["韓立", "輪迴殿主"], "gains": ["攻天庭節點"], "battle": "攻天庭", "importance": "main"}, {"type": "盟友/站位", "label": "終局主要盟友完成最後站位", "summary": "每條人物線都在這裡決定自己最後的位置。", "people": ["韓立", "南宮婉", "蛟三"], "gains": ["終局站位"], "battle": "無", "importance": "main"}, {"type": "布陣/壓縮", "label": "為最終大道對決做最後準備", "summary": "剩下的一切都將壓縮成最後一戰。", "people": ["韓立"], "gains": ["最終戰準備"], "battle": "無", "importance": "key"}]}, {"id": "immortal-24", "realmType": "仙界篇", "era": "終局核心", "title": "時間道祖終戰與古或今最終對決", "range": "仙界終局｜最後一戰", "summary": "最後一戰集中到韓立與古或今的時間大道正面碰撞。這裡保留作為終局最高峰，讓前面的攻天庭與布陣有地方匯流。", "tags": ["古或今", "時間道祖", "輪迴殿主", "大結局"], "participants": ["韓立", "古或今", "輪迴殿主", "南宮婉", "紫靈"], "locations": ["天庭最高處", "最終戰場"], "gains": ["完整掌天瓶", "時間道祖位格", "天道本源"], "losses": ["輪迴殿主", "最後的平凡可能"], "types": ["終戰", "道祖", "大結局"], "impact": "完成韓立整個角色弧線：從最怕死的凡人少年，走到能掌握時間大道卻仍想保留自由的存在。", "subevents": [{"type": "聯手/犧牲", "label": "與輪迴殿主完成最後聯手", "summary": "一切前世、輪迴與自我鏡像在此收束。", "people": ["韓立", "輪迴殿主"], "gains": [], "battle": "無", "importance": "main"}, {"type": "決戰/大道", "label": "與古或今展開時間大道最終對決", "summary": "這不是單純比法寶，而是大道與意志的全面碰撞。", "people": ["韓立", "古或今"], "gains": ["完整掌天瓶", "天道本源"], "battle": "時間大道終戰", "importance": "main"}, {"type": "收束/自由", "label": "成為新任時間道祖後選擇新的存在方式", "summary": "最終落點不是高高在上，而是回到韓立最初對自由與長生的理解。", "people": ["韓立", "南宮婉", "紫靈"], "gains": ["時間道祖位格"], "battle": "無", "importance": "key"}]}, {"id": "immortal-25", "realmType": "仙界篇", "era": "終局收束", "title": "自由結局、道祖位格與後日談收束", "range": "仙界終局｜大結局後", "summary": "真正的結局不只在於贏了古或今，而是韓立在得到時間道祖位格後，依然如何理解自由、長生與自身存在。這一層應獨立，不能跟終戰擠在一起。", "tags": ["大結局", "時間道祖", "自由", "後日談"], "participants": ["韓立", "南宮婉", "紫靈"], "locations": ["天庭後", "新秩序下的仙界"], "gains": ["時間道祖位格", "新的存在方式"], "losses": ["最後的平凡可能"], "types": ["收束", "後日談", "角色弧線"], "impact": "完成韓立從凡人到時間道祖、但仍選擇保留自我與自由的角色閉環。", "subevents": [{"type": "位格/承接", "label": "接下時間道祖位格與本源責任", "summary": "不是單純變強，而是成為某種秩序本身。", "people": ["韓立"], "gains": ["時間道祖位格"], "battle": "無", "importance": "main"}, {"type": "角色/落點", "label": "重新定義自由與長生的意義", "summary": "這正是韓立整部書最終的價值落點。", "people": ["韓立"], "gains": ["新的存在方式"], "battle": "無", "importance": "main"}, {"type": "後日談/收束", "label": "與重要人物關係回到新的平衡", "summary": "終局不是斷裂，而是把所有長線人物重新放回世界。", "people": ["韓立", "南宮婉", "紫靈"], "gains": ["後日談收束"], "battle": "無", "importance": "key"}]}];
+let state = {
+  realm: '全部',
+  density: 'standard',
+  search: '',
+  selectedId: eventGroups[0]?.id || null,
+  graph: null,
+  graphMode: 'core',
+};
 
-        // ================= 2. Massive Categorized ECharts Graph Data (擴充版) =================
-        const chartCategories = [
-            { name: '主角', itemStyle: { color: '#06b6d4' } },
-            { name: '紅顏/道侶', itemStyle: { color: '#ec4899' } },
-            { name: '至親/血脈', itemStyle: { color: '#f43f5e' } },
-            { name: '生死摯友/同道', itemStyle: { color: '#10b981' } },
-            { name: '靈獸/部屬/器靈', itemStyle: { color: '#fbbf24' } },
-            { name: '恩師/前輩/高人', itemStyle: { color: '#a855f7' } },
-            { name: '宿敵/死敵/反派', itemStyle: { color: '#b91c1c' } }
-        ];
+const tabBtns = [...document.querySelectorAll('.tab-btn')];
+const realmBtns = [...document.querySelectorAll('.realm-btn')];
+const densityBtns = [...document.querySelectorAll('.density-btn')];
+const timelineContainer = document.getElementById('timelineContainer');
+const sidebarContent = document.getElementById('sidebarContent');
+const resultCount = document.getElementById('resultCount');
+const searchInput = document.getElementById('searchInput');
+const ageRail = document.getElementById('ageRail');
+const graphModeBtns = [...document.querySelectorAll('.graph-mode-btn')];
 
-        // 擴充節點 (加入超過20位重要角色)
-        const chartNodes = [
-            // 主角
-            { id: "韓立", name: "韓立\n(時間道祖)", category: '主角', symbolSize: 90, itemStyle: { shadowBlur: 20, shadowColor: '#06b6d4' } },
-            
-            // 紅顏/道侶
-            { id: "南宮婉", name: "南宮婉\n(正妻)", category: '紅顏/道侶', symbolSize: 60 },
-            { id: "紫靈", name: "紫靈/汪凝\n(紅顏)", category: '紅顏/道侶', symbolSize: 55 },
-            { id: "元瑤", name: "元瑤\n(紅顏)", category: '紅顏/道侶', symbolSize: 50 },
-            { id: "銀月", name: "銀月\n(器靈/紅顏)", category: '紅顏/道侶', symbolSize: 50 },
-            { id: "陳巧倩", name: "陳巧倩\n(錯過情緣)", category: '紅顏/道侶', symbolSize: 35 },
-            { id: "董萱兒", name: "董萱兒\n(舊識)", category: '紅顏/道侶', symbolSize: 30 },
-            { id: "慕沛靈", name: "慕沛靈\n(名義妾室)", category: '紅顏/道侶', symbolSize: 35 },
-            { id: "梅凝", name: "梅凝\n(共患難)", category: '紅顏/道侶', symbolSize: 30 },
-            { id: "墨彩環", name: "墨彩環\n(無緣凡俗)", category: '紅顏/道侶', symbolSize: 35 },
-            { id: "甘如霜", name: "甘如霜\n(南宮婉前世)", category: '紅顏/道侶', symbolSize: 45 },
-            { id: "凌玉靈", name: "凌玉靈\n(星宮少主/紅顏)", category: '紅顏/道侶', symbolSize: 45 },
-            { id: "樂韻", name: "樂韻\n(慕蘭聖女)", category: '紅顏/道侶', symbolSize: 40 },
-            
-            // 至親/血脈
-            { id: "蛟三", name: "蛟三/甘九真\n(親生女兒)", category: '至親/血脈', symbolSize: 55 },
-            { id: "柳樂兒", name: "柳樂兒\n(狐妖妹妹)", category: '至親/血脈', symbolSize: 50 },
-            { id: "田琴兒", name: "田琴兒\n(辛如音轉世)", category: '至親/血脈', symbolSize: 40 },
-            { id: "韓家", name: "韓家\n(凡俗家人)", category: '至親/血脈', symbolSize: 25 },
-            { id: "嚴氏", name: "嚴氏\n(凡俗師母)", category: '至親/血脈', symbolSize: 28 },
-            
-            // 生死摯友/同道
-            { id: "厲飛雨", name: "厲飛雨\n(生死摯友)", category: '生死摯友/同道', symbolSize: 50 },
-            { id: "張鐵", name: "張鐵/曲魂\n(師弟/煉屍)", category: '生死摯友/同道', symbolSize: 40 },
-            { id: "辛如音", name: "辛如音\n(陣法奇才)", category: '生死摯友/同道', symbolSize: 40 },
-            { id: "齊雲霄", name: "齊雲霄\n(煉器師)", category: '生死摯友/同道', symbolSize: 30 },
-            { id: "萬小山", name: "萬小山\n(太南摯友)", category: '生死摯友/同道', symbolSize: 30 },
-            { id: "冰鳳", name: "冰鳳\n(偷渡道友)", category: '生死摯友/同道', symbolSize: 40 },
-            { id: "石穿空", name: "石穿空\n(灰界生死友)", category: '生死摯友/同道', symbolSize: 45 },
-            { id: "呼言道人", name: "呼言道人\n(忘年交)", category: '生死摯友/同道', symbolSize: 40 },
-            { id: "呂洛", name: "呂洛\n(落雲宗師兄)", category: '生死摯友/同道', symbolSize: 38 },
-            { id: "雷蘭", name: "雷蘭\n(天鵬族)", category: '生死摯友/同道', symbolSize: 30 },
-            { id: "白果兒", name: "白果兒\n(弟子)", category: '生死摯友/同道', symbolSize: 35 },
-            { id: "海大少", name: "海大少\n(記名弟子)", category: '生死摯友/同道', symbolSize: 30 },
-            { id: "器靈子", name: "器靈子\n(記名弟子)", category: '生死摯友/同道', symbolSize: 30 },
-            
-            // 靈獸/部屬/器靈
-            { id: "金童", name: "金童\n(噬金仙/道祖)", category: '靈獸/部屬/器靈', symbolSize: 65 },
-            { id: "啼魂", name: "啼魂\n(刑獸/大羅)", category: '靈獸/部屬/器靈', symbolSize: 55 },
-            { id: "六翼霜蚣", name: "六翼霜蚣\n(叛變靈蟲)", category: '靈獸/部屬/器靈', symbolSize: 45 },
-            { id: "蟹道人", name: "蟹道人\n(仙界傀儡)", category: '靈獸/部屬/器靈', symbolSize: 45 },
-            { id: "魔光", name: "魔光\n(契約天魔)", category: '靈獸/部屬/器靈', symbolSize: 40 },
-            { id: "火須子", name: "火須子\n(火靈)", category: '靈獸/部屬/器靈', symbolSize: 35 },
-            { id: "貔貅", name: "小白/貔貅\n(真靈)", category: '靈獸/部屬/器靈', symbolSize: 40 },
-            { id: "血玉蜘蛛", name: "血玉蜘蛛\n(拉鼎隕落)", category: '靈獸/部屬/器靈', symbolSize: 35 },
-            { id: "豹麟獸", name: "豹麟獸\n(飛靈族收服)", category: '靈獸/部屬/器靈', symbolSize: 35 },
-            
-            // 恩師/前輩/高人
-            { id: "大衍神君", name: "大衍神君\n(良師益友)", category: '恩師/前輩/高人', symbolSize: 55 },
-            { id: "李化元", name: "李化元\n(築基恩師)", category: '恩師/前輩/高人', symbolSize: 40 },
-            { id: "天星雙聖", name: "天星雙聖\n(星宮之主)", category: '恩師/前輩/高人', symbolSize: 48 },
-            { id: "向之禮", name: "向之禮\n(化神苟王)", category: '恩師/前輩/高人', symbolSize: 45 },
-            { id: "寶花", name: "寶花\n(魔界始祖)", category: '恩師/前輩/高人', symbolSize: 55 },
-            { id: "車老妖", name: "車老妖\n(萬妖谷主)", category: '恩師/前輩/高人', symbolSize: 40 },
-            { id: "青元子", name: "青元子\n(劍訣祖師)", category: '恩師/前輩/高人', symbolSize: 50 },
-            { id: "冰魄仙子", name: "冰魄仙子\n(人族前輩)", category: '恩師/前輩/高人', symbolSize: 40 },
-            { id: "明尊", name: "明尊\n(戰死大乘)", category: '恩師/前輩/高人', symbolSize: 40 },
-            { id: "百里炎", name: "百里炎\n(業火道祖)", category: '恩師/前輩/高人', symbolSize: 45 },
-            { id: "輪迴殿主", name: "輪迴殿主\n(前世/分身)", category: '恩師/前輩/高人', symbolSize: 70 },
-            { id: "虛靈", name: "虛靈仙子\n(蜉蝣族道祖)", category: '恩師/前輩/高人', symbolSize: 45 },
-            { id: "金悅", name: "金悅\n(天鵬大長老)", category: '恩師/前輩/高人', symbolSize: 35 },
-            
-            // 宿敵/死敵/反派
-            { id: "墨居仁", name: "墨居仁\n(啟蒙恩師/死敵)", category: '宿敵/死敵/反派', symbolSize: 45 },
-            { id: "余子童", name: "余子童\n(圖謀奪舍)", category: '宿敵/死敵/反派', symbolSize: 32 },
-            { id: "王蟬", name: "王蟬\n(人界宿敵)", category: '宿敵/死敵/反派', symbolSize: 35 },
-            { id: "金光上人", name: "金光上人\n(贈令快遞)", category: '宿敵/死敵/反派', symbolSize: 25 },
-            { id: "極陰祖師", name: "極陰祖師\n(虛天殿仇敵)", category: '宿敵/死敵/反派', symbolSize: 40 },
-            { id: "玄骨上人", name: "玄骨上人\n(算計反殺)", category: '宿敵/死敵/反派', symbolSize: 40 },
-            { id: "六道極聖", name: "六道極聖\n(逆星盟主)", category: '宿敵/死敵/反派', symbolSize: 45 },
-            { id: "黑煞教主", name: "越皇/黑煞教主\n(越京死敵)", category: '宿敵/死敵/反派', symbolSize: 35 },
-            { id: "血焰古魔", name: "血焰古魔\n(墜魔谷敵)", category: '宿敵/死敵/反派', symbolSize: 35 },
-            { id: "元剎", name: "元剎聖祖\n(昆吾山大敵)", category: '宿敵/死敵/反派', symbolSize: 40 },
-            { id: "元魘", name: "元魘\n(魔界聖祖)", category: '宿敵/死敵/反派', symbolSize: 45 },
-            { id: "木青", name: "木青\n(地淵妖王)", category: '宿敵/死敵/反派', symbolSize: 35 },
-            { id: "馬良", name: "馬良\n(下凡真仙)", category: '宿敵/死敵/反派', symbolSize: 50 },
-            { id: "螟蟲之母", name: "螟蟲之母\n(吞世之劫)", category: '宿敵/死敵/反派', symbolSize: 45 },
-            { id: "方磐", name: "方磐\n(暗算追殺)", category: '宿敵/死敵/反派', symbolSize: 38 },
-            { id: "奇摩子", name: "奇摩子\n(仙界叛徒)", category: '宿敵/死敵/反派', symbolSize: 48 },
-            { id: "蕭晉寒", name: "蕭晉寒\n(仙府死敵)", category: '宿敵/死敵/反派', symbolSize: 45 },
-            { id: "照骨真人", name: "照骨真人\n(灰界大敵)", category: '宿敵/死敵/反派', symbolSize: 42 },
-            { id: "古或今", name: "古或今\n(時間道祖/最終)", category: '宿敵/死敵/反派', symbolSize: 80, itemStyle: { shadowBlur: 20, shadowColor: '#ef4444' } }
-        ];
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
 
-        // 擴充連線
-        let chartLinks = [
-            // 主角與紅顏
-            { source: "韓立", target: "南宮婉", value: "血色結緣，結髮正妻" },
-            { source: "韓立", target: "紫靈", value: "亂星結識，共患難飛升" },
-            { source: "韓立", target: "元瑤", value: "黑鐵沙漠救命，贈啼魂" },
-            { source: "韓立", target: "銀月", value: "虛天器靈，生死相隨" },
-            { source: "韓立", target: "陳巧倩", value: "同門師姐，無緣錯過" },
-            { source: "韓立", target: "慕沛靈", value: "名義妾室，元嬰期隕落" },
-            { source: "韓立", target: "董萱兒", value: "燕家堡突圍，情愫暗生" },
-            { source: "韓立", target: "梅凝", value: "陰冥之地共患難" },
-            { source: "韓立", target: "墨彩環", value: "凡俗無緣，曾許來生" },
-            { source: "韓立", target: "凌玉靈", value: "星宮少主，互有好感" },
-            { source: "韓立", target: "樂韻", value: "邊界休戰牽線，助其解咒" },
-            { source: "墨彩環", target: "紫靈", value: "疑似轉世 / 精神延續 (書迷推測)", lineStyle: { type: 'dashed' } },
-            
-            // 主角與至親轉世
-            { source: "韓立", target: "蛟三", value: "平行時空之親生女兒" },
-            { source: "南宮婉", target: "蛟三", value: "血脈母女" },
-            { source: "輪迴殿主", target: "甘如霜", value: "結髮道侶 (平行時空)" },
-            { source: "甘如霜", target: "南宮婉", value: "靈魂轉世" },
-            { source: "韓立", target: "柳樂兒", value: "仙界救命，視如親妹" },
-            { source: "韓立", target: "韓家", value: "留下功法，斬斷凡塵" },
-            { source: "辛如音", target: "田琴兒", value: "龍吟之質轉世" },
-            { source: "韓立", target: "田琴兒", value: "收為親傳弟子" },
-            { source: "墨居仁", target: "嚴氏", value: "結髮夫妻" },
-            
-            // 主角與摯友/弟子
-            { source: "韓立", target: "厲飛雨", value: "七玄門生死交(殺人放火名號)" },
-            { source: "韓立", target: "張鐵", value: "七玄門同門師弟，後收服為曲魂" },
-            { source: "韓立", target: "辛如音", value: "修復古傳送陣，傳陣法" },
-            { source: "韓立", target: "齊雲霄", value: "交易大衍決與陣法" },
-            { source: "齊雲霄", target: "辛如音", value: "道侶" },
-            { source: "韓立", target: "萬小山", value: "太南小會結識，修仙界第一位朋友" },
-            { source: "韓立", target: "冰鳳", value: "聯手闖空間節點偷渡" },
-            { source: "韓立", target: "石穿空", value: "灰界同生共死" },
-            { source: "韓立", target: "呼言道人", value: "燭龍道忘年交" },
-            { source: "韓立", target: "呂洛", value: "落雲宗師兄，相互扶持" },
-            { source: "韓立", target: "白果兒", value: "人界親傳弟子" },
-            { source: "韓立", target: "海大少", value: "記名弟子" },
-            { source: "韓立", target: "雷蘭", value: "天鵬族聖子試煉搭檔" },
-            
-            // 主角與靈寵/傀儡
-            { source: "韓立", target: "金童", value: "本命靈蟲，噬金仙，情同父女" },
-            { source: "韓立", target: "啼魂", value: "專剋鬼物靈寵 (元瑤於虛天贈)" },
-            { source: "元瑤", target: "啼魂", value: "擊殺青陽門少主奪得，後贈韓立" },
-            { source: "韓立", target: "六翼霜蚣", value: "收服培育，後生神智叛逃" },
-            { source: "韓立", target: "血玉蜘蛛", value: "越京獲卵，虛天殿拉鼎隕落" },
-            { source: "韓立", target: "蟹道人", value: "仙界雇傭傀儡/並肩作戰" },
-            { source: "韓立", target: "魔光", value: "簽訂天魔契約" },
-            { source: "韓立", target: "火須子", value: "火道靈物" },
-            { source: "韓立", target: "貔貅", value: "仙界收服真靈小白" },
-            { source: "韓立", target: "豹麟獸", value: "飛靈族地淵收服" },
-            
-            // 主角與前輩/合作
-            { source: "韓立", target: "李化元", value: "築基期師傅，傳青元劍訣" },
-            { source: "韓立", target: "大衍神君", value: "寄宿竹筒，傳承大衍決機關術" },
-            { source: "韓立", target: "向之禮", value: "血色禁地同行，靈界相遇" },
-            { source: "凌玉靈", target: "天星雙聖", value: "血脈父母" },
-            { source: "韓立", target: "寶花", value: "魔界交易合作，助平螟蟲" },
-            { source: "韓立", target: "車老妖", value: "人界頂級大妖，互有忌憚" },
-            { source: "韓立", target: "青元子", value: "劍訣創始人，靈界贈禮" },
-            { source: "韓立", target: "冰魄仙子", value: "天淵城獲其遺留線索" },
-            { source: "韓立", target: "明尊", value: "聯手佈陣血戰馬良" },
-            { source: "韓立", target: "百里炎", value: "業火道祖，仙界切磋交好" },
-            { source: "韓立", target: "輪迴殿主", value: "前世今生，平行時空分身" },
-            { source: "韓立", target: "虛靈", value: "助其平亂，獲廣寒令牌" },
-            { source: "韓立", target: "金悅", value: "被迫交易，偽裝天鵬聖子" },
-            
-            // 主角與宿敵/被殺
-            { source: "韓立", target: "墨居仁", value: "圖謀奪舍，神手谷反殺" },
-            { source: "韓立", target: "余子童", value: "教唆墨居仁奪舍，被韓立吞噬" },
-            { source: "墨居仁", target: "張鐵", value: "將其暗害煉成曲魂" },
-            { source: "韓立", target: "金光上人", value: "火彈反殺，爆升仙令" },
-            { source: "韓立", target: "王蟬", value: "燕家堡血戰，人界死敵" },
-            { source: "韓立", target: "黑煞教主", value: "越京血戰誅殺，獲血玉蜘蛛" },
-            { source: "韓立", target: "極陰祖師", value: "虛天殿仇敵，算計" },
-            { source: "韓立", target: "玄骨上人", value: "虛天殿冰火道辟邪雷反殺" },
-            { source: "天星雙聖", target: "六道極聖", value: "死敵，亂星海爭霸" },
-            { source: "韓立", target: "血焰古魔", value: "墜魔谷死戰" },
-            { source: "韓立", target: "元剎", value: "昆吾山參與鎮壓分念" },
-            { source: "韓立", target: "木青", value: "地淵妖王，騙取神乳" },
-            { source: "韓立", target: "元魘", value: "洗靈池大戰" },
-            { source: "韓立", target: "馬良", value: "靈界滅世，玄天斬仙" },
-            { source: "韓立", target: "螟蟲之母", value: "聯手寶花鎮壓" },
-            { source: "韓立", target: "方磐", value: "仙界初期暗算，後反殺" },
-            { source: "韓立", target: "奇摩子", value: "仙界大反派，歲月塔爭奪" },
-            { source: "韓立", target: "蕭晉寒", value: "冥寒仙府怒斬金仙" },
-            { source: "韓立", target: "照骨真人", value: "灰界血戰" },
-            { source: "韓立", target: "古或今", value: "時間大道終極之戰，擊殺" },
-            { source: "輪迴殿主", target: "古或今", value: "宿命死敵" }
-        ];
 
-        // 預先處理連線樣式 (避免搜尋還原時線條亂飄)
-        chartLinks = chartLinks.map(link => ({
-            ...link,
-            lineStyle: {
-                color: link.value.includes('殺') || link.value.includes('死') || link.value.includes('敵') || link.value.includes('仇') || link.value.includes('奪舍') || link.value.includes('暗害') ? '#ef4444' : 
-                       link.value.includes('妻') || link.value.includes('紅顏') ? '#ec4899' : 
-                       link.value.includes('傳承') || link.value.includes('師') || link.value.includes('前世') || link.value.includes('轉世') ? '#a855f7' : '#64748b',
-                width: link.value.includes('殺') || link.value.includes('妻') || link.value.includes('死敵') || link.value.includes('轉世') ? 3 : 1.5,
-                opacity: 0.7,
-                curveness: Math.random() * 0.2 + 0.15
-            }
-        }));
+function splitRange(range) {
+  const parts = String(range || '').split('｜');
+  return {
+    age: (parts[0] || '').trim(),
+    scope: (parts[1] || '').trim()
+  };
+}
 
-        // --- App Logic ---
-        let currentTimelineFilter = '全部';
-        let currentSearchTimeline = '';
-        let myChart = null;
+function wrapLabel(text, lineLength = 8, maxLines = 2) {
+  const source = String(text || '');
+  if (!source) return '';
+  const chunks = [];
+  for (let i = 0; i < source.length; i += lineLength) {
+    chunks.push(source.slice(i, i + lineLength));
+  }
+  const lines = chunks.slice(0, maxLines);
+  if (chunks.length > maxLines) {
+    lines[maxLines - 1] = `${lines[maxLines - 1].slice(0, Math.max(0, lineLength - 1))}…`;
+  }
+  return lines.join('\n');
+}
 
-        function getRealmColorTheme(realmType) {
-            if (realmType === '人界篇') return { text: 'text-emerald-400', border: 'border-emerald-500/40', bg: 'bg-emerald-900/20' };
-            if (realmType === '靈界篇') return { text: 'text-cyan-400', border: 'border-cyan-500/40', bg: 'bg-cyan-900/20' };
-            if (realmType === '仙界篇') return { text: 'text-amber-400', border: 'border-amber-500/40', bg: 'bg-amber-900/20' };
-            return { text: 'text-gray-300', border: 'border-gray-500/40', bg: 'bg-gray-800/20' };
-        }
+function badgeColor(realm) {
+  if (realm === '人界篇') return 'text-emerald-300 border-emerald-500/40 bg-emerald-500/10';
+  if (realm === '靈界篇') return 'text-cyan-300 border-cyan-500/40 bg-cyan-500/10';
+  return 'text-amber-300 border-amber-500/40 bg-amber-500/10';
+}
 
-        // --- Timeline Logic ---
-        function filterTimeline(realmType) {
-            currentTimelineFilter = realmType;
-            document.querySelectorAll('#view-timeline .filter-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`filter-${realmType}`).classList.add('active');
-            renderTimeline();
-        }
+function highlight(text, query) {
+  const safe = escapeHtml(text);
+  if (!query) return safe;
+  try {
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return safe.replace(new RegExp(escaped, 'ig'), (m) => `<mark>${m}</mark>`);
+  } catch {
+    return safe;
+  }
+}
 
-        function toggleCard(headerElement) {
-            const card = headerElement.closest('.event-card');
-            card.classList.toggle('expanded');
-        }
+function getFilteredGroups() {
+  const q = state.search.trim().toLowerCase();
+  return eventGroups.filter(group => {
+    if (state.realm !== '全部' && group.realmType !== state.realm) return false;
+    if (!q) return true;
+    const haystack = [
+      group.title, group.summary, group.era, group.range, group.impact,
+      ...(group.tags || []), ...(group.participants || []), ...(group.locations || []),
+      ...(group.gains || []), ...(group.losses || []), ...(group.types || []),
+      ...(group.subevents || []).flatMap(s => [s.label, s.summary, s.type, ...(s.people || []), ...(s.gains || [])])
+    ].join(' ').toLowerCase();
+    return haystack.includes(q);
+  });
+}
 
-        function toggleAllCards() {
-            const btn = document.getElementById('toggleAllBtn');
-            const isExpanding = btn.innerHTML.includes('展開');
-            const cards = document.querySelectorAll('.event-card');
-            
-            cards.forEach(card => {
-                if (isExpanding) card.classList.add('expanded');
-                else card.classList.remove('expanded');
-            });
+function getVisibleSubevents(group) {
+  if (state.density === 'brief') return [];
+  if (state.density === 'standard') return group.subevents.filter(s => s.importance !== 'detail');
+  return group.subevents;
+}
 
-            if (isExpanding) {
-                btn.innerHTML = '<i class="fa-solid fa-angles-up"></i> <span class="hidden sm:inline">全部收合</span>';
-            } else {
-                btn.innerHTML = '<i class="fa-solid fa-angles-down"></i> <span class="hidden sm:inline">全部展開</span>';
-            }
-        }
 
-        function renderTimeline() {
-            const container = document.getElementById('timeline-container');
-            if(!container) return;
-            container.innerHTML = '';
-            
-            currentSearchTimeline = document.getElementById('searchTimeline').value.toLowerCase();
-            let filteredData = timelineData;
-            
-            if (currentTimelineFilter !== '全部') {
-                filteredData = filteredData.filter(item => item.realmType === currentTimelineFilter);
-            }
-            if (currentSearchTimeline.trim() !== '') {
-                filteredData = filteredData.filter(item => {
-                    const str = `${item.phase} ${item.event} ${item.location} ${item.combat} ${item.relations} ${item.loot} ${item.techniques} ${item.insects}`.toLowerCase();
-                    return str.includes(currentSearchTimeline);
-                });
-            }
 
-            const resultCountElement = document.getElementById('resultCount');
-            if (resultCountElement) {
-                resultCountElement.innerText = `檢索到 ${filteredData.length} 條因果`;
-            }
-            
-            const autoExpand = currentSearchTimeline.trim() !== '' ? 'expanded' : '';
-            let html = '';
+function getRealmColor(realm) {
+  if (realm === '人界篇') return '#10b981';
+  if (realm === '靈界篇') return '#06b6d4';
+  return '#fbbf24';
+}
 
-            filteredData.forEach((item, index) => {
-                const isLeft = index % 2 === 0;
-                const layoutClass = isLeft ? 'flex-row' : 'flex-row-reverse';
-                const theme = getRealmColorTheme(item.realmType);
+function makeMicroNodes(group) {
+  const pack = [];
+  (group.gains || []).slice(0, 4).forEach(item => pack.push({ kind: '收穫', icon: 'fa-solid fa-box-open', color: 'text-cyan-300', text: item }));
+  (group.losses || []).slice(0, 2).forEach(item => pack.push({ kind: '代價', icon: 'fa-solid fa-fire', color: 'text-rose-300', text: item }));
+  (group.locations || []).slice(0, 2).forEach(item => pack.push({ kind: '場域', icon: 'fa-solid fa-location-dot', color: 'text-slate-300', text: item }));
+  const people = (group.participants || []).filter(p => p !== '韓立').slice(0, 3);
+  people.forEach(item => pack.push({ kind: '角色', icon: 'fa-solid fa-user', color: 'text-emerald-300', text: item }));
+  return pack;
+}
 
-                html += `
-                <div class="flex flex-col md:${layoutClass} w-full items-center justify-between relative z-10 group">
-                    <div class="w-full md:w-[43%] z-20">
-                        <div class="glass-card event-card rounded-2xl p-5 ${autoExpand} ${theme.border}">
-                            <div class="cursor-pointer flex flex-col gap-2 select-none" onclick="toggleCard(this)">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-[10px] px-2 py-0.5 rounded ${theme.bg} border ${theme.border} ${theme.text} tracking-wider">${item.realmType}</span>
-                                    <i class="fa-solid fa-chevron-down text-gray-500 chevron-icon"></i>
-                                </div>
-                                <h3 class="text-xl font-serif font-bold ${theme.text} drop-shadow-md">${item.phase}</h3>
-                                <div class="text-[13px] text-gray-400 font-light flex justify-between items-center mt-1">
-                                    <span class="md:hidden text-amber-500 font-bold tracking-widest">${item.age}</span>
-                                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-gray-600"></i> ${item.location}</span>
-                                    <span class="text-purple-400/90 font-medium">${item.realm}</span>
-                                </div>
-                            </div>
+function renderAgeRail() {
+  ageRail.innerHTML = '';
+  ageRail.classList.add('hidden');
+}
 
-                            <div class="collapse-content">
-                                <p class="text-gray-300 text-[14px] leading-relaxed mb-4 font-light">${item.event}</p>
-                                
-                                <div class="bg-black/40 p-3 rounded-xl border border-white/5 mb-3">
-                                    <span class="text-gray-500 text-[11px] block mb-1"><i class="fa-solid fa-khanda text-red-500/80 mr-1.5"></i>戰鬥紀錄</span>
-                                    <span class="text-gray-200 text-[13px]">${item.combat}</span>
-                                    ${item.kills !== '無' ? `<div class="text-red-400 text-[11px] mt-2 font-medium border-t border-red-900/30 pt-1.5"><i class="fa-solid fa-skull mr-1"></i>斬殺: ${item.kills}</div>` : ''}
-                                </div>
 
-                                <div class="flex flex-wrap gap-2 mb-4">
-                                    ${item.loot !== '無' ? `<span class="mini-tag text-cyan-300"><i class="fa-solid fa-box-open text-cyan-600"></i>${item.loot}</span>` : ''}
-                                    ${item.techniques !== '無' ? `<span class="mini-tag text-purple-300"><i class="fa-solid fa-book text-purple-600"></i>${item.techniques}</span>` : ''}
-                                    ${item.abilities !== '無' ? `<span class="mini-tag text-indigo-300"><i class="fa-solid fa-bolt text-indigo-600"></i>${item.abilities}</span>` : ''}
-                                    ${item.insects !== '無' ? `<span class="mini-tag text-emerald-300"><i class="fa-solid fa-bug text-emerald-600"></i>${item.insects}</span>` : ''}
-                                </div>
+function buildGraphData() {
+  const groups = eventGroups.filter(group => state.realm === '全部' || group.realmType === state.realm);
+  const palette = {
+    '人界篇': '#10b981',
+    '靈界篇': '#06b6d4',
+    '仙界篇': '#fbbf24'
+  };
+  const categories = [
+    { name: '人界事件' },
+    { name: '靈界事件' },
+    { name: '仙界事件' },
+    { name: '核心人物' },
+    { name: '關聯人物' }
+  ];
+  const nodes = [];
+  const links = [];
+  const personMap = new Map();
+  const coreRoster = new Set(['韓立','南宮婉','銀月','紫靈','元瑤','辛如音','厲飛雨','大衍神君','輪迴殿主','古或今','金童','墨居仁','李化元','寶花','石穿空','蛟三','呼言道人','銀月','南隴侯']);
 
-                                <div class="text-[12px] bg-gradient-to-r from-gray-900/80 to-transparent py-2.5 px-3 rounded-lg border-l-2 ${theme.border} font-light">
-                                    <span class="text-gray-500">人際羈絆：</span><span class="text-gray-200 ml-1">${item.relations}</span>
-                                </div>
-                                
-                                ${item.lost !== '無' ? `
-                                <div class="mt-3 text-red-300 text-[11px] bg-red-900/20 px-3 py-1.5 rounded-lg border border-red-900/50 flex items-center gap-2 font-medium">
-                                    <i class="fa-solid fa-fire text-red-500"></i>代價/失去: ${item.lost}
-                                </div>` : ''}
-                            </div>
-                        </div>
+  groups.forEach((group, idx) => {
+    const rangeInfo = splitRange(group.range);
+    const eventCategory = group.realmType === '人界篇' ? 0 : group.realmType === '靈界篇' ? 1 : 2;
+    const eventWeight = (group.subevents?.length || 0) + (group.participants?.length || 0) + (group.gains?.length || 0);
+    nodes.push({
+      id: group.id,
+      name: group.title,
+      labelName: wrapLabel(group.title, 8, 2),
+      nodeType: 'event',
+      realm: group.realmType,
+      category: eventCategory,
+      age: rangeInfo.age,
+      scope: rangeInfo.scope,
+      participantsCount: (group.participants || []).length,
+      subeventCount: (group.subevents || []).length,
+      impact: group.impact,
+      symbol: 'roundRect',
+      symbolSize: Math.min(74, 32 + eventWeight * 1.45),
+      itemStyle: {
+        color: palette[group.realmType],
+        borderColor: 'rgba(255,255,255,.28)',
+        borderWidth: 1.2,
+        shadowBlur: 18,
+        shadowColor: palette[group.realmType]
+      },
+      label: { fontWeight: 700 }
+    });
+    if (idx > 0) {
+      links.push({
+        source: groups[idx - 1].id,
+        target: group.id,
+        value: '時間推進',
+        sourceName: groups[idx - 1].title,
+        targetName: group.title,
+        lineStyle: { color: 'rgba(148,163,184,.65)', width: 1.8, opacity: .9 }
+      });
+    }
+
+    (group.participants || []).forEach(person => {
+      const id = `char:${person}`;
+      if (!personMap.has(id)) {
+        personMap.set(id, {
+          id,
+          name: person,
+          count: 0,
+          realms: new Set(),
+          eventIds: [],
+          eventNames: []
+        });
+      }
+      const info = personMap.get(id);
+      info.count += 1;
+      info.realms.add(group.realmType);
+      info.eventIds.push(group.id);
+      info.eventNames.push(group.title);
+    });
+  });
+
+  if (state.graphMode !== 'events') {
+    [...personMap.values()].forEach(info => {
+      const core = info.count >= 3 || coreRoster.has(info.name) || info.realms.size >= 2;
+      if (state.graphMode === 'core' && !core) return;
+      nodes.push({
+        id: info.id,
+        name: info.name,
+        labelName: info.name,
+        nodeType: 'character',
+        category: core ? 3 : 4,
+        occurrence: info.count,
+        realms: [...info.realms],
+        relatedEvents: info.eventNames,
+        symbol: core ? 'diamond' : 'circle',
+        symbolSize: core ? Math.min(60, 28 + info.count * 5) : Math.min(34, 14 + info.count * 3),
+        itemStyle: {
+          color: core ? '#e2e8f0' : '#94a3b8',
+          borderColor: core ? '#f8fafc' : '#cbd5e1',
+          borderWidth: core ? 1.4 : 1,
+          shadowBlur: core ? 16 : 8,
+          shadowColor: 'rgba(226,232,240,.35)'
+        },
+        label: { fontWeight: core ? 700 : 500 }
+      });
+    });
+
+    groups.forEach(group => {
+      (group.participants || []).forEach(person => {
+        const id = `char:${person}`;
+        const info = personMap.get(id);
+        const core = info && (info.count >= 3 || coreRoster.has(info.name) || info.realms.size >= 2);
+        if (state.graphMode === 'core' && !core) return;
+        links.push({
+          source: id,
+          target: group.id,
+          value: info && info.realms.size > 1 ? '跨篇角色線' : '角色參與',
+          sourceName: person,
+          targetName: group.title,
+          lineStyle: {
+            type: 'dashed',
+            color: palette[group.realmType],
+            opacity: .28,
+            width: 1.1,
+            curveness: .1
+          }
+        });
+      });
+    });
+  }
+
+  return { nodes, links, categories };
+}
+
+
+function getRealmDescriptor(realm) {
+  if (realm === '人界篇') return '凡俗起步、越國風雲、亂星海、大晉與飛升前夜。';
+  if (realm === '靈界篇') return '初入靈界、百族爭鋒、魔界潛行與飛升前夕。';
+  return '仙域失憶重修、輪迴殿暗線、時間法則與終局之戰。';
+}
+
+function renderRealmDivider(realm) {
+  const color = getRealmColor(realm);
+  return `
+    <div class="realm-divider">
+      <div class="realm-divider-line" style="background:linear-gradient(to bottom, ${color}, transparent)"></div>
+      <div class="realm-divider-row">
+        <span class="realm-divider-pill" style="color:${color}; border-color:${color}44; background:${color}12">
+          <i class="fa-solid fa-book-open"></i>${escapeHtml(realm)}
+        </span>
+        <div class="realm-divider-copy">
+          <div class="realm-divider-title">${escapeHtml(realm)}</div>
+          <div class="realm-divider-desc">${escapeHtml(getRealmDescriptor(realm))}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+
+
+function renderTimeline() {
+  const groups = getFilteredGroups();
+  ageRail.innerHTML = '';
+  ageRail.classList.add('hidden');
+
+  if (!groups.find(g => g.id === state.selectedId)) {
+    state.selectedId = groups[0]?.id || null;
+  }
+  resultCount.textContent = `共 ${groups.length} 個事件群｜${state.density === 'brief' ? '主事件層' : state.density === 'standard' ? '主事件＋關鍵子事件' : '完整事件＋關聯節點層'}`;
+  if (groups.length === 0) {
+    timelineContainer.innerHTML = `<div class="py-16 text-center text-slate-400">查無符合條件的事件群。</div>`;
+    sidebarContent.innerHTML = `<div class="text-slate-400">沒有可顯示的事件內容。</div>`;
+    return;
+  }
+
+  let lastRealm = null;
+  timelineContainer.innerHTML = groups.map((group, index) => {
+    const selected = group.id === state.selectedId;
+    const subevents = getVisibleSubevents(group);
+    const typeChips = (group.tags || []).slice(0, 5).map(tag => `<span class="mini-chip text-slate-300">${highlight(tag, state.search)}</span>`).join('');
+    const gainPreview = (group.gains || []).slice(0, 3).map(tag => `<span class="mini-chip text-cyan-300"><i class="fa-solid fa-box-open text-cyan-500"></i>${highlight(tag, state.search)}</span>`).join('');
+    const microNodes = state.density === 'detail' ? makeMicroNodes(group) : [];
+    const rangeInfo = splitRange(group.range);
+    const ageText = rangeInfo.age || '年齡未明';
+    const scopeText = rangeInfo.scope || group.era;
+    const subeventHtml = subevents.map((sub, idx) => `
+      <div class="subevent ${sub.importance} pl-4 py-3 ${idx ? 'mt-2' : 'mt-4'}">
+        <div class="flex flex-wrap items-center gap-2 mb-2">
+          <span class="text-[11px] tracking-wide px-2 py-1 rounded-full border border-slate-700 text-slate-300 bg-black/25">${highlight(sub.type, state.search)}</span>
+          <h4 class="font-bold text-slate-100">${highlight(sub.label, state.search)}</h4>
+        </div>
+        <p class="text-sm text-slate-300 leading-6">${highlight(sub.summary, state.search)}</p>
+        <div class="flex flex-wrap gap-2 mt-3">
+          ${(sub.people || []).slice(0,4).map(p => `<span class="mini-chip text-emerald-300"><i class="fa-solid fa-user text-emerald-500"></i>${highlight(p, state.search)}</span>`).join('')}
+          ${(sub.gains || []).slice(0,3).map(g => `<span class="mini-chip text-cyan-300"><i class="fa-solid fa-sparkles text-cyan-500"></i>${highlight(g, state.search)}</span>`).join('')}
+          ${sub.battle && sub.battle !== '無' ? `<span class="mini-chip text-rose-300"><i class="fa-solid fa-khanda text-rose-500"></i>${highlight(sub.battle, state.search)}</span>` : ''}
+        </div>
+      </div>
+    `).join('');
+
+    const prefix = group.realmType !== lastRealm ? renderRealmDivider(group.realmType) : '';
+    lastRealm = group.realmType;
+
+    return `
+      ${prefix}
+      <div class="timeline-entry" data-id="${group.id}">
+        <span class="event-dot" style="background:${getRealmColor(group.realmType)}"></span>
+        <article class="event-card rounded-3xl border p-5 lg:p-6 cursor-pointer transition-all duration-300 ${selected ? 'selected' : 'hover:bg-slate-950/20'}" data-id="${group.id}">
+          <div class="event-layout">
+            <div class="event-meta-panel">
+              <div class="event-order">#${String(index + 1).padStart(2, '0')}</div>
+              <div class="event-age">${highlight(ageText, state.search)}</div>
+              <div class="event-age-caption">韓立年齡段</div>
+              <div class="event-scope-text">${highlight(scopeText, state.search)}</div>
+              <div class="event-era-text">${highlight(group.era, state.search)}</div>
+            </div>
+
+            <div class="event-main">
+              <div class="flex flex-col gap-4">
+                <div class="flex flex-wrap items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="flex flex-wrap gap-2 items-center mb-2">
+                      <span class="px-2.5 py-1 rounded-full border text-xs font-bold ${badgeColor(group.realmType)}">${group.realmType}</span>
+                      <span class="mini-chip scope-chip text-slate-300"><i class="fa-solid fa-compass"></i>${highlight(scopeText, state.search)}</span>
                     </div>
-
-                    <div class="hidden md:flex w-[14%] justify-center relative">
-                        <div class="absolute top-8 w-full h-[1px] z-0 ${isLeft ? 'bg-gradient-to-l right-1/2' : 'bg-gradient-to-r left-1/2'} from-transparent to-white/20"></div>
-                        <div class="age-badge-wrapper absolute top-8 transform -translate-y-1/2 z-20 transition-transform duration-300 group-hover:scale-110">
-                            <div class="age-badge text-[12px] font-bold px-3 py-1.5 rounded-full whitespace-nowrap ${theme.text} ${theme.border} tracking-widest">
-                                ${item.age}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="hidden md:block w-[43%]"></div>
+                    <h3 class="event-headline font-black text-slate-50 leading-tight">${highlight(group.title, state.search)}</h3>
+                  </div>
+                  <div class="event-chip-row text-xs text-slate-400">
+                    <span class="mini-chip">${group.subevents.length} 個子事件</span>
+                    <span class="mini-chip">${(group.participants || []).length} 位關聯角色</span>
+                  </div>
                 </div>
-                `;
-            });
-            container.innerHTML = html;
+
+                <p class="event-summary">${highlight(group.summary, state.search)}</p>
+
+                <div class="event-chip-row">${typeChips}</div>
+
+                ${(gainPreview || state.density !== 'brief') ? `
+                <div class="flex flex-col gap-2">
+                  <div class="text-xs tracking-[0.25em] uppercase text-slate-500">關鍵收穫</div>
+                  <div class="event-chip-row">${gainPreview || '<span class="text-slate-500 text-sm">此事件群沒有前置摘要收穫。</span>'}</div>
+                </div>` : ''}
+
+                ${subeventHtml}
+                ${microNodes.length ? `
+                  <div class="mt-4">
+                    <div class="text-xs tracking-[0.25em] uppercase text-slate-500 mb-2">關聯節點</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      ${microNodes.map(node => `<div class="micro-node rounded-2xl px-3 py-3 text-sm ${node.color}"><div class="text-[10px] tracking-[0.22em] uppercase text-slate-500 mb-1">${node.kind}</div><div class="leading-6"><i class="${node.icon} mr-2"></i>${highlight(node.text, state.search)}</div></div>`).join('')}
+                    </div>
+                  </div>` : ''}
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    `;
+  }).join('');
+
+  timelineContainer.querySelectorAll('.timeline-entry').forEach(card => {
+    card.addEventListener('click', () => {
+      state.selectedId = card.dataset.id;
+      renderTimeline();
+    });
+  });
+  renderSidebar();
+}
+
+
+function renderSidebar() {
+  const group = eventGroups.find(g => g.id === state.selectedId);
+  if (!group) {
+    sidebarContent.innerHTML = '<div class="text-slate-400">沒有可顯示的事件。</div>';
+    return;
+  }
+  const section = (title, icon, items, color='text-slate-300') => {
+    if (!items || !items.length) return '';
+    return `
+      <section class="mt-5">
+        <div class="text-xs tracking-[0.3em] uppercase text-slate-500 mb-2"><i class="${icon} mr-2"></i>${title}</div>
+        <ul class="sidebar-list space-y-2 text-sm ${color}">
+          ${items.map(item => `<li>${escapeHtml(item)}</li>`).join('')}
+        </ul>
+      </section>`;
+  };
+  sidebarContent.innerHTML = `
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <div class="flex flex-wrap gap-2 items-center">
+          <span class="px-2.5 py-1 rounded-full border text-xs font-bold ${badgeColor(group.realmType)}">${group.realmType}</span>
+          <span class="mini-chip age-chip"><i class="fa-regular fa-hourglass-half"></i>${escapeHtml(splitRange(group.range).age || '年齡未明')}</span>
+          <span class="mini-chip scope-chip text-slate-300"><i class="fa-solid fa-compass"></i>${escapeHtml(splitRange(group.range).scope || group.era)}</span>
+        </div>
+        <div class="mt-3 text-xs tracking-[0.24em] uppercase text-slate-500">${escapeHtml(group.era)}</div>
+        <h3 class="text-2xl font-black mt-2 leading-tight">${escapeHtml(group.title)}</h3>
+      </div>
+    </div>
+    <p class="mt-4 text-sm text-slate-300 leading-7">${escapeHtml(group.summary)}</p>
+    <div class="mt-3 text-[11px] leading-5 text-slate-500">本版以你上傳的小說文本為主重整，事件切分採『主事件＋子事件』；年齡資訊直接嵌入時間線卡左側，閱讀時不用在不同區塊來回對照。</div>
+
+    <section class="mt-5">
+      <div class="text-xs tracking-[0.3em] uppercase text-slate-500 mb-2"><i class="fa-solid fa-wave-square mr-2"></i>事件作用</div>
+      <div class="rounded-2xl border border-slate-800 bg-black/25 p-4 text-sm text-slate-200 leading-7">${escapeHtml(group.impact)}</div>
+    </section>
+
+    ${section('關聯人物','fa-solid fa-users', group.participants, 'text-emerald-300')}
+    ${section('重要地點','fa-solid fa-location-dot', group.locations)}
+    ${section('主要收穫','fa-solid fa-box-open', group.gains, 'text-cyan-300')}
+    ${section('代價 / 失去','fa-solid fa-fire', group.losses, 'text-rose-300')}
+    ${section('事件類型','fa-solid fa-shapes', group.types)}
+    ${section('事件關鍵詞','fa-solid fa-tags', group.tags, 'text-amber-300')}
+    <section class="mt-5">
+      <div class="text-xs tracking-[0.3em] uppercase text-slate-500 mb-2"><i class="fa-solid fa-list-check mr-2"></i>事件拆解</div>
+      <div class="space-y-3">
+        ${group.subevents.map((sub, idx) => `<div class="rounded-2xl border border-slate-800 bg-black/20 p-3"><div class="flex items-center justify-between gap-3"><div class="text-sm font-bold text-slate-100">${idx + 1}. ${escapeHtml(sub.label)}</div><div class="text-[10px] uppercase tracking-[0.2em] text-slate-500">${escapeHtml(sub.type)}</div></div><div class="mt-2 text-sm text-slate-300 leading-6">${escapeHtml(sub.summary)}</div></div>`).join('')}
+      </div>
+    </section>
+  `;
+}
+
+function setTab(tab) {
+  document.getElementById('view-timeline').classList.toggle('hidden', tab !== 'timeline');
+  document.getElementById('view-graph').classList.toggle('hidden', tab !== 'graph');
+  document.getElementById('view-realm').classList.toggle('hidden', tab !== 'realm');
+  tabBtns.forEach(btn => {
+    const active = btn.dataset.tab === tab;
+    btn.className = active
+      ? 'tab-btn px-4 py-2 rounded-xl glass text-sm font-bold text-white'
+      : 'tab-btn px-4 py-2 rounded-xl border border-slate-700 text-slate-300 text-sm font-bold hover:text-white';
+  });
+  if (tab === 'graph') initGraph();
+}
+
+function initGraph() {
+  const dom = document.getElementById('graphContainer');
+  if (!state.graph) {
+    state.graph = echarts.init(dom);
+    window.addEventListener('resize', () => state.graph && state.graph.resize());
+  }
+  const graphData = buildGraphData();
+  const option = {
+    backgroundColor: 'transparent',
+    animationDuration: 500,
+    tooltip: {
+      trigger: 'item',
+      confine: true,
+      formatter: (params) => {
+        if (params.dataType === 'edge') {
+          const source = params.data.sourceName || params.data.source;
+          const target = params.data.targetName || params.data.target;
+          return `<div style="max-width:280px;line-height:1.7"><b>${source}</b> → <b>${target}</b><br><span style="color:#fbbf24">${params.data.value || ''}</span></div>`;
         }
-
-        // --- Massive ECharts Logic ---
-        function initChart() {
-            if (myChart != null) {
-                myChart.resize();
-                return;
-            }
-            const chartDom = document.getElementById('echarts-container');
-            myChart = echarts.init(chartDom);
-            const option = {
-                backgroundColor: 'transparent',
-                legend: {
-                    data: chartCategories.map(c => c.name),
-                    textStyle: { color: '#cbd5e1', fontSize: 12 },
-                    top: 20,
-                    right: 20,
-                    orient: 'vertical',
-                    backgroundColor: 'rgba(5, 10, 20, 0.8)',
-                    padding: 15,
-                    borderRadius: 12,
-                    borderWidth: 1,
-                    borderColor: '#334155',
-                    itemGap: 12
-                },
-                tooltip: {
-                    trigger: 'item',
-                    formatter: function (params) {
-                        if (params.dataType === 'edge') {
-                            return `<div class="text-sm px-4 py-3 bg-black/95 rounded-lg border border-gray-700 backdrop-blur-md shadow-2xl">
-                                        <div class="text-gray-400 mb-1 font-mono text-[10px]">因果牽連</div>
-                                        <b>${params.data.source}</b> <i class="fa-solid fa-arrow-right text-gray-500 text-xs mx-1"></i> <b>${params.data.target}</b><br>
-                                        <span class="text-amber-400 mt-2 block font-bold tracking-wide">${params.data.value}</span>
-                                    </div>`;
-                        }
-                        return `<div class="font-bold text-lg px-3 py-1 text-white drop-shadow-lg">${params.name.replace('\n', ' ')}<br>
-                                <span class="text-xs text-gray-400 font-normal tracking-widest">${params.data.category}</span></div>`;
-                    },
-                    backgroundColor: 'rgba(0,0,0,0)',
-                    borderWidth: 0,
-                    shadowBlur: 0
-                },
-                series: [{
-                    type: 'graph',
-                    layout: 'force',
-                    roam: true,
-                    draggable: true,
-                    categories: chartCategories,
-                    label: {
-                        show: true,
-                        position: 'right',
-                        color: '#f8fafc',
-                        fontSize: 12,
-                        fontFamily: '"Noto Sans TC", sans-serif',
-                        textBorderColor: '#020617',
-                        textBorderWidth: 4,
-                        distance: 8
-                    },
-                    edgeLabel: {
-                        show: true,
-                        fontSize: 10,
-                        formatter: "{c}",
-                        color: '#94a3b8',
-                        textBorderColor: 'rgba(5, 10, 20, 0.9)',
-                        textBorderWidth: 3,
-                        backgroundColor: 'rgba(5, 10, 20, 0.7)',
-                        padding: [3, 5],
-                        borderRadius: 4
-                    },
-                    edgeSymbol: ['none', 'arrow'],
-                    edgeSymbolSize: [0, 8],
-                    force: { 
-                        repulsion: 4200, // 調高斥力容納更多節點
-                        edgeLength: 220, 
-                        gravity: 0.04,
-                        friction: 0.15
-                    },
-                    data: chartNodes,
-                    links: chartLinks
-                }]
-            };
-            myChart.setOption(option);
-            window.addEventListener('resize', () => myChart.resize());
+        if (params.data.nodeType === 'event') {
+          return `<div style="max-width:320px;line-height:1.75"><b>${params.data.name}</b><br><span style="color:#cbd5e1">${params.data.realm}</span><br><span style="color:#fde68a">${params.data.age || '年齡未明'}</span>${params.data.scope ? `｜${params.data.scope}` : ''}<br>子事件：${params.data.subeventCount}｜關聯人物：${params.data.participantsCount}<br><span style="color:#94a3b8">${params.data.impact || ''}</span></div>`;
         }
+        return `<div style="max-width:280px;line-height:1.75"><b>${params.data.name}</b><br><span style="color:#cbd5e1">${(params.data.realms || []).join('、') || '單一篇章人物'}</span><br>出現事件群：${params.data.occurrence || 0}<br><span style="color:#94a3b8">${(params.data.relatedEvents || []).slice(0,4).join('、')}</span></div>`;
+      }
+    },
+    legend: {
+      top: 8,
+      textStyle: { color: '#cbd5e1' },
+      data: graphData.categories.map(item => item.name)
+    },
+    series: [{
+      type: 'graph',
+      layout: 'force',
+      roam: true,
+      draggable: true,
+      focusNodeAdjacency: true,
+      emphasis: { focus: 'adjacency', lineStyle: { width: 2.4 } },
+      label: {
+        show: true,
+        color: '#f8fafc',
+        fontSize: 11,
+        lineHeight: 14,
+        textBorderColor: '#020617',
+        textBorderWidth: 4,
+        formatter: (params) => params.data.labelName || params.data.name
+      },
+      edgeLabel: { show: false },
+      force: {
+        repulsion: 720,
+        edgeLength: [70, 150],
+        gravity: .06,
+        friction: 0.15
+      },
+      categories: graphData.categories,
+      data: graphData.nodes,
+      links: graphData.links,
+      lineStyle: {
+        color: '#64748b',
+        opacity: .72,
+        width: 1.4,
+        curveness: .12
+      }
+    }]
+  };
+  state.graph.setOption(option, true);
+  state.graph.off('click');
+  state.graph.on('click', (params) => {
+    if (params.data?.nodeType === 'event') {
+      state.selectedId = params.data.id;
+      setTab('timeline');
+      renderTimeline();
+      setTimeout(() => {
+        const target = timelineContainer.querySelector(`[data-id="${params.data.id}"]`);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 40);
+    }
+  });
+  state.graph.resize();
+}
 
-        // --- Chart Search Logic ---
-        function searchChartNode() {
-            if (!myChart) return;
-            const query = document.getElementById('searchGraph').value.trim().toLowerCase();
-            
-            if (query === '') {
-                resetChartSearch(false);
-                return;
-            }
+graphModeBtns.forEach(btn => btn.addEventListener('click', () => {
+  state.graphMode = btn.dataset.mode;
+  graphModeBtns.forEach(b => b.classList.toggle('active', b === btn));
+  initGraph();
+}));
 
-            // 尋找匹配的節點 (比對 ID 和 Name)
-            const matchNodes = new Set();
-            chartNodes.forEach(n => {
-                if (n.name.toLowerCase().includes(query) || n.id.toLowerCase().includes(query)) {
-                    matchNodes.add(n.id);
-                }
-            });
+tabBtns.forEach(btn => btn.addEventListener('click', () => setTab(btn.dataset.tab)));
+realmBtns.forEach(btn => btn.addEventListener('click', () => {
+  state.realm = btn.dataset.realm;
+  realmBtns.forEach(b => b.classList.toggle('active', b === btn));
+  renderTimeline();
+  if (state.graph) initGraph();
+}));
+densityBtns.forEach(btn => btn.addEventListener('click', () => {
+  state.density = btn.dataset.density;
+  densityBtns.forEach(b => b.classList.toggle('active', b === btn));
+  renderTimeline();
+}));
+searchInput.addEventListener('input', (e) => {
+  state.search = e.target.value;
+  renderTimeline();
+});
 
-            if (matchNodes.size === 0) return; // 沒找到就不更新
-
-            // 尋找與匹配節點相連的一度關係節點
-            const relatedNodes = new Set(matchNodes);
-            chartLinks.forEach(l => {
-                if (matchNodes.has(l.source)) relatedNodes.add(l.target);
-                if (matchNodes.has(l.target)) relatedNodes.add(l.source);
-            });
-
-            // 更新節點樣式 (未相關的透明度降低)
-            const updatedNodes = chartNodes.map(n => ({
-                ...n,
-                itemStyle: {
-                    ...n.itemStyle,
-                    opacity: relatedNodes.has(n.id) ? 1 : 0.05
-                },
-                label: {
-                    ...n.label,
-                    show: relatedNodes.has(n.id) // 隱藏不相關的文字
-                }
-            }));
-
-            // 更新連線樣式
-            const updatedLinks = chartLinks.map(l => {
-                const isRelated = matchNodes.has(l.source) || matchNodes.has(l.target);
-                return {
-                    ...l,
-                    lineStyle: {
-                        ...l.lineStyle,
-                        opacity: isRelated ? 1 : 0.02,
-                        width: isRelated ? (l.lineStyle.width || 2) * 2 : 1 // 加粗相關連線
-                    }
-                };
-            });
-
-            myChart.setOption({
-                series: [{
-                    data: updatedNodes,
-                    links: updatedLinks
-                }]
-            });
-        }
-
-        function resetChartSearch(clearInput = true) {
-            if (!myChart) return;
-            if (clearInput) document.getElementById('searchGraph').value = '';
-            
-            // 還原為初始狀態
-            const resetNodes = chartNodes.map(n => ({
-                ...n,
-                itemStyle: { ...n.itemStyle, opacity: 1 },
-                label: { ...n.label, show: true }
-            }));
-
-            myChart.setOption({
-                series: [{
-                    data: resetNodes,
-                    links: chartLinks // 原始已包含曲率和基礎顏色
-                }]
-            });
-        }
-
-        // --- Tabs Logic ---
-        function switchMainTab(tab) {
-            const views = {
-                'timeline': document.getElementById('view-timeline'),
-                'chart': document.getElementById('view-chart'),
-                'realm': document.getElementById('view-realm')
-            };
-            
-            const btns = {
-                'timeline': document.getElementById('btn-timeline'),
-                'chart': document.getElementById('btn-chart'),
-                'realm': document.getElementById('btn-realm')
-            };
-
-            // 隱藏所有視圖並重置按鈕樣式
-            Object.keys(views).forEach(key => {
-                views[key].classList.add('hidden');
-                btns[key].className = "px-5 md:px-6 py-2 rounded-lg text-sm font-bold text-gray-400 hover:text-white hover:bg-gray-800/80 border border-transparent transition-all flex items-center gap-2";
-            });
-
-            // 顯示選擇的視圖並套用活躍按鈕樣式
-            views[tab].classList.remove('hidden');
-            btns[tab].className = "px-5 md:px-6 py-2 rounded-lg text-sm font-bold bg-gradient-to-b from-gray-700 to-gray-900 text-white shadow-md border border-gray-500 transition-all flex items-center gap-2";
-            
-            // 如果是圖表，確保重新繪製
-            if (tab === 'chart') {
-                setTimeout(initChart, 50);
-            }
-        }
-
-        // Init
-        window.onload = () => {
-            renderTimeline();
-        };
-    </script>
+setTab('timeline');
+renderTimeline();
+</script>
 </body>
 </html>
